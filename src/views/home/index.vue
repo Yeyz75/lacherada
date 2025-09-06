@@ -9,11 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import HeroSection from '../../components/hero-section/index.vue'
-import HowItWorks from '../../components/how-it-works/index.vue'
-import Categories from '../../components/categories/index.vue'
-import Testimonials from '../../components/testimonials/index.vue'
-import StatsSection from '../../components/stats-section/index.vue'
+import HeroSection from "../../components/HeroSections/index.vue";
+import HowItWorks from "../../components/HowItWorks/index.vue";
+import Categories from "../../components/Categories/index.vue";
+import Testimonials from "../../components/Testimonials/index.vue";
+import StatsSection from "../../components/StatsSection/index.vue";
 </script>
 
 <style scoped>
