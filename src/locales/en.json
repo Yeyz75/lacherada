@@ -63,7 +63,8 @@
     "howItWorks": "How it Works",
     "contact": "Contact",
     "login": "Sign In",
-    "register": "Sign Up"
+    "register": "Sign Up",
+    "signOut": "Sign Out"
   },
   "footer": {
     "about": "About",
@@ -84,6 +85,42 @@
     "changeLanguage": "Change language",
     "lightMode": "Light mode",
     "darkMode": "Dark mode"
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "displayName": "Full Name",
+    "displayNamePlaceholder": "Enter your full name",
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account to continue",
+      "button": "Sign In",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join our community and start sharing",
+      "button": "Create Account",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "acceptTerms": "I accept the",
+      "termsAndConditions": "Terms and Conditions",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign In"
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email and we'll send you a link to reset your password",
+      "button": "Send Reset Link",
+      "emailSent": "Email Sent!",
+      "checkEmail": "Check your email for the password reset link",
+      "resendEmail": "Resend Email",
+      "backToLogin": "Back to Login"
+    }
   },
   "primevueDemo": {
     "title": "PrimeVue Demo with Iconify",

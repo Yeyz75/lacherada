@@ -47,12 +47,35 @@
           
           <!-- Auth Buttons -->
           <div class="auth-buttons">
-            <button class="btn btn-ghost">
-              {{ t('navbar.login') }}
-            </button>
-            <button class="btn btn-primary">
-              {{ t('navbar.register') }}
-            </button>
+            <!-- Not authenticated -->
+            <template v-if="!isAuthenticated">
+              <button @click="goToLogin" class="btn btn-ghost">
+                {{ t('navbar.login') }}
+              </button>
+              <button @click="goToRegister" class="btn btn-primary">
+                {{ t('navbar.register') }}
+              </button>
+            </template>
+            
+            <!-- Authenticated -->
+            <template v-else>
+              <div class="user-menu">
+                <div class="user-info">
+                  <div class="user-avatar">
+                    <Icon icon="mdi:account-circle" />
+                  </div>
+                  <span class="user-name">{{ user?.displayName || user?.email }}</span>
+                </div>
+                <button 
+                  @click="handleSignOut" 
+                  class="btn btn-ghost sign-out-btn"
+                  :disabled="loading"
+                >
+                  <Icon icon="mdi:logout" />
+                  {{ t('navbar.signOut', 'Sign Out') }}
+                </button>
+              </div>
+            </template>
           </div>
           
           <!-- Mobile Menu Button -->
@@ -83,12 +106,33 @@
         </router-link>
         
         <div class="mobile-auth-buttons">
-          <button class="btn btn-ghost btn-full">
-            {{ t('navbar.login') }}
-          </button>
-          <button class="btn btn-primary btn-full">
-            {{ t('navbar.register') }}
-          </button>
+          <!-- Not authenticated -->
+          <template v-if="!isAuthenticated">
+            <button @click="goToLogin" class="btn btn-ghost btn-full">
+              {{ t('navbar.login') }}
+            </button>
+            <button @click="goToRegister" class="btn btn-primary btn-full">
+              {{ t('navbar.register') }}
+            </button>
+          </template>
+          
+          <!-- Authenticated -->
+          <template v-else>
+            <div class="mobile-user-info">
+              <div class="user-display">
+                <Icon icon="mdi:account-circle" class="user-avatar-mobile" />
+                <span>{{ user?.displayName || user?.email }}</span>
+              </div>
+              <button 
+                @click="handleSignOut" 
+                class="btn btn-ghost btn-full"
+                :disabled="loading"
+              >
+                <Icon icon="mdi:logout" />
+                {{ t('navbar.signOut', 'Sign Out') }}
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -98,11 +142,15 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useTheme } from '../../composables/useTheme'
+import { useAuth } from '../../composables/useAuth'
 
 const { t, locale } = useI18n()
 const { isDark, toggleTheme } = useTheme()
+const { user, isAuthenticated, signOut, loading } = useAuth()
+const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
 
@@ -119,6 +167,25 @@ const toggleLanguage = () => {
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const handleSignOut = async () => {
+  try {
+    await signOut()
+    router.push('/')
+  } catch (error) {
+    console.error('Sign out failed:', error)
+  }
+}
+
+const goToLogin = () => {
+  router.push('/auth/login')
+  closeMobileMenu()
+}
+
+const goToRegister = () => {
+  router.push('/auth/register')
+  closeMobileMenu()
 }
 
 const closeMobileMenu = () => {
@@ -239,6 +306,44 @@ const closeMobileMenu = () => {
   gap: var(--space-sm);
 }
 
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.user-avatar {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+}
+
+.user-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sign-out-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+}
+
 .mobile-menu-btn {
   display: none;
   font-size: var(--font-size-lg);
@@ -277,6 +382,27 @@ const closeMobileMenu = () => {
   gap: var(--space-sm);
   margin-top: var(--space-md);
   padding: 0 var(--space-md);
+}
+
+.mobile-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.user-display {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.user-avatar-mobile {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
 }
 
 .btn-full {

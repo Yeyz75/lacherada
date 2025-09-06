@@ -63,7 +63,8 @@
     "howItWorks": "Cómo Funciona",
     "contact": "Contacto",
     "login": "Iniciar Sesión",
-    "register": "Registrarse"
+    "register": "Registrarse",
+    "signOut": "Cerrar Sesión"
   },
   "footer": {
     "about": "Acerca de",
@@ -84,6 +85,42 @@
     "changeLanguage": "Cambiar idioma",
     "lightMode": "Modo claro",
     "darkMode": "Modo oscuro"
+  },
+  "auth": {
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Ingresa tu contraseña",
+    "displayName": "Nombre Completo",
+    "displayNamePlaceholder": "Ingresa tu nombre completo",
+    "login": {
+      "title": "Bienvenido de Nuevo",
+      "subtitle": "Inicia sesión en tu cuenta para continuar",
+      "button": "Iniciar Sesión",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUp": "Registrarse"
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "subtitle": "Únete a nuestra comunidad y comienza a compartir",
+      "button": "Crear Cuenta",
+      "confirmPassword": "Confirmar Contraseña",
+      "confirmPasswordPlaceholder": "Confirma tu contraseña",
+      "acceptTerms": "Acepto los",
+      "termsAndConditions": "Términos y Condiciones",
+      "haveAccount": "¿Ya tienes una cuenta?",
+      "signIn": "Iniciar Sesión"
+    },
+    "forgotPassword": {
+      "title": "Restablecer Contraseña",
+      "subtitle": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+      "button": "Enviar Enlace",
+      "emailSent": "¡Correo Enviado!",
+      "checkEmail": "Revisa tu correo electrónico para el enlace de restablecimiento",
+      "resendEmail": "Reenviar Correo",
+      "backToLogin": "Volver al Inicio de Sesión"
+    }
   },
   "primevueDemo": {
     "title": "Demo de PrimeVue con Iconify",
