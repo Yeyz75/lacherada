@@ -9,28 +9,28 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-import Navbar from "./components/NavBar/index.vue";
-import Footer from "./components/Footer/index.vue";
-import { useTheme } from "./composables/useTheme";
+  import { onMounted } from 'vue'
+  import Navbar from './components/NavBar/index.vue'
+  import Footer from './components/Footer/index.vue'
+  import { useTheme } from './composables/useTheme'
 
-const { initTheme } = useTheme();
+  const { initTheme } = useTheme()
 
-onMounted(() => {
-  initTheme();
-});
+  onMounted(() => {
+    initTheme()
+  })
 </script>
 
 <style>
-@import "./styles/globals.css";
+  @import url('./styles/globals.css');
 
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+  #app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-.main-content {
-  flex: 1;
-}
+  .main-content {
+    flex: 1;
+  }
 </style>

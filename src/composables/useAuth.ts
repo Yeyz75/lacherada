@@ -15,19 +15,20 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 
 export function useAuth() {
-  const isAuthenticated = computed(() => !!user.value)
-  
+  const isAuthenticated = computed(() => Boolean(user.value))
+
   const signIn = async (email: string, password: string): Promise<void> => {
     loading.value = true
     error.value = null
-    
+
     try {
       // TODO: Implement Firebase signInWithEmailAndPassword
+      // eslint-disable-next-line no-console
       console.log('Sign in with:', email, password)
-      
+
       // Placeholder success
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
       // Set mock user for development
       user.value = {
         uid: '123',
@@ -35,7 +36,7 @@ export function useAuth() {
         displayName: null,
         photoURL: null,
         emailVerified: true,
-        createdAt: new Date()
+        createdAt: new Date(),
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Authentication failed'
@@ -44,16 +45,21 @@ export function useAuth() {
       loading.value = false
     }
   }
-  
-  const signUp = async (email: string, password: string, displayName?: string): Promise<void> => {
+
+  const signUp = async (
+    email: string,
+    password: string,
+    displayName?: string,
+  ): Promise<void> => {
     loading.value = true
     error.value = null
-    
+
     try {
       // TODO: Implement Firebase createUserWithEmailAndPassword
+      // eslint-disable-next-line no-console
       console.log('Sign up with:', email, password, displayName)
-      
-      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Registration failed'
       throw err
@@ -61,16 +67,17 @@ export function useAuth() {
       loading.value = false
     }
   }
-  
+
   const signOut = async (): Promise<void> => {
     loading.value = true
-    
+
     try {
       // TODO: Implement Firebase signOut
+      // eslint-disable-next-line no-console
       console.log('Sign out')
-      
+
       user.value = null
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Sign out failed'
       throw err
@@ -78,16 +85,17 @@ export function useAuth() {
       loading.value = false
     }
   }
-  
+
   const resetPassword = async (email: string): Promise<void> => {
     loading.value = true
     error.value = null
-    
+
     try {
       // TODO: Implement Firebase sendPasswordResetEmail
+      // eslint-disable-next-line no-console
       console.log('Reset password for:', email)
-      
-      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Password reset failed'
       throw err
@@ -95,7 +103,7 @@ export function useAuth() {
       loading.value = false
     }
   }
-  
+
   return {
     user: computed(() => user.value),
     isAuthenticated,
@@ -104,6 +112,6 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
-    resetPassword
+    resetPassword,
   }
 }

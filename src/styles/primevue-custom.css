@@ -52,31 +52,11 @@
 /* Tema oscuro para PrimeVue */
 [data-theme="dark"] {
   /* Ajustar colores primarios para tema oscuro */
-  --p-primary-50: color-mix(
-    in srgb,
-    var(--color-primary) 10%,
-    var(--color-background)
-  );
-  --p-primary-100: color-mix(
-    in srgb,
-    var(--color-primary) 20%,
-    var(--color-background)
-  );
-  --p-primary-200: color-mix(
-    in srgb,
-    var(--color-primary) 30%,
-    var(--color-background)
-  );
-  --p-primary-300: color-mix(
-    in srgb,
-    var(--color-primary) 40%,
-    var(--color-background)
-  );
-  --p-primary-400: color-mix(
-    in srgb,
-    var(--color-primary) 60%,
-    var(--color-background)
-  );
+  --p-primary-50: color-mix(in srgb, var(--color-primary) 10%, var(--color-background));
+  --p-primary-100: color-mix(in srgb, var(--color-primary) 20%, var(--color-background));
+  --p-primary-200: color-mix(in srgb, var(--color-primary) 30%, var(--color-background));
+  --p-primary-300: color-mix(in srgb, var(--color-primary) 40%, var(--color-background));
+  --p-primary-400: color-mix(in srgb, var(--color-primary) 60%, var(--color-background));
 
   /* Colores de superficie para tema oscuro */
   --p-surface-0: var(--color-background);
@@ -116,8 +96,7 @@
 .p-dropdown:focus,
 .p-multiselect:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px
-    color-mix(in srgb, var(--color-primary) 20%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 .p-card {

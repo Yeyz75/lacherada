@@ -1,8 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/home/index.vue'
-import LoginView from '../views/auth/LoginView.vue'
-import RegisterView from '../views/auth/RegisterView.vue'
-import ForgotPasswordView from '../views/auth/ForgotPasswordView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -10,39 +6,39 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('../views/home/index.vue'),
     },
     {
       path: '/explore',
       name: 'explore',
-      component: Home // Por ahora redirigimos a Home
+      component: () => import('../views/home/index.vue'), // Por ahora redirigimos a Home
     },
     {
       path: '/how-it-works',
       name: 'howItWorks',
-      component: Home // Por ahora redirigimos a Home
+      component: () => import('../views/home/index.vue'), // Por ahora redirigimos a Home
     },
     {
       path: '/contact',
       name: 'contact',
-      component: Home // Por ahora redirigimos a Home
+      component: () => import('../views/home/index.vue'), // Por ahora redirigimos a Home
     },
     {
       path: '/auth/login',
       name: 'login',
-      component: LoginView
+      component: () => import('../views/auth/LoginView.vue'),
     },
     {
       path: '/auth/register',
       name: 'register',
-      component: RegisterView
+      component: () => import('../views/auth/RegisterView.vue'),
     },
     {
       path: '/auth/forgot-password',
       name: 'forgotPassword',
-      component: ForgotPasswordView
-    }
-  ]
+      component: () => import('../views/auth/ForgotPasswordView.vue'),
+    },
+  ],
 })
 
 export default router

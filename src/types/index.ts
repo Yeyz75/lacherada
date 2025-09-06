@@ -37,22 +37,32 @@ export interface Post {
   favoriteCount: number
 }
 
-export type PostType = 'lend' | 'borrow' | 'sell' | 'donate' | 'exchange' | 'service'
+export type PostType =
+  | 'lend'
+  | 'borrow'
+  | 'sell'
+  | 'donate'
+  | 'exchange'
+  | 'service'
 
-export type PostCategory = 
-  | 'tools' 
-  | 'technology' 
-  | 'home' 
-  | 'services' 
-  | 'education' 
-  | 'sports' 
-  | 'clothing' 
-  | 'vehicles' 
+export type PostCategory =
+  | 'tools'
+  | 'technology'
+  | 'home'
+  | 'services'
+  | 'education'
+  | 'sports'
+  | 'clothing'
+  | 'vehicles'
   | 'other'
 
 export type ItemCondition = 'new' | 'like-new' | 'good' | 'fair' | 'poor'
 
-export type PostAvailability = 'available' | 'reserved' | 'unavailable' | 'completed'
+export type PostAvailability =
+  | 'available'
+  | 'reserved'
+  | 'unavailable'
+  | 'completed'
 
 export interface Location {
   city: string
@@ -79,7 +89,13 @@ export interface Exchange {
   updatedAt: Date
 }
 
-export type ExchangeStatus = 'pending' | 'accepted' | 'declined' | 'in-progress' | 'completed' | 'cancelled'
+export type ExchangeStatus =
+  | 'pending'
+  | 'accepted'
+  | 'declined'
+  | 'in-progress'
+  | 'completed'
+  | 'cancelled'
 
 export interface Message {
   id: string
