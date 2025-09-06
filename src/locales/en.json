@@ -1,0 +1,82 @@
+{
+  "home": {
+    "welcome": "Welcome to LaCherada",
+    "subtitle": "Share, exchange and connect with your community",
+    "hero": {
+      "title": "Connect, Share, Exchange with your Community",
+      "subtitle": "The platform where you can lend, sell, donate or exchange objects and services safely",
+      "primaryCta": "Get Started",
+      "secondaryCta": "See How it Works"
+    },
+    "howItWorks": {
+      "title": "How it Works?",
+      "step1": {
+        "title": "Post what you offer",
+        "description": "Upload photos and describe what you want to lend, sell or exchange"
+      },
+      "step2": {
+        "title": "Connect with neighbors",
+        "description": "Find nearby people interested in what you offer"
+      },
+      "step3": {
+        "title": "Exchange safely",
+        "description": "Use our verification and secure communication system"
+      }
+    },
+    "categories": {
+      "title": "Popular Categories",
+      "tools": "Tools & DIY",
+      "technology": "Technology",
+      "home": "Home & Garden",
+      "services": "Professional Services",
+      "education": "Books & Education",
+      "sports": "Sports & Recreation"
+    },
+    "testimonials": {
+      "title": "What our users say",
+      "testimonial1": {
+        "text": "Thanks to LaCherada I was able to get the tools I needed for my project without having to buy them.",
+        "author": "María González",
+        "role": "Architect"
+      },
+      "testimonial2": {
+        "text": "An incredible community. I've met many neighbors and we've created a mutual support network.",
+        "author": "Carlos Rodríguez",
+        "role": "Engineer"
+      },
+      "testimonial3": {
+        "text": "Perfect for exchanging books and educational materials. My children always have something new to read.",
+        "author": "Ana Martínez",
+        "role": "Teacher"
+      }
+    },
+    "stats": {
+      "title": "Our Community in Numbers",
+      "users": "Active Users",
+      "exchanges": "Completed Exchanges",
+      "cities": "Available Cities"
+    }
+  },
+  "navbar": {
+    "home": "Home",
+    "explore": "Explore",
+    "howItWorks": "How it Works",
+    "contact": "Contact",
+    "login": "Sign In",
+    "register": "Sign Up"
+  },
+  "footer": {
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "support": "Support",
+    "followUs": "Follow Us"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "accept": "Accept"
+  }
+}

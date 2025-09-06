@@ -1,0 +1,82 @@
+{
+  "home": {
+    "welcome": "Bienvenido a LaCherada",
+    "subtitle": "Comparte, intercambia y conecta con tu comunidad",
+    "hero": {
+      "title": "Conecta, Comparte, Intercambia con tu Comunidad",
+      "subtitle": "La plataforma donde puedes prestar, vender, donar o intercambiar objetos y servicios de manera segura",
+      "primaryCta": "Comenzar Ahora",
+      "secondaryCta": "Ver Cómo Funciona"
+    },
+    "howItWorks": {
+      "title": "¿Cómo Funciona?",
+      "step1": {
+        "title": "Publica lo que ofreces",
+        "description": "Sube fotos y describe lo que quieres prestar, vender o intercambiar"
+      },
+      "step2": {
+        "title": "Conecta con vecinos",
+        "description": "Encuentra personas cercanas interesadas en lo que ofreces"
+      },
+      "step3": {
+        "title": "Intercambia de forma segura",
+        "description": "Utiliza nuestro sistema de verificación y comunicación segura"
+      }
+    },
+    "categories": {
+      "title": "Categorías Populares",
+      "tools": "Herramientas y Bricolaje",
+      "technology": "Tecnología",
+      "home": "Hogar y Jardín",
+      "services": "Servicios Profesionales",
+      "education": "Libros y Educación",
+      "sports": "Deportes y Ocio"
+    },
+    "testimonials": {
+      "title": "Lo que dicen nuestros usuarios",
+      "testimonial1": {
+        "text": "Gracias a LaCherada pude conseguir las herramientas que necesitaba para mi proyecto sin tener que comprarlas.",
+        "author": "María González",
+        "role": "Arquitecta"
+      },
+      "testimonial2": {
+        "text": "Una comunidad increíble. He conocido a muchos vecinos y hemos creado una red de apoyo mutuo.",
+        "author": "Carlos Rodríguez",
+        "role": "Ingeniero"
+      },
+      "testimonial3": {
+        "text": "Perfecta para intercambiar libros y materiales educativos. Mis hijos siempre tienen algo nuevo que leer.",
+        "author": "Ana Martínez",
+        "role": "Profesora"
+      }
+    },
+    "stats": {
+      "title": "Nuestra Comunidad en Números",
+      "users": "Usuarios Activos",
+      "exchanges": "Intercambios Realizados",
+      "cities": "Ciudades Disponibles"
+    }
+  },
+  "navbar": {
+    "home": "Inicio",
+    "explore": "Explorar",
+    "howItWorks": "Cómo Funciona",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse"
+  },
+  "footer": {
+    "about": "Acerca de",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "support": "Soporte",
+    "followUs": "Síguenos"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "accept": "Aceptar"
+  }
+}
