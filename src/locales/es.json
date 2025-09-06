@@ -77,6 +77,12 @@
     "error": "Error",
     "success": "Éxito",
     "cancel": "Cancelar",
-    "accept": "Aceptar"
+    "accept": "Aceptar",
+    "lend": "Prestar",
+    "items": "elementos",
+    "explore": "Explorar",
+    "changeLanguage": "Cambiar idioma",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro"
   }
 }
