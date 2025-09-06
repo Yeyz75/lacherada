@@ -20,7 +20,7 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    include: ['@iconify/json/json/lucide.json', '@iconify/json/json/mdi.json'],
+    // Removed include for @iconify/json files as they are handled by unplugin-icons
   },
   build: {
     chunkSizeWarningLimit: 1000,
