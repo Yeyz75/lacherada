@@ -84,5 +84,30 @@
     "changeLanguage": "Cambiar idioma",
     "lightMode": "Modo claro",
     "darkMode": "Modo oscuro"
+  },
+  "primevueDemo": {
+    "title": "Demo de PrimeVue con Iconify",
+    "formTitle": "Formulario de Ejemplo",
+    "name": "Nombre",
+    "namePlaceholder": "Ingresa tu nombre",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "Ingresa tu email",
+    "category": "Categoría",
+    "categoryPlaceholder": "Selecciona una categoría",
+    "message": "Mensaje",
+    "messagePlaceholder": "Escribe tu mensaje aquí...",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "dataTableTitle": "Tabla de Datos",
+    "status": "Estado",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "info": "Información",
+    "success": "Éxito",
+    "formReset": "Formulario reiniciado",
+    "formSubmitted": "Formulario enviado correctamente",
+    "editing": "Editando",
+    "deleting": "Eliminando"
   }
 }

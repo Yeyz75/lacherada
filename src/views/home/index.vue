@@ -5,6 +5,8 @@
     <Categories />
     <Testimonials />
     <StatsSection />
+    <!-- Componente demo de PrimeVue -->
+    <PrimeVueDemo />
   </div>
 </template>
 
@@ -14,6 +16,7 @@ import HowItWorks from "../../components/HowItWorks/index.vue";
 import Categories from "../../components/Categories/index.vue";
 import Testimonials from "../../components/Testimonials/index.vue";
 import StatsSection from "../../components/StatsSection/index.vue";
+import PrimeVueDemo from "../../components/PrimeVueDemo/index.vue";
 </script>
 
 <style scoped>

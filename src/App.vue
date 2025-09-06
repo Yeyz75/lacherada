@@ -2,7 +2,7 @@
   <div id="app">
     <Navbar />
     <main class="main-content">
-      <Home />
+      <router-view />
     </main>
     <Footer />
   </div>
@@ -12,7 +12,6 @@
 import { onMounted } from "vue";
 import Navbar from "./components/NavBar/index.vue";
 import Footer from "./components/Footer/index.vue";
-import Home from "./views/home/index.vue";
 import { useTheme } from "./composables/useTheme";
 
 const { initTheme } = useTheme();

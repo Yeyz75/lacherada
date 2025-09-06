@@ -1,0 +1,152 @@
+/* PrimeVue Custom Theme Integration */
+/* Este archivo personaliza PrimeVue para usar las variables CSS del proyecto */
+
+/* Sobrescribir variables de PrimeVue con nuestras variables existentes */
+:root {
+  /* Colores primarios */
+  --p-primary-50: color-mix(in srgb, var(--color-primary) 10%, white);
+  --p-primary-100: color-mix(in srgb, var(--color-primary) 20%, white);
+  --p-primary-200: color-mix(in srgb, var(--color-primary) 30%, white);
+  --p-primary-300: color-mix(in srgb, var(--color-primary) 40%, white);
+  --p-primary-400: color-mix(in srgb, var(--color-primary) 60%, white);
+  --p-primary-500: var(--color-primary);
+  --p-primary-600: var(--color-primary-dark);
+  --p-primary-700: color-mix(in srgb, var(--color-primary-dark) 80%, black);
+  --p-primary-800: color-mix(in srgb, var(--color-primary-dark) 60%, black);
+  --p-primary-900: color-mix(in srgb, var(--color-primary-dark) 40%, black);
+  --p-primary-950: color-mix(in srgb, var(--color-primary-dark) 20%, black);
+
+  /* Colores de superficie */
+  --p-surface-0: var(--color-background);
+  --p-surface-50: var(--color-background-secondary);
+  --p-surface-100: var(--color-background-tertiary);
+  --p-surface-200: var(--color-border-light);
+  --p-surface-300: var(--color-border);
+  --p-surface-400: var(--color-border-dark);
+  --p-surface-500: var(--color-text-tertiary);
+  --p-surface-600: var(--color-text-secondary);
+  --p-surface-700: var(--color-text-primary);
+  --p-surface-800: color-mix(in srgb, var(--color-text-primary) 80%, black);
+  --p-surface-900: color-mix(in srgb, var(--color-text-primary) 60%, black);
+  --p-surface-950: color-mix(in srgb, var(--color-text-primary) 40%, black);
+
+  /* Colores de texto */
+  --p-text-color: var(--color-text-primary);
+  --p-text-muted-color: var(--color-text-secondary);
+  --p-content-background: var(--color-background);
+
+  /* Bordes */
+  --p-content-border-color: var(--color-border);
+  --p-content-border-radius: var(--radius-md);
+
+  /* Sombras */
+  --p-overlay-shadow: var(--shadow-lg);
+
+  /* Estados de color */
+  --p-green-500: var(--color-success);
+  --p-red-500: var(--color-error);
+  --p-yellow-500: var(--color-warning);
+  --p-blue-500: var(--color-info);
+}
+
+/* Tema oscuro para PrimeVue */
+[data-theme="dark"] {
+  /* Ajustar colores primarios para tema oscuro */
+  --p-primary-50: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    var(--color-background)
+  );
+  --p-primary-100: color-mix(
+    in srgb,
+    var(--color-primary) 20%,
+    var(--color-background)
+  );
+  --p-primary-200: color-mix(
+    in srgb,
+    var(--color-primary) 30%,
+    var(--color-background)
+  );
+  --p-primary-300: color-mix(
+    in srgb,
+    var(--color-primary) 40%,
+    var(--color-background)
+  );
+  --p-primary-400: color-mix(
+    in srgb,
+    var(--color-primary) 60%,
+    var(--color-background)
+  );
+
+  /* Colores de superficie para tema oscuro */
+  --p-surface-0: var(--color-background);
+  --p-surface-50: var(--color-background-secondary);
+  --p-surface-100: var(--color-background-tertiary);
+  --p-surface-200: var(--color-border);
+  --p-surface-300: var(--color-border-light);
+  --p-surface-400: var(--color-border-dark);
+  --p-surface-500: var(--color-text-tertiary);
+  --p-surface-600: var(--color-text-secondary);
+  --p-surface-700: var(--color-text-primary);
+  --p-surface-800: color-mix(in srgb, var(--color-text-primary) 120%, white);
+  --p-surface-900: color-mix(in srgb, var(--color-text-primary) 140%, white);
+  --p-surface-950: color-mix(in srgb, var(--color-text-primary) 160%, white);
+}
+
+/* Personalización de componentes específicos */
+.p-button {
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.p-button:hover {
+  transform: translateY(-1px);
+}
+
+.p-inputtext,
+.p-dropdown,
+.p-multiselect {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.p-inputtext:focus,
+.p-dropdown:focus,
+.p-multiselect:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.p-card {
+  background: var(--glass-background);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.p-dialog {
+  border-radius: var(--radius-lg);
+  backdrop-filter: var(--glass-backdrop);
+}
+
+.p-toast .p-toast-message {
+  border-radius: var(--radius-md);
+  backdrop-filter: var(--glass-backdrop);
+}
+
+/* Efectos de glassmorphism en overlays */
+.p-overlay {
+  backdrop-filter: blur(8px);
+}
+
+/* Animaciones suaves */
+.p-button,
+.p-inputtext,
+.p-dropdown,
+.p-card {
+  transition: all var(--transition-fast);
+}
