@@ -122,6 +122,91 @@
       "backToLogin": "Back to Login"
     }
   },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover items and services available in your community",
+    "searchPlaceholder": "Search items, services, categories...",
+    "filters": {
+      "category": "Category",
+      "type": "Type",
+      "location": "Location",
+      "all": "All",
+      "lend": "Lend",
+      "sell": "Sell",
+      "exchange": "Exchange",
+      "donate": "Donate"
+    },
+    "noResults": "No results found",
+    "loadMore": "Load More",
+    "featured": "Featured",
+    "recent": "Recent",
+    "popular": "Popular"
+  },
+  "howItWorks": {
+    "title": "How LaCherada Works",
+    "subtitle": "Discover how easy it is to share with your community",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "benefits": {
+      "title": "Benefits of Using LaCherada",
+      "community": {
+        "title": "Build Community",
+        "description": "Connect with neighbors and create lasting relationships based on mutual trust"
+      },
+      "sustainable": {
+        "title": "Consume Responsibly",
+        "description": "Reduce waste and make the most of available resources"
+      },
+      "economic": {
+        "title": "Save Money",
+        "description": "Access what you need without the financial burden of buying everything new"
+      },
+      "diverse": {
+        "title": "Variety of Options",
+        "description": "From tools to professional services, everything in one place"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Have questions? We're here to help",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "subject": "Subject",
+      "subjectPlaceholder": "How can we help you?",
+      "message": "Message",
+      "messagePlaceholder": "Describe your inquiry or comment...",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent! We'll get back to you soon.",
+      "error": "Error sending message. Please try again."
+    },
+    "info": {
+      "address": "Address",
+      "email": "Email Address",
+      "phone": "Phone",
+      "hours": "Business Hours",
+      "hoursValue": "Monday to Friday: 9:00 AM - 6:00 PM"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "question": "How do I post an item?",
+        "answer": "Simply register, go to your profile and use the 'Post' button. Add photos, description and type of exchange."
+      },
+      "q2": {
+        "question": "Is it safe to use LaCherada?",
+        "answer": "Yes, we have a user verification system and secure communication within the platform."
+      },
+      "q3": {
+        "question": "What types of exchanges can I make?",
+        "answer": "You can lend, sell, donate or exchange objects and services with other community members."
+      }
+    }
+  },
   "primevueDemo": {
     "title": "PrimeVue Demo with Iconify",
     "formTitle": "Example Form",

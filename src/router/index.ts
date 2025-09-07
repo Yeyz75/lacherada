@@ -11,17 +11,17 @@ const router = createRouter({
     {
       path: '/explore',
       name: 'explore',
-      component: () => import('../views/home/index.vue'), // Por ahora redirigimos a Home
+      component: () => import('../views/ExploreView.vue'),
     },
     {
       path: '/how-it-works',
       name: 'howItWorks',
-      component: () => import('../views/home/index.vue'), // Por ahora redirigimos a Home
+      component: () => import('../views/HowItWorksView.vue'),
     },
     {
       path: '/contact',
       name: 'contact',
-      component: () => import('../views/home/index.vue'), // Por ahora redirigimos a Home
+      component: () => import('../views/ContactView.vue'),
     },
     {
       path: '/auth/login',
