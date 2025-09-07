@@ -93,7 +93,9 @@
     width: 80px;
     height: 80px;
     background: linear-gradient(
-      135deg, var(--color-primary), var(--color-secondary)
+      135deg,
+      var(--color-primary),
+      var(--color-secondary)
     );
     border-radius: 50%;
     margin-bottom: var(--space-lg);
@@ -142,7 +144,9 @@
     width: 200px;
     height: 2px;
     background: linear-gradient(
-      90deg, var(--color-primary), var(--color-secondary)
+      90deg,
+      var(--color-primary),
+      var(--color-secondary)
     );
     border-radius: 1px;
   }

@@ -199,9 +199,10 @@
     line-height: var(--line-height-tight);
     margin-bottom: 0;
     background: linear-gradient(
-      135deg, var(--color-text-primary), var(--color-text-secondary)
+      135deg,
+      var(--color-text-primary),
+      var(--color-text-secondary)
     );
-    background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }

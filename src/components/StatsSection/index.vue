@@ -65,7 +65,9 @@
   .stats {
     padding: var(--space-3xl) 0;
     background: linear-gradient(
-      135deg, var(--color-primary), var(--color-secondary)
+      135deg,
+      var(--color-primary),
+      var(--color-secondary)
     );
     color: white;
     position: relative;

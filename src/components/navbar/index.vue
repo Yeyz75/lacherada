@@ -189,7 +189,6 @@
   .navbar {
     background: var(--glass-background);
     backdrop-filter: var(--glass-backdrop);
-    backdrop-filter: var(--glass-backdrop);
     border-bottom: 1px solid var(--glass-border);
     position: sticky;
     top: 0;
@@ -230,9 +229,10 @@
 
   .logo-text {
     background: linear-gradient(
-      135deg, var(--color-primary), var(--color-secondary)
+      135deg,
+      var(--color-primary),
+      var(--color-secondary)
     );
-    background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
@@ -265,7 +265,9 @@
     width: 0;
     height: 2px;
     background: linear-gradient(
-      90deg, var(--color-primary), var(--color-secondary)
+      90deg,
+      var(--color-primary),
+      var(--color-secondary)
     );
     transition: width var(--transition-fast);
   }

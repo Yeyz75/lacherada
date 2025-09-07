@@ -201,7 +201,9 @@
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-base);
     background: linear-gradient(
-      135deg, var(--color-secondary), var(--color-secondary-dark)
+      135deg,
+      var(--color-secondary),
+      var(--color-secondary-dark)
     );
     border: none;
     border-radius: var(--radius-lg);

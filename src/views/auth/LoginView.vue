@@ -225,7 +225,9 @@
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-base);
     background: linear-gradient(
-      135deg, var(--color-accent), var(--color-accent-dark)
+      135deg,
+      var(--color-accent),
+      var(--color-accent-dark)
     );
     border: none;
     border-radius: var(--radius-lg);

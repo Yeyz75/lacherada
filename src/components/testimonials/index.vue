@@ -87,7 +87,10 @@
     right: 0;
     height: 1px;
     background: linear-gradient(
-      90deg, transparent, var(--color-primary), transparent
+      90deg,
+      transparent,
+      var(--color-primary),
+      transparent
     );
   }
 
