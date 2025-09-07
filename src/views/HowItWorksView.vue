@@ -7,14 +7,17 @@
           <h1 class="hero-title">{{ t('howItWorks.title') }}</h1>
           <p class="hero-subtitle">{{ t('howItWorks.subtitle') }}</p>
           <div class="hero-actions">
-            <button class="btn btn-primary btn-lg">
-              <Icon icon="mdi:rocket-launch" />
-              {{ t('howItWorks.getStarted') }}
-            </button>
-            <button class="btn btn-outline btn-lg">
-              <Icon icon="mdi:book-open-variant" />
-              {{ t('howItWorks.learnMore') }}
-            </button>
+            <Button
+              class="btn-primary-custom btn-lg"
+              icon="mdi:rocket-launch"
+              :label="t('howItWorks.getStarted')"
+              size="large" />
+            <Button
+              severity="secondary"
+              outlined
+              icon="mdi:book-open-variant"
+              :label="t('howItWorks.learnMore')"
+              size="large" />
           </div>
         </div>
       </div>
@@ -54,14 +57,21 @@
           <h2 class="cta-title">{{ t('home.hero.title') }}</h2>
           <p class="cta-subtitle">{{ t('home.hero.subtitle') }}</p>
           <div class="cta-actions">
-            <router-link to="/auth/register" class="btn btn-primary btn-xl">
-              <Icon icon="mdi:account-plus" />
-              {{ t('navbar.register') }}
-            </router-link>
-            <router-link to="/explore" class="btn btn-outline btn-xl">
-              <Icon icon="mdi:compass" />
-              {{ t('navbar.explore') }}
-            </router-link>
+            <Button
+              as="router-link"
+              to="/auth/register"
+              class="btn-primary-custom btn-xl"
+              icon="mdi:account-plus"
+              :label="t('navbar.register')"
+              size="large" />
+            <Button
+              as="router-link"
+              to="/explore"
+              severity="secondary"
+              outlined
+              icon="mdi:compass"
+              :label="t('navbar.explore')"
+              size="large" />
           </div>
         </div>
       </div>
@@ -73,6 +83,9 @@
   import { useI18n } from 'vue-i18n'
   import { Icon } from '@iconify/vue'
   import HowItWorks from '../components/HowItWorks/index.vue'
+
+  // PrimeVue components
+  import Button from 'primevue/button'
 
   const { t } = useI18n()
 
@@ -140,6 +153,23 @@
     justify-content: center;
     gap: var(--space-md);
     flex-wrap: wrap;
+  }
+
+  /* Custom button styles for primary orange color */
+  .btn-primary-custom {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: white !important;
+  }
+
+  .btn-primary-custom:hover {
+    background: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+    color: white !important;
+  }
+
+  .btn-primary-custom:focus {
+    box-shadow: 0 0 0 2px var(--color-primary-light) !important;
   }
 
   /* Benefits Section */

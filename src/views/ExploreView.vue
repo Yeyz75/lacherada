@@ -7,19 +7,24 @@
           <h1 class="hero-title">{{ t('explore.title') }}</h1>
           <p class="hero-subtitle">{{ t('explore.subtitle') }}</p>
 
-          <!-- Search Bar -->
+          <!-- Search Bar using PrimeVue -->
           <div class="search-container">
             <div class="search-input-wrapper">
-              <Icon icon="mdi:magnify" class="search-icon" />
-              <input
-                v-model="searchQuery"
-                type="text"
-                class="search-input"
-                :placeholder="t('explore.searchPlaceholder')"
-                @keyup.enter="handleSearch" />
-              <button @click="handleSearch" class="search-btn">
-                <Icon icon="mdi:magnify" />
-              </button>
+              <InputGroup>
+                <InputGroupAddon>
+                  <Icon icon="mdi:magnify" />
+                </InputGroupAddon>
+                <InputText
+                  v-model="searchQuery"
+                  :placeholder="t('explore.searchPlaceholder')"
+                  @keyup.enter="handleSearch"
+                  class="search-input" />
+                <Button
+                  @click="handleSearch"
+                  class="search-btn"
+                  icon="mdi:magnify"
+                  size="large" />
+              </InputGroup>
             </div>
           </div>
         </div>
@@ -207,6 +212,15 @@
   import { useI18n } from 'vue-i18n'
   import { Icon } from '@iconify/vue'
 
+  // PrimeVue components
+  import Card from 'primevue/card'
+  import InputText from 'primevue/inputtext'
+  import InputGroup from 'primevue/inputgroup'
+  import InputGroupAddon from 'primevue/inputgroupaddon'
+  import Select from 'primevue/select'
+  import Button from 'primevue/button'
+  import Tag from 'primevue/tag'
+
   const { t } = useI18n()
 
   // Search and filters
@@ -230,6 +244,23 @@
     { key: 'education', icon: 'mdi:book-open-variant' },
     { key: 'sports', icon: 'mdi:basketball' },
   ]
+
+  // Options for PrimeVue Select components
+  const categoryOptions = computed(() => [
+    { label: t('explore.filters.all'), value: '' },
+    ...categories.map((cat) => ({
+      label: t(`home.categories.${cat.key}`),
+      value: cat.key,
+    })),
+  ])
+
+  const typeOptions = computed(() => [
+    { label: t('explore.filters.all'), value: '' },
+    { label: t('explore.filters.lend'), value: 'lend' },
+    { label: t('explore.filters.sell'), value: 'sell' },
+    { label: t('explore.filters.exchange'), value: 'exchange' },
+    { label: t('explore.filters.donate'), value: 'donate' },
+  ])
 
   // Mock data
   const allItems = ref([
@@ -448,46 +479,26 @@
 
   .search-input-wrapper {
     display: flex;
-    align-items: center;
-    background: white;
-    border-radius: var(--radius-full);
-    padding: var(--space-xs);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .search-icon {
-    color: var(--color-text-tertiary);
-    margin-left: var(--space-md);
-    font-size: var(--font-size-lg);
+    width: 100%;
   }
 
   .search-input {
     flex: 1;
-    border: none;
-    outline: none;
-    padding: var(--space-md);
     font-size: var(--font-size-md);
-    color: var(--color-text-primary);
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
   }
 
   .search-btn {
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    font-size: var(--font-size-lg);
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
   }
 
   .search-btn:hover {
-    background: var(--color-primary-dark);
-    transform: scale(1.05);
+    background: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
   }
 
   /* Filters Section */
