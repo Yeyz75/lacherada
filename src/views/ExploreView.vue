@@ -213,13 +213,10 @@
   import { Icon } from '@iconify/vue'
 
   // PrimeVue components
-  import Card from 'primevue/card'
   import InputText from 'primevue/inputtext'
   import InputGroup from 'primevue/inputgroup'
   import InputGroupAddon from 'primevue/inputgroupaddon'
-  import Select from 'primevue/select'
   import Button from 'primevue/button'
-  import Tag from 'primevue/tag'
 
   const { t } = useI18n()
 
@@ -244,23 +241,6 @@
     { key: 'education', icon: 'mdi:book-open-variant' },
     { key: 'sports', icon: 'mdi:basketball' },
   ]
-
-  // Options for PrimeVue Select components
-  const categoryOptions = computed(() => [
-    { label: t('explore.filters.all'), value: '' },
-    ...categories.map((cat) => ({
-      label: t(`home.categories.${cat.key}`),
-      value: cat.key,
-    })),
-  ])
-
-  const typeOptions = computed(() => [
-    { label: t('explore.filters.all'), value: '' },
-    { label: t('explore.filters.lend'), value: 'lend' },
-    { label: t('explore.filters.sell'), value: 'sell' },
-    { label: t('explore.filters.exchange'), value: 'exchange' },
-    { label: t('explore.filters.donate'), value: 'donate' },
-  ])
 
   // Mock data
   const allItems = ref([
