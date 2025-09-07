@@ -1,5 +1,6 @@
 {
   "extends": ["stylelint-config-recommended", "stylelint-config-prettier"],
+  "plugins": [],
   "rules": {
     "at-rule-no-unknown": [
       true,
@@ -21,9 +22,6 @@
     "keyframes-name-pattern": null,
     "function-name-case": "lower",
     "value-keyword-case": null,
-    "property-case": "lower",
-    "color-hex-case": "lower",
-    "unit-case": "lower",
     "color-named": null,
     "color-no-invalid-hex": true,
     "declaration-block-no-duplicate-properties": [
@@ -32,21 +30,8 @@
         "ignore": ["consecutive-duplicates-with-different-values"]
       }
     ],
-    "declaration-block-trailing-semicolon": "always",
-    "declaration-colon-space-after": "always",
-    "declaration-colon-space-before": "never",
-    "function-comma-space-after": "always",
-    "function-comma-space-before": "never",
-    "function-parentheses-space-inside": "never",
-    "indentation": 2,
-    "max-empty-lines": 2,
     "no-duplicate-selectors": true,
     "no-empty-source": null,
-    "no-eol-whitespace": true,
-    "no-extra-semicolons": true,
-    "no-missing-end-of-source-newline": null,
-    "number-leading-zero": "always",
-    "number-no-trailing-zeros": true,
     "property-no-unknown": [
       true,
       {
@@ -54,15 +39,6 @@
       }
     ],
     "rule-empty-line-before": null,
-    "selector-combinator-space-after": "always",
-    "selector-combinator-space-before": "always",
-    "selector-descendant-combinator-no-non-space": true,
-    "selector-list-comma-newline-after": "always",
-    "selector-list-comma-space-before": "never",
-    "selector-max-empty-lines": 0,
-    "string-quotes": null,
-    "value-list-comma-space-after": "always",
-    "value-list-comma-space-before": "never",
     "no-descending-specificity": null
   },
   "overrides": [
