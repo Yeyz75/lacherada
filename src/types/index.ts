@@ -1,4 +1,5 @@
 // User types
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface User {
   uid: string
   email: string | null
@@ -145,4 +146,153 @@ export interface SearchFilters {
   priceMax?: number
   condition?: ItemCondition
   availability?: PostAvailability
+}
+
+// =============================================================================
+// DESIGN SYSTEM TYPES
+// =============================================================================
+
+// Base component props
+export interface BaseComponentProps {
+  class?: string
+  id?: string
+  testId?: string
+}
+
+// Button types
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'danger'
+  | 'success'
+  | 'warning'
+
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+export interface ButtonProps extends BaseComponentProps {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  disabled?: boolean
+  loading?: boolean
+  fullWidth?: boolean
+  icon?: string
+  iconPosition?: 'left' | 'right'
+  type?: 'button' | 'submit' | 'reset'
+}
+
+// Input types
+export type InputType =
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'number'
+  | 'tel'
+  | 'url'
+  | 'search'
+
+export type InputSize = 'sm' | 'md' | 'lg'
+
+export interface InputProps extends BaseComponentProps {
+  type?: InputType
+  size?: InputSize
+  placeholder?: string
+  disabled?: boolean
+  readonly?: boolean
+  required?: boolean
+  error?: string | boolean
+  success?: boolean
+  icon?: string
+  iconPosition?: 'left' | 'right'
+  clearable?: boolean
+  maxlength?: number
+  minlength?: number
+  pattern?: string
+  autocomplete?: string
+}
+
+// Card types
+export type CardVariant = 'default' | 'glass' | 'elevated' | 'outlined'
+
+export interface CardProps extends BaseComponentProps {
+  variant?: CardVariant
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
+  clickable?: boolean
+  loading?: boolean
+}
+
+// Table types
+export interface TableColumn<T = any> {
+  key: string
+  label: string
+  sortable?: boolean
+  width?: string
+  align?: 'left' | 'center' | 'right'
+  render?: (value: any, row: T, index: number) => string | any
+}
+
+export interface TableProps<T = any> extends BaseComponentProps {
+  columns: TableColumn<T>[]
+  data: T[]
+  loading?: boolean
+  selectable?: boolean
+  pagination?: {
+    page: number
+    size: number
+    total: number
+  }
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+  emptyMessage?: string
+}
+
+// Form types
+export interface FormField {
+  name: string
+  label?: string
+  type: 'input' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'file'
+  required?: boolean
+  validation?: {
+    pattern?: string
+    min?: number
+    max?: number
+    minLength?: number
+    maxLength?: number
+    custom?: (value: any) => string | boolean
+  }
+  options?: Array<{ label: string; value: any }>
+  placeholder?: string
+  disabled?: boolean
+}
+
+export interface FormProps extends BaseComponentProps {
+  fields?: FormField[]
+  layout?: 'vertical' | 'horizontal' | 'inline'
+  loading?: boolean
+  showSubmit?: boolean
+  submitText?: string
+  showCancel?: boolean
+  cancelText?: string
+}
+
+// Design tokens
+export interface DesignTokens {
+  colors: {
+    primary: string
+    secondary: string
+    success: string
+    warning: string
+    error: string
+    info: string
+  }
+  spacing: Record<string, string>
+  typography: {
+    fontFamily: string
+    fontSize: Record<string, string>
+    fontWeight: Record<string, number>
+    lineHeight: Record<string, number>
+  }
+  borderRadius: Record<string, string>
+  shadows: Record<string, string>
+  transitions: Record<string, string>
 }

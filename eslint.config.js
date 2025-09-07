@@ -1,4 +1,3 @@
-import js from '@eslint/js'
 import typescript from '@typescript-eslint/eslint-plugin'
 import typescriptParser from '@typescript-eslint/parser'
 import vue from 'eslint-plugin-vue'
@@ -108,7 +107,7 @@ export default [
       },
     },
     plugins: {
-      'vue': vue,
+      vue,
       '@typescript-eslint': typescript,
     },
     rules: {
