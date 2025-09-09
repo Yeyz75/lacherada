@@ -7,17 +7,15 @@
           <h1 class="hero-title">{{ t('howItWorks.title') }}</h1>
           <p class="hero-subtitle">{{ t('howItWorks.subtitle') }}</p>
           <div class="hero-actions">
-            <Button
-              class="btn-primary-custom btn-lg"
-              icon="mdi:rocket-launch"
-              :label="t('howItWorks.getStarted')"
-              size="large" />
-            <Button
-              severity="secondary"
-              outlined
+            <BaseButton variant="primary" icon="mdi:rocket-launch" size="large">
+              {{ t('howItWorks.getStarted') }}
+            </BaseButton>
+            <BaseButton
+              variant="outlined"
               icon="mdi:book-open-variant"
-              :label="t('howItWorks.learnMore')"
-              size="large" />
+              size="large">
+              {{ t('howItWorks.learnMore') }}
+            </BaseButton>
           </div>
         </div>
       </div>
@@ -31,7 +29,7 @@
       <div class="container">
         <h2 class="section-title">{{ t('howItWorks.benefits.title') }}</h2>
         <div class="benefits-grid">
-          <div
+          <BaseCard
             v-for="(benefit, index) in benefits"
             :key="benefit.key"
             class="benefit-card"
@@ -45,7 +43,7 @@
             <p class="benefit-description">
               {{ t(`howItWorks.benefits.${benefit.key}.description`) }}
             </p>
-          </div>
+          </BaseCard>
         </div>
       </div>
     </section>
@@ -57,21 +55,22 @@
           <h2 class="cta-title">{{ t('home.hero.title') }}</h2>
           <p class="cta-subtitle">{{ t('home.hero.subtitle') }}</p>
           <div class="cta-actions">
-            <Button
+            <BaseButton
               as="router-link"
               to="/auth/register"
-              class="btn-primary-custom btn-xl"
+              variant="primary"
               icon="mdi:account-plus"
-              :label="t('navbar.register')"
-              size="large" />
-            <Button
+              size="large">
+              {{ t('navbar.register') }}
+            </BaseButton>
+            <BaseButton
               as="router-link"
               to="/explore"
-              severity="secondary"
-              outlined
+              variant="outlined"
               icon="mdi:compass"
-              :label="t('navbar.explore')"
-              size="large" />
+              size="large">
+              {{ t('navbar.explore') }}
+            </BaseButton>
           </div>
         </div>
       </div>
@@ -83,9 +82,8 @@
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import HowItWorks from '../components/HowItWorks/index.vue'
-
-// PrimeVue components
-import Button from 'primevue/button'
+// Base components
+import { BaseButton, BaseCard } from '@/components/base'
 
 const { t } = useI18n()
 

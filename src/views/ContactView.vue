@@ -14,9 +14,9 @@
     <section class="main-content">
       <div class="container">
         <div class="content-grid">
-          <!-- Contact Form using PrimeVue -->
+          <!-- Contact Form using Base Components -->
           <div class="contact-form-section">
-            <Card class="form-card">
+            <BaseCard class="form-card">
               <template #header>
                 <div class="card-header">
                   <Icon icon="mdi:email-edit" class="header-icon" />
@@ -27,81 +27,71 @@
               <template #content>
                 <form @submit.prevent="submitForm" class="contact-form">
                   <div class="form-field">
-                    <label for="name" class="field-label">
-                      <Icon icon="mdi:account" class="label-icon" />
-                      {{ t('contact.form.name') }}
-                    </label>
-                    <InputText
+                    <BaseInput
                       id="name"
                       v-model="form.name"
+                      :label="t('contact.form.name')"
                       :placeholder="t('contact.form.namePlaceholder')"
+                      icon="mdi:account"
                       required
                       class="w-full" />
                   </div>
 
                   <div class="form-field">
-                    <label for="email" class="field-label">
-                      <Icon icon="mdi:email" class="label-icon" />
-                      {{ t('contact.form.email') }}
-                    </label>
-                    <InputText
+                    <BaseInput
                       id="email"
                       v-model="form.email"
                       type="email"
+                      :label="t('contact.form.email')"
                       :placeholder="t('contact.form.emailPlaceholder')"
+                      icon="mdi:email"
                       required
                       class="w-full" />
                   </div>
 
                   <div class="form-field">
-                    <label for="subject" class="field-label">
-                      <Icon icon="mdi:bookmark" class="label-icon" />
-                      {{ t('contact.form.subject') }}
-                    </label>
-                    <InputText
+                    <BaseInput
                       id="subject"
                       v-model="form.subject"
+                      :label="t('contact.form.subject')"
                       :placeholder="t('contact.form.subjectPlaceholder')"
+                      icon="mdi:bookmark"
                       required
                       class="w-full" />
                   </div>
 
                   <div class="form-field">
-                    <label for="message" class="field-label">
-                      <Icon icon="mdi:message-text" class="label-icon" />
-                      {{ t('contact.form.message') }}
-                    </label>
-                    <Textarea
+                    <BaseTextarea
                       id="message"
                       v-model="form.message"
+                      :label="t('contact.form.message')"
                       :placeholder="t('contact.form.messagePlaceholder')"
-                      rows="6"
+                      :rows="6"
                       required
                       class="w-full" />
                   </div>
 
-                  <Button
+                  <BaseButton
                     type="submit"
-                    :label="
+                    :loading="isSubmitting"
+                    icon="mdi:send"
+                    variant="primary"
+                    size="large"
+                    full-width>
+                    {{
                       isSubmitting
                         ? t('contact.form.sending')
                         : t('contact.form.send')
-                    "
-                    :loading="isSubmitting"
-                    class="w-full"
-                    size="large">
-                    <template #icon>
-                      <Icon icon="mdi:send" />
-                    </template>
-                  </Button>
+                    }}
+                  </BaseButton>
                 </form>
               </template>
-            </Card>
+            </BaseCard>
           </div>
 
-          <!-- Contact Information using PrimeVue -->
+          <!-- Contact Information using Base Components -->
           <div class="contact-info-section">
-            <Card class="info-card">
+            <BaseCard class="info-card">
               <template #header>
                 <div class="card-header">
                   <Icon icon="mdi:information" class="header-icon" />
@@ -160,40 +150,36 @@
                   </div>
                 </div>
 
-                <Divider />
+                <BaseDivider />
 
-                <!-- Social Links using PrimeVue Buttons -->
+                <!-- Social Links using Base Components -->
                 <div class="social-links">
                   <h3 class="social-title">Síguenos</h3>
                   <div class="social-icons">
-                    <Button
+                    <BaseButton
                       icon="mdi:twitter"
-                      severity="secondary"
-                      text
-                      rounded
+                      variant="outlined"
+                      size="small"
                       @click="openSocial('twitter')" />
-                    <Button
+                    <BaseButton
                       icon="mdi:facebook"
-                      severity="secondary"
-                      text
-                      rounded
+                      variant="outlined"
+                      size="small"
                       @click="openSocial('facebook')" />
-                    <Button
+                    <BaseButton
                       icon="mdi:instagram"
-                      severity="secondary"
-                      text
-                      rounded
+                      variant="outlined"
+                      size="small"
                       @click="openSocial('instagram')" />
-                    <Button
+                    <BaseButton
                       icon="mdi:linkedin"
-                      severity="secondary"
-                      text
-                      rounded
+                      variant="outlined"
+                      size="small"
                       @click="openSocial('linkedin')" />
                   </div>
                 </div>
               </template>
-            </Card>
+            </BaseCard>
           </div>
         </div>
       </div>
@@ -204,7 +190,7 @@
       <div class="container">
         <h2 class="section-title">{{ t('contact.faq.title') }}</h2>
 
-        <Card class="faq-card">
+        <BaseCard class="faq-card">
           <template #content>
             <Accordion>
               <AccordionTab
@@ -217,7 +203,7 @@
               </AccordionTab>
             </Accordion>
           </template>
-        </Card>
+        </BaseCard>
       </div>
     </section>
 
@@ -225,14 +211,14 @@
     <section class="map-section">
       <div class="container">
         <h2 class="section-title">Nuestra Ubicación</h2>
-        <Card class="map-card">
+        <BaseCard class="map-card">
           <template #content>
             <div class="map-placeholder">
               <Icon icon="mdi:map" class="map-icon" />
               <p class="map-text">Mapa interactivo próximamente</p>
             </div>
           </template>
-        </Card>
+        </BaseCard>
       </div>
     </section>
 
@@ -246,13 +232,16 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
 import { Icon } from '@iconify/vue'
+// Base components
+import {
+  BaseInput,
+  BaseButton,
+  BaseCard,
+  BaseTextarea,
+  BaseDivider,
+} from '@/components/base'
 
 // PrimeVue components
-import Card from 'primevue/card'
-import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
-import Button from 'primevue/button'
-import Divider from 'primevue/divider'
 import Accordion from 'primevue/accordion'
 import AccordionTab from 'primevue/accordiontab'
 import Toast from 'primevue/toast'

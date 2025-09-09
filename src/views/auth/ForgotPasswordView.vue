@@ -15,16 +15,18 @@
         class="forgot-password-form"
         v-if="!emailSent">
         <div class="form-group">
-          <BaseInput
+          <label for="email" class="form-label">{{ $t('auth.email') }}</label>
+          <InputText
             id="email"
             v-model="email"
             type="email"
-            :label="$t('auth.email')"
             :placeholder="$t('auth.emailPlaceholder')"
-            :error="emailError"
-            icon="mdi:email"
+            :invalid="!!emailError"
             class="form-input"
             required />
+          <small v-if="emailError" class="error-message">
+            {{ emailError }}
+          </small>
         </div>
 
         <Button
@@ -75,7 +77,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuth } from '../../composables/useAuth'
-import BaseInput from '../../components/base/BaseInput.vue'
+import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 

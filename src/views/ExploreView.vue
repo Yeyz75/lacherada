@@ -14,12 +14,12 @@
                 <InputGroupAddon>
                   <Icon icon="mdi:magnify" />
                 </InputGroupAddon>
-                <InputText
+                <BaseInput
                   v-model="searchQuery"
                   :placeholder="t('explore.searchPlaceholder')"
                   @keyup.enter="handleSearch"
                   class="search-input" />
-                <Button
+                <BaseButton
                   @click="handleSearch"
                   class="search-btn"
                   icon="mdi:magnify"
@@ -36,48 +36,38 @@
       <div class="container">
         <div class="filters-container">
           <div class="filter-group">
-            <label class="filter-label">
-              {{ t('explore.filters.category') }}
-            </label>
-            <select v-model="selectedCategory" class="filter-select">
-              <option value="">{{ t('explore.filters.all') }}</option>
-              <option
-                v-for="category in categories"
-                :key="category.key"
-                :value="category.key">
-                {{ t(`home.categories.${category.key}`) }}
-              </option>
-            </select>
+            <BaseSelect
+              v-model="selectedCategory"
+              :label="t('explore.filters.category')"
+              :placeholder="t('explore.filters.all')"
+              :options="categoryOptions"
+              class="filter-select" />
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">{{ t('explore.filters.type') }}</label>
-            <select v-model="selectedType" class="filter-select">
-              <option value="">{{ t('explore.filters.all') }}</option>
-              <option value="lend">{{ t('explore.filters.lend') }}</option>
-              <option value="sell">{{ t('explore.filters.sell') }}</option>
-              <option value="exchange">
-                {{ t('explore.filters.exchange') }}
-              </option>
-              <option value="donate">{{ t('explore.filters.donate') }}</option>
-            </select>
+            <BaseSelect
+              v-model="selectedType"
+              :label="t('explore.filters.type')"
+              :placeholder="t('explore.filters.all')"
+              :options="typeOptions"
+              class="filter-select" />
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">
-              {{ t('explore.filters.location') }}
-            </label>
-            <input
+            <BaseInput
               v-model="locationFilter"
-              type="text"
-              class="filter-input"
-              placeholder="Ciudad, barrio..." />
+              :label="t('explore.filters.location')"
+              placeholder="Ciudad, barrio..."
+              class="filter-input" />
           </div>
 
-          <button @click="clearFilters" class="btn btn-outline btn-sm">
-            <Icon icon="mdi:filter-remove" />
+          <BaseButton
+            @click="clearFilters"
+            variant="outlined"
+            size="small"
+            icon="mdi:filter-remove">
             Limpiar
-          </button>
+          </BaseButton>
         </div>
       </div>
     </section>
@@ -103,21 +93,24 @@
           </div>
 
           <div class="results-tabs">
-            <button
+            <BaseButton
               @click="currentSection = 'featured'"
-              :class="['tab-btn', { active: currentSection === 'featured' }]">
+              :variant="currentSection === 'featured' ? 'primary' : 'outlined'"
+              size="small">
               {{ t('explore.featured') }}
-            </button>
-            <button
+            </BaseButton>
+            <BaseButton
               @click="currentSection = 'recent'"
-              :class="['tab-btn', { active: currentSection === 'recent' }]">
+              :variant="currentSection === 'recent' ? 'primary' : 'outlined'"
+              size="small">
               {{ t('explore.recent') }}
-            </button>
-            <button
+            </BaseButton>
+            <BaseButton
               @click="currentSection = 'popular'"
-              :class="['tab-btn', { active: currentSection === 'popular' }]">
+              :variant="currentSection === 'popular' ? 'primary' : 'outlined'"
+              size="small">
               {{ t('explore.popular') }}
-            </button>
+            </BaseButton>
           </div>
         </div>
 
@@ -134,12 +127,16 @@
                 {{ t(`explore.filters.${item.type}`) }}
               </div>
               <div class="item-actions">
-                <button class="action-btn">
-                  <Icon icon="mdi:heart-outline" />
-                </button>
-                <button class="action-btn">
-                  <Icon icon="mdi:share-variant" />
-                </button>
+                <BaseButton
+                  class="action-btn"
+                  icon="mdi:heart-outline"
+                  variant="ghost"
+                  size="small" />
+                <BaseButton
+                  class="action-btn"
+                  icon="mdi:share-variant"
+                  variant="ghost"
+                  size="small" />
               </div>
             </div>
 
@@ -171,10 +168,12 @@
                   </div>
                   <span class="user-name">{{ item.user.name }}</span>
                 </div>
-                <button class="btn btn-primary btn-sm">
-                  <Icon icon="mdi:message-text" />
+                <BaseButton
+                  variant="primary"
+                  size="small"
+                  icon="mdi:message-text">
                   Contactar
-                </button>
+                </BaseButton>
               </div>
             </div>
           </div>
@@ -187,22 +186,25 @@
           <p class="no-results-text">
             Prueba ajustando los filtros o cambiando los términos de búsqueda
           </p>
-          <button @click="clearFilters" class="btn btn-primary">
-            <Icon icon="mdi:filter-remove" />
+          <BaseButton
+            @click="clearFilters"
+            variant="primary"
+            icon="mdi:filter-remove">
             Limpiar Filtros
-          </button>
+          </BaseButton>
         </div>
 
         <!-- Load More Button -->
         <div v-if="hasMoreItems" class="load-more-container">
-          <button
+          <BaseButton
             @click="loadMoreItems"
-            class="btn btn-outline btn-lg"
-            :disabled="loadingMore">
-            <Icon v-if="loadingMore" icon="mdi:loading" class="spin" />
-            <Icon v-else icon="mdi:plus" />
+            variant="outlined"
+            size="large"
+            :disabled="loadingMore"
+            :loading="loadingMore"
+            :icon="loadingMore ? 'mdi:loading' : 'mdi:plus'">
             {{ t('explore.loadMore') }}
-          </button>
+          </BaseButton>
         </div>
       </div>
     </section>
@@ -213,12 +215,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
+// Base components
+import { BaseInput, BaseButton, BaseSelect } from '@/components/base'
 
 // PrimeVue components
-import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
-import Button from 'primevue/button'
 
 const { t } = useI18n()
 
@@ -243,6 +245,23 @@ const categories = [
   { key: 'education', icon: 'mdi:book-open-variant' },
   { key: 'sports', icon: 'mdi:basketball' },
 ]
+
+// Select options
+const categoryOptions = computed(() => [
+  { label: t('explore.filters.all'), value: '' },
+  ...categories.map((category) => ({
+    label: t(`home.categories.${category.key}`),
+    value: category.key,
+  })),
+])
+
+const typeOptions = computed(() => [
+  { label: t('explore.filters.all'), value: '' },
+  { label: t('explore.filters.lend'), value: 'lend' },
+  { label: t('explore.filters.sell'), value: 'sell' },
+  { label: t('explore.filters.exchange'), value: 'exchange' },
+  { label: t('explore.filters.donate'), value: 'donate' },
+])
 
 // Mock data
 const allItems = ref([
