@@ -26,6 +26,7 @@
             :label="$t('auth.email')"
             :placeholder="$t('auth.emailPlaceholder')"
             :error="emailError"
+            icon="mdi:email"
             class="form-input"
             required />
         </div>

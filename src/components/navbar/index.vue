@@ -151,7 +151,6 @@ const navItems = [
   { key: 'explore', path: '/explore' },
   { key: 'howItWorks', path: '/how-it-works' },
   { key: 'contact', path: '/contact' },
-  { key: 'componentsDemo', path: '/components-demo' },
 ]
 
 const toggleLanguage = () => {
