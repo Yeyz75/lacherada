@@ -33,6 +33,7 @@
                       :label="t('contact.form.name')"
                       :placeholder="t('contact.form.namePlaceholder')"
                       icon="mdi:account"
+                      clearable
                       required
                       class="w-full" />
                   </div>
@@ -45,6 +46,7 @@
                       :label="t('contact.form.email')"
                       :placeholder="t('contact.form.emailPlaceholder')"
                       icon="mdi:email"
+                      clearable
                       required
                       class="w-full" />
                   </div>
@@ -56,6 +58,7 @@
                       :label="t('contact.form.subject')"
                       :placeholder="t('contact.form.subjectPlaceholder')"
                       icon="mdi:bookmark"
+                      clearable
                       required
                       class="w-full" />
                   </div>
@@ -67,6 +70,9 @@
                       :label="t('contact.form.message')"
                       :placeholder="t('contact.form.messagePlaceholder')"
                       :rows="6"
+                      :maxlength="500"
+                      show-character-count
+                      clearable
                       required
                       class="w-full" />
                   </div>
@@ -365,19 +371,26 @@ const openSocial = (platform: string) => {
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3xl);
   align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Card styling */
 .form-card,
 .info-card {
   height: fit-content;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-lg);
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background-secondary);
 }
 
 .header-icon {
@@ -397,27 +410,13 @@ const openSocial = (platform: string) => {
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
+  padding: var(--space-xl);
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.field-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-.label-icon {
-  font-size: 1rem;
-  color: var(--color-text-secondary);
 }
 
 /* Contact Information */
@@ -425,7 +424,8 @@ const openSocial = (platform: string) => {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-xl);
 }
 
 .info-item {
@@ -469,21 +469,25 @@ const openSocial = (platform: string) => {
 
 /* Social Links */
 .social-links {
-  margin-top: var(--space-lg);
+  margin-top: var(--space-xl);
+  padding: var(--space-xl);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-md);
 }
 
 .social-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
   text-align: center;
 }
 
 .social-icons {
   display: flex;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
 /* FAQ Section */
@@ -544,6 +548,12 @@ const openSocial = (platform: string) => {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .content-grid {
+    gap: var(--space-2xl);
+  }
+}
+
 @media (max-width: 768px) {
   .hero-title {
     font-size: var(--font-size-2xl);
@@ -556,6 +566,23 @@ const openSocial = (platform: string) => {
 
   .main-content {
     padding: var(--space-2xl) 0;
+  }
+
+  .contact-form {
+    padding: var(--space-lg);
+    gap: var(--space-lg);
+  }
+
+  .info-items {
+    padding: var(--space-lg);
+  }
+
+  .card-header {
+    padding: var(--space-lg);
+  }
+
+  .social-links {
+    padding: var(--space-lg);
   }
 
   .faq-section {
@@ -571,7 +598,7 @@ const openSocial = (platform: string) => {
   }
 
   .social-icons {
-    gap: var(--space-xs);
+    gap: var(--space-sm);
   }
 }
 

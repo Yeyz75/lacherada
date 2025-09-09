@@ -41,6 +41,8 @@
               :label="t('explore.filters.category')"
               :placeholder="t('explore.filters.all')"
               :options="categoryOptions"
+              clearable
+              filter
               class="filter-select" />
           </div>
 
@@ -50,6 +52,8 @@
               :label="t('explore.filters.type')"
               :placeholder="t('explore.filters.all')"
               :options="typeOptions"
+              clearable
+              filter
               class="filter-select" />
           </div>
 
@@ -58,16 +62,19 @@
               v-model="locationFilter"
               :label="t('explore.filters.location')"
               placeholder="Ciudad, barrio..."
+              icon="mdi:map-marker"
+              clearable
               class="filter-input" />
           </div>
 
-          <div class="filter-group">
+          <div class="filter-group filter-actions">
             <BaseButton
               @click="clearFilters"
               variant="outlined"
               size="md"
-              icon="mdi:filter-remove">
-              Limpiar
+              icon="mdi:filter-remove"
+              class="clear-button">
+              {{ t('explore.clearFilters') }}
             </BaseButton>
           </div>
         </div>
@@ -501,61 +508,53 @@ onMounted(() => {
 /* Filters Section */
 .filters-section {
   background: var(--color-background-secondary);
-  padding: var(--space-lg) 0;
+  padding: var(--space-xl) 0;
   border-bottom: 1px solid var(--color-border);
 }
 
 .filters-container {
-  display: flex;
-  gap: var(--space-md);
-  align-items: flex-end;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-@media (min-width: 768px) {
-  .filters-container {
-    justify-content: flex-start;
-  }
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
+  align-items: end;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  min-width: 180px;
-  flex: 1;
-  max-width: 250px;
+  width: 100%;
+}
+
+/* Grupo específico para las acciones (botón limpiar) */
+.filter-actions {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.clear-button {
+  min-height: 42px;
+  white-space: nowrap;
+  padding: var(--space-sm) var(--space-lg) !important;
 }
 
 @media (max-width: 768px) {
-  .filter-group {
-    min-width: 100%;
-    max-width: none;
+  .filters-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
-}
 
-.filter-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-}
+  .filter-actions {
+    order: 4;
+    justify-content: stretch;
+    align-items: stretch;
+  }
 
-.filter-select,
-.filter-input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-}
-
-.filter-select:focus,
-.filter-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  .clear-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Results Section */

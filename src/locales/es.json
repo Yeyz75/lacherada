@@ -140,7 +140,8 @@
     "loadMore": "Cargar más",
     "featured": "Destacados",
     "recent": "Recientes",
-    "popular": "Populares"
+    "popular": "Populares",
+    "clearFilters": "Limpiar Filtros"
   },
   "howItWorks": {
     "title": "Cómo Funciona LaCherada",

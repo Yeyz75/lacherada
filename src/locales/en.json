@@ -140,7 +140,8 @@
     "loadMore": "Load More",
     "featured": "Featured",
     "recent": "Recent",
-    "popular": "Popular"
+    "popular": "Popular",
+    "clearFilters": "Clear Filters"
   },
   "howItWorks": {
     "title": "How LaCherada Works",
