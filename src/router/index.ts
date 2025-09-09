@@ -43,11 +43,6 @@ const router = createRouter({
       name: 'designSystem',
       component: () => import('../views/DesignSystemView.vue'),
     },
-    {
-      path: '/example',
-      name: 'example',
-      component: () => import('../views/ExampleView.vue'),
-    },
   ],
 })
 
