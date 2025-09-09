@@ -11,15 +11,13 @@
               class="btn-primary-custom btn-lg"
               icon="mdi:rocket-launch"
               :label="t('howItWorks.getStarted')"
-              size="large"
-            />
+              size="large" />
             <Button
               severity="secondary"
               outlined
               icon="mdi:book-open-variant"
               :label="t('howItWorks.learnMore')"
-              size="large"
-            />
+              size="large" />
           </div>
         </div>
       </div>
@@ -37,8 +35,7 @@
             v-for="(benefit, index) in benefits"
             :key="benefit.key"
             class="benefit-card"
-            :style="{ animationDelay: `${index * 0.1}s` }"
-          >
+            :style="{ animationDelay: `${index * 0.1}s` }">
             <div class="benefit-icon">
               <Icon :icon="benefit.icon" />
             </div>
@@ -66,8 +63,7 @@
               class="btn-primary-custom btn-xl"
               icon="mdi:account-plus"
               :label="t('navbar.register')"
-              size="large"
-            />
+              size="large" />
             <Button
               as="router-link"
               to="/explore"
@@ -75,8 +71,7 @@
               outlined
               icon="mdi:compass"
               :label="t('navbar.explore')"
-              size="large"
-            />
+              size="large" />
           </div>
         </div>
       </div>
@@ -220,7 +215,11 @@ const benefits = [
   width: 80px;
   height: 80px;
   margin: 0 auto var(--space-md);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   border-radius: 50%;
   display: flex;
   align-items: center;

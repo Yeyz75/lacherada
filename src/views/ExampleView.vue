@@ -74,118 +74,118 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref } from 'vue'
-  import {
-    BaseButton,
-    BaseInput,
-    BaseCard,
-    BaseForm,
-    type FormField,
-  } from '../components/base'
+import { reactive, ref } from 'vue'
+import {
+  BaseButton,
+  BaseInput,
+  BaseCard,
+  BaseForm,
+  type FormField,
+} from '../components/base'
 
-  // Datos de ejemplo
-  const exampleData = reactive({
-    name: '',
-    email: '',
-    password: '',
-  })
+// Datos de ejemplo
+const exampleData = reactive({
+  name: '',
+  email: '',
+  password: '',
+})
 
-  const formData = ref({})
+const formData = ref({})
 
-  const formFields: FormField[] = [
-    {
-      name: 'nombre',
-      label: 'Nombre Completo',
-      type: 'input',
-      required: true,
-      placeholder: 'Tu nombre completo',
-    },
-    {
-      name: 'email',
-      label: 'Correo Electrónico',
-      type: 'input',
-      required: true,
-      placeholder: 'ejemplo@correo.com',
-    },
-    {
-      name: 'mensaje',
-      label: 'Mensaje',
-      type: 'textarea',
-      required: true,
-      placeholder: 'Escribe tu mensaje aquí...',
-    },
-  ]
+const formFields: FormField[] = [
+  {
+    name: 'nombre',
+    label: 'Nombre Completo',
+    type: 'input',
+    required: true,
+    placeholder: 'Tu nombre completo',
+  },
+  {
+    name: 'email',
+    label: 'Correo Electrónico',
+    type: 'input',
+    required: true,
+    placeholder: 'ejemplo@correo.com',
+  },
+  {
+    name: 'mensaje',
+    label: 'Mensaje',
+    type: 'textarea',
+    required: true,
+    placeholder: 'Escribe tu mensaje aquí...',
+  },
+]
 
-  // Funciones
-  const showAlert = () => {
-    alert('¡Tarjeta clickeada!')
-  }
+// Funciones
+const showAlert = () => {
+  alert('¡Tarjeta clickeada!')
+}
 
-  const handleFormSubmit = (data: any) => {
-    console.log('Formulario enviado:', data)
-    alert('¡Formulario enviado correctamente!')
-  }
+const handleFormSubmit = (data: any) => {
+  console.log('Formulario enviado:', data)
+  alert('¡Formulario enviado correctamente!')
+}
 </script>
 
 <style scoped>
-  .example-page {
-    padding: var(--space-xl) 0;
-    min-height: 100vh;
-    background: var(--color-background);
-  }
+.example-page {
+  padding: var(--space-xl) 0;
+  min-height: 100vh;
+  background: var(--color-background);
+}
 
-  .example-page h1 {
-    text-align: center;
-    margin-bottom: var(--space-lg);
-    color: var(--color-primary);
-  }
+.example-page h1 {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  color: var(--color-primary);
+}
 
-  .example-page > div > p {
-    text-align: center;
-    margin-bottom: var(--space-3xl);
-    color: var(--color-text-secondary);
-  }
+.example-page > div > p {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+  color: var(--color-text-secondary);
+}
 
-  .example-section {
-    margin-bottom: var(--space-3xl);
-    padding: var(--space-xl);
-    background: var(--color-background-secondary);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-border);
-  }
+.example-section {
+  margin-bottom: var(--space-3xl);
+  padding: var(--space-xl);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
 
-  .example-section h2 {
-    margin-bottom: var(--space-lg);
-    color: var(--color-text-primary);
-  }
+.example-section h2 {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-primary);
+}
 
+.example-row {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.example-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 400px;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.example-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
   .example-row {
-    display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
-  }
-
-  .example-column {
-    display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-    max-width: 400px;
   }
-
-  .example-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--space-lg);
-  }
-
-  .example-form {
-    max-width: 500px;
-    margin: 0 auto;
-  }
-
-  @media (max-width: 768px) {
-    .example-row {
-      flex-direction: column;
-    }
-  }
+}
 </style>

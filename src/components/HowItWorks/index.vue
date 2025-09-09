@@ -10,8 +10,7 @@
           v-for="(step, index) in steps"
           :key="index"
           class="step-card card animate-fade-up"
-          :style="{ animationDelay: `${index * 0.2}s` }"
-        >
+          :style="{ animationDelay: `${index * 0.2}s` }">
           <div class="step-icon">
             <Icon :icon="step.icon" />
             <span class="step-number">{{ index + 1 }}</span>
@@ -31,8 +30,7 @@
             v-for="index in 3"
             :key="index"
             class="flow-dot"
-            :class="{ active: index <= 2 }"
-          ></div>
+            :class="{ active: index <= 2 }"></div>
         </div>
       </div>
     </div>
@@ -94,7 +92,11 @@ const steps = [
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   border-radius: 50%;
   margin-bottom: var(--space-lg);
   font-size: var(--font-size-2xl);
@@ -141,7 +143,11 @@ const steps = [
   position: absolute;
   width: 200px;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   border-radius: 1px;
 }
 

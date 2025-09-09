@@ -11,6 +11,8 @@
     "lint:fix": "eslint src --ext .vue,.ts,.js --fix",
     "format": "prettier --write src/**/*.{vue,ts,js,css,scss,json}",
     "format:check": "prettier --check src/**/*.{vue,ts,js,css,scss,json}",
+    "format:vue": "prettier --write src/**/*.vue",
+    "fix-format": "prettier --write src/**/*.{vue,ts,js,css,scss,json} && eslint src --ext .vue,.ts,.js --fix",
     "style": "stylelint src/**/*.{css,scss,vue}",
     "style:fix": "stylelint src/**/*.{css,scss,vue} --fix",
     "check-all": "npm run lint && npm run format:check && npm run style",

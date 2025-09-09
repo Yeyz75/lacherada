@@ -2,6 +2,7 @@ import typescript from '@typescript-eslint/eslint-plugin'
 import typescriptParser from '@typescript-eslint/parser'
 import vue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
+import prettierConfig from 'eslint-config-prettier'
 
 export default [
   // Archivos a ignorar
@@ -112,24 +113,29 @@ export default [
     },
     rules: {
       // Reglas básicas de Vue 3
+      ...prettierConfig.rules,
       'vue/multi-word-component-names': 'off',
       'vue/no-unused-vars': 'error',
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
-      'vue/max-attributes-per-line': ['warn', { singleline: 5, multiline: 1 }],
+      'vue/max-attributes-per-line': 'off', // Prettier maneja esto
       'vue/attribute-hyphenation': ['error', 'always'],
       'vue/component-definition-name-casing': ['error', 'PascalCase'],
-      'vue/html-indent': ['error', 2],
+      'vue/html-indent': 'off', // Prettier maneja la indentación
       'vue/html-quotes': ['error', 'double'],
       'vue/mustache-interpolation-spacing': ['error', 'always'],
-      'vue/no-multi-spaces': 'error',
+      'vue/no-multi-spaces': 'off', // Prettier maneja esto
       'vue/prop-name-casing': ['error', 'camelCase'],
       'vue/v-bind-style': ['error', 'shorthand'],
       'vue/v-on-style': ['error', 'shorthand'],
       'vue/valid-template-root': 'error',
       'vue/no-lone-template': 'error',
+      'vue/html-self-closing': 'off', // Prettier maneja esto
+      'vue/singleline-html-element-content-newline': 'off', // Prettier maneja esto
+      'vue/multiline-html-element-content-newline': 'off', // Prettier maneja esto
 
-      // Desactivar reglas de indentación para Vue
+      // Desactivar reglas de indentación para Vue - Prettier las maneja
       'indent': 'off',
+      '@typescript-eslint/indent': 'off',
     },
   },
 

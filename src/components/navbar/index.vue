@@ -4,12 +4,8 @@
       <div class="navbar-content">
         <!-- Logo -->
         <div class="navbar-brand">
-          <router-link
-            to="/"
-            class="logo">
-            <Icon
-              icon="mdi:handshake"
-              class="logo-icon" />
+          <router-link to="/" class="logo">
+            <Icon icon="mdi:handshake" class="logo-icon" />
             <span class="logo-text">LaCherada</span>
           </router-link>
         </div>
@@ -20,8 +16,7 @@
             v-for="item in navItems"
             :key="item.key"
             :to="item.path"
-            class="nav-link"
-          >
+            class="nav-link">
             {{ t(`navbar.${item.key}`) }}
           </router-link>
         </div>
@@ -33,8 +28,7 @@
             <button
               @click="toggleLanguage"
               class="btn btn-ghost language-btn"
-              :title="t('common.changeLanguage')"
-            >
+              :title="t('common.changeLanguage')">
               <Icon icon="mdi:translate" />
               <span>{{ locale.toUpperCase() }}</span>
             </button>
@@ -44,8 +38,7 @@
           <button
             @click="toggleTheme"
             class="btn btn-ghost theme-toggle"
-            :title="isDark ? t('common.lightMode') : t('common.darkMode')"
-          >
+            :title="isDark ? t('common.lightMode') : t('common.darkMode')">
             <Icon :icon="isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'" />
           </button>
 
@@ -53,14 +46,10 @@
           <div class="auth-buttons">
             <!-- Not authenticated -->
             <template v-if="!isAuthenticated">
-              <button
-                @click="goToLogin"
-                class="btn btn-ghost">
+              <button @click="goToLogin" class="btn btn-ghost">
                 {{ t('navbar.login') }}
               </button>
-              <button
-                @click="goToRegister"
-                class="btn btn-primary">
+              <button @click="goToRegister" class="btn btn-primary">
                 {{ t('navbar.register') }}
               </button>
             </template>
@@ -72,13 +61,14 @@
                   <div class="user-avatar">
                     <Icon icon="mdi:account-circle" />
                   </div>
-                  <span class="user-name">{{ user?.displayName || user?.email }}</span>
+                  <span class="user-name">
+                    {{ user?.displayName || user?.email }}
+                  </span>
                 </div>
                 <button
                   @click="handleSignOut"
                   class="btn btn-ghost sign-out-btn"
-                  :disabled="loading"
-                >
+                  :disabled="loading">
                   <Icon icon="mdi:logout" />
                   {{ t('navbar.signOut', 'Sign Out') }}
                 </button>
@@ -89,8 +79,7 @@
           <!-- Mobile Menu Button -->
           <button
             @click="toggleMobileMenu"
-            class="btn btn-ghost mobile-menu-btn"
-          >
+            class="btn btn-ghost mobile-menu-btn">
             <Icon :icon="isMobileMenuOpen ? 'mdi:close' : 'mdi:menu'" />
           </button>
         </div>
@@ -98,31 +87,24 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div
-      v-if="isMobileMenuOpen"
-      class="mobile-menu">
+    <div v-if="isMobileMenuOpen" class="mobile-menu">
       <div class="mobile-menu-content">
         <router-link
           v-for="item in navItems"
           :key="item.key"
           :to="item.path"
           class="mobile-nav-link"
-          @click="closeMobileMenu"
-        >
+          @click="closeMobileMenu">
           {{ t(`navbar.${item.key}`) }}
         </router-link>
 
         <div class="mobile-auth-buttons">
           <!-- Not authenticated -->
           <template v-if="!isAuthenticated">
-            <button
-              @click="goToLogin"
-              class="btn btn-ghost btn-full">
+            <button @click="goToLogin" class="btn btn-ghost btn-full">
               {{ t('navbar.login') }}
             </button>
-            <button
-              @click="goToRegister"
-              class="btn btn-primary btn-full">
+            <button @click="goToRegister" class="btn btn-primary btn-full">
               {{ t('navbar.register') }}
             </button>
           </template>
@@ -131,16 +113,13 @@
           <template v-else>
             <div class="mobile-user-info">
               <div class="user-display">
-                <Icon
-                  icon="mdi:account-circle"
-                  class="user-avatar-mobile" />
+                <Icon icon="mdi:account-circle" class="user-avatar-mobile" />
                 <span>{{ user?.displayName || user?.email }}</span>
               </div>
               <button
                 @click="handleSignOut"
                 class="btn btn-ghost btn-full"
-                :disabled="loading"
-              >
+                :disabled="loading">
                 <Icon icon="mdi:logout" />
                 {{ t('navbar.signOut', 'Sign Out') }}
               </button>
@@ -172,6 +151,7 @@ const navItems = [
   { key: 'explore', path: '/explore' },
   { key: 'howItWorks', path: '/how-it-works' },
   { key: 'contact', path: '/contact' },
+  { key: 'componentsDemo', path: '/components-demo' },
 ]
 
 const toggleLanguage = () => {
@@ -249,7 +229,11 @@ const closeMobileMenu = () => {
 }
 
 .logo-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -281,7 +265,11 @@ const closeMobileMenu = () => {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   transition: width var(--transition-fast);
 }
 

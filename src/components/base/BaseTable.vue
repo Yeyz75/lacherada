@@ -123,9 +123,9 @@
                     ) === 'object'
                   "
                   :is="column.render(getValue(row, column.key), row, index)" />
-                <span v-else>{{
-                  column.render(getValue(row, column.key), row, index)
-                }}</span>
+                <span v-else>
+                  {{ column.render(getValue(row, column.key), row, index) }}
+                </span>
               </template>
 
               <!-- Default value display -->
@@ -180,141 +180,139 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
-  import { Icon } from '@iconify/vue'
-  import BaseButton from './BaseButton.vue'
-  import type { TableProps } from '../../types'
+import { computed, ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import BaseButton from './BaseButton.vue'
+import type { TableProps } from '../../types'
 
-  interface Props extends TableProps {
-    title?: string
+interface Props extends TableProps {
+  title?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+  selectable: false,
+  emptyMessage: 'No hay datos disponibles',
+  sortOrder: 'asc',
+})
+
+const emit = defineEmits<{
+  'sort': [column: string, order: 'asc' | 'desc']
+  'row-click': [row: any, index: number]
+  'row-select': [selectedRows: any[]]
+  'page-change': [page: number]
+}>()
+
+const selectedRows = ref(new Set<string>())
+
+// Computed properties
+const totalColumns = computed(() => {
+  return props.columns.length + (props.selectable ? 1 : 0)
+})
+
+const containerClasses = computed(() => [
+  {
+    'opacity-50 pointer-events-none': props.loading,
+  },
+  props.class,
+])
+
+const isAllSelected = computed(() => {
+  return props.data.length > 0 && selectedRows.value.size === props.data.length
+})
+
+const isSomeSelected = computed(() => {
+  return (
+    selectedRows.value.size > 0 && selectedRows.value.size < props.data.length
+  )
+})
+
+// Helper functions
+const getRowKey = (row: any, index: number): string => {
+  return row.id || row.key || index.toString()
+}
+
+const getValue = (row: any, key: string) => {
+  return key.split('.').reduce((obj, k) => obj?.[k], row)
+}
+
+const getSortIcon = (columnKey: string): string => {
+  if (props.sortBy !== columnKey) return 'mdi:unfold-more-horizontal'
+  return props.sortOrder === 'asc' ? 'mdi:chevron-up' : 'mdi:chevron-down'
+}
+
+// Event handlers
+const handleSort = (columnKey: string) => {
+  const newOrder =
+    props.sortBy === columnKey && props.sortOrder === 'asc' ? 'desc' : 'asc'
+  emit('sort', columnKey, newOrder)
+}
+
+const handleRowClick = (row: any, index: number) => {
+  emit('row-click', row, index)
+}
+
+const handleRowSelect = (row: any, index: number, event: Event) => {
+  const target = event.target as HTMLInputElement
+  const rowKey = getRowKey(row, index)
+
+  if (target.checked) {
+    selectedRows.value.add(rowKey)
+  } else {
+    selectedRows.value.delete(rowKey)
   }
 
-  const props = withDefaults(defineProps<Props>(), {
-    loading: false,
-    selectable: false,
-    emptyMessage: 'No hay datos disponibles',
-    sortOrder: 'asc',
-  })
+  emitSelectedRows()
+}
 
-  const emit = defineEmits<{
-    'sort': [column: string, order: 'asc' | 'desc']
-    'row-click': [row: any, index: number]
-    'row-select': [selectedRows: any[]]
-    'page-change': [page: number]
-  }>()
+const handleSelectAll = (event: Event) => {
+  const target = event.target as HTMLInputElement
 
-  const selectedRows = ref(new Set<string>())
-
-  // Computed properties
-  const totalColumns = computed(() => {
-    return props.columns.length + (props.selectable ? 1 : 0)
-  })
-
-  const containerClasses = computed(() => [
-    {
-      'opacity-50 pointer-events-none': props.loading,
-    },
-    props.class,
-  ])
-
-  const isAllSelected = computed(() => {
-    return (
-      props.data.length > 0 && selectedRows.value.size === props.data.length
-    )
-  })
-
-  const isSomeSelected = computed(() => {
-    return (
-      selectedRows.value.size > 0 && selectedRows.value.size < props.data.length
-    )
-  })
-
-  // Helper functions
-  const getRowKey = (row: any, index: number): string => {
-    return row.id || row.key || index.toString()
-  }
-
-  const getValue = (row: any, key: string) => {
-    return key.split('.').reduce((obj, k) => obj?.[k], row)
-  }
-
-  const getSortIcon = (columnKey: string): string => {
-    if (props.sortBy !== columnKey) return 'mdi:unfold-more-horizontal'
-    return props.sortOrder === 'asc' ? 'mdi:chevron-up' : 'mdi:chevron-down'
-  }
-
-  // Event handlers
-  const handleSort = (columnKey: string) => {
-    const newOrder =
-      props.sortBy === columnKey && props.sortOrder === 'asc' ? 'desc' : 'asc'
-    emit('sort', columnKey, newOrder)
-  }
-
-  const handleRowClick = (row: any, index: number) => {
-    emit('row-click', row, index)
-  }
-
-  const handleRowSelect = (row: any, index: number, event: Event) => {
-    const target = event.target as HTMLInputElement
-    const rowKey = getRowKey(row, index)
-
-    if (target.checked) {
-      selectedRows.value.add(rowKey)
-    } else {
-      selectedRows.value.delete(rowKey)
-    }
-
-    emitSelectedRows()
-  }
-
-  const handleSelectAll = (event: Event) => {
-    const target = event.target as HTMLInputElement
-
-    if (target.checked) {
-      props.data.forEach((row, index) => {
-        selectedRows.value.add(getRowKey(row, index))
-      })
-    } else {
-      selectedRows.value.clear()
-    }
-
-    emitSelectedRows()
-  }
-
-  const handlePageChange = (page: number) => {
-    emit('page-change', page)
-  }
-
-  const emitSelectedRows = () => {
-    const selected = props.data.filter((row, index) =>
-      selectedRows.value.has(getRowKey(row, index)),
-    )
-    emit('row-select', selected)
-  }
-
-  // Public methods
-  const clearSelection = () => {
-    selectedRows.value.clear()
-    emitSelectedRows()
-  }
-
-  const selectAll = () => {
+  if (target.checked) {
     props.data.forEach((row, index) => {
       selectedRows.value.add(getRowKey(row, index))
     })
-    emitSelectedRows()
+  } else {
+    selectedRows.value.clear()
   }
 
-  defineExpose({
-    clearSelection,
-    selectAll,
-    selectedRows: computed(() => Array.from(selectedRows.value)),
+  emitSelectedRows()
+}
+
+const handlePageChange = (page: number) => {
+  emit('page-change', page)
+}
+
+const emitSelectedRows = () => {
+  const selected = props.data.filter((row, index) =>
+    selectedRows.value.has(getRowKey(row, index)),
+  )
+  emit('row-select', selected)
+}
+
+// Public methods
+const clearSelection = () => {
+  selectedRows.value.clear()
+  emitSelectedRows()
+}
+
+const selectAll = () => {
+  props.data.forEach((row, index) => {
+    selectedRows.value.add(getRowKey(row, index))
   })
+  emitSelectedRows()
+}
+
+defineExpose({
+  clearSelection,
+  selectAll,
+  selectedRows: computed(() => Array.from(selectedRows.value)),
+})
 </script>
 
 <script lang="ts">
-  export default {
-    name: 'BaseTable',
-    inheritAttrs: false,
-  }
+export default {
+  name: 'BaseTable',
+  inheritAttrs: false,
+}
 </script>

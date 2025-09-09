@@ -10,8 +10,7 @@
           v-for="(testimonial, index) in testimonials"
           :key="index"
           class="testimonial-card card-glass animate-fade-up"
-          :style="{ animationDelay: `${index * 0.2}s` }"
-        >
+          :style="{ animationDelay: `${index * 0.2}s` }">
           <div class="testimonial-content">
             <div class="quote-icon">
               <Icon icon="mdi:format-quote-open" />
@@ -26,8 +25,7 @@
               <img
                 :src="testimonial.avatar"
                 :alt="t(`home.testimonials.testimonial${index + 1}.author`)"
-                class="avatar-image"
-              />
+                class="avatar-image" />
               <div class="verified-badge">
                 <Icon icon="mdi:check-decagram" />
               </div>
@@ -40,10 +38,7 @@
                 {{ t(`home.testimonials.testimonial${index + 1}.role`) }}
               </p>
               <div class="rating">
-                <Icon
-                  icon="mdi:star"
-                  v-for="i in 5"
-                  :key="i" />
+                <Icon icon="mdi:star" v-for="i in 5" :key="i" />
                 <span>5.0</span>
               </div>
             </div>
@@ -91,7 +86,12 @@ const testimonials = [
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary),
+    transparent
+  );
 }
 
 .section-header {

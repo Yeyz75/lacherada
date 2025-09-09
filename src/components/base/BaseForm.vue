@@ -58,8 +58,7 @@
               :maxlength="field.validation?.maxLength"
               :minlength="field.validation?.minLength"
               rows="4"
-              @blur="validateField(field.name)">
-            </textarea>
+              @blur="validateField(field.name)"></textarea>
             <span
               v-if="getFieldError(field.name)"
               class="text-sm text-red-600 flex items-center gap-1">
@@ -162,252 +161,252 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, reactive, ref, watch } from 'vue'
-  import BaseCard from './BaseCard.vue'
-  import BaseButton from './BaseButton.vue'
-  import BaseInput from './BaseInput.vue'
-  import type { FormProps, FormField, InputType } from '../../types'
+import { computed, reactive, ref, watch } from 'vue'
+import BaseCard from './BaseCard.vue'
+import BaseButton from './BaseButton.vue'
+import BaseInput from './BaseInput.vue'
+import type { FormProps, FormField, InputType } from '../../types'
 
-  interface Props extends FormProps {
-    title?: string
-    subtitle?: string
-    modelValue?: Record<string, any>
+interface Props extends FormProps {
+  title?: string
+  subtitle?: string
+  modelValue?: Record<string, any>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  layout: 'vertical',
+  loading: false,
+  showSubmit: true,
+  submitText: 'Enviar',
+  showCancel: false,
+  cancelText: 'Cancelar',
+})
+
+const emit = defineEmits<{
+  'update:modelValue': [value: Record<string, any>]
+  'submit': [data: Record<string, any>]
+  'cancel': []
+  'field-change': [fieldName: string, value: any]
+  'field-error': [fieldName: string, error: string | null]
+}>()
+
+const formData = reactive<Record<string, any>>({})
+const fieldErrors = ref<Record<string, string>>({})
+const touchedFields = ref<Set<string>>(new Set())
+
+// Initialize form data
+if (props.modelValue) {
+  Object.assign(formData, props.modelValue)
+}
+
+// Initialize empty fields
+if (props.fields) {
+  props.fields.forEach((field) => {
+    if (!(field.name in formData)) {
+      formData[field.name] = getDefaultValue(field)
+    }
+  })
+}
+
+// Computed properties
+const formClasses = computed(() => [
+  'space-y-6',
+  {
+    'opacity-50 pointer-events-none': props.loading,
+  },
+])
+
+const isFormValid = computed(() => {
+  if (!props.fields) return true
+
+  // Check required fields
+  const hasRequiredFields = props.fields.some((field) => field.required)
+  if (!hasRequiredFields) return true
+
+  // Validate all required fields are filled and have no errors
+  return props.fields
+    .filter((field) => field.required)
+    .every((field) => {
+      const value = formData[field.name]
+      const hasValue = value !== null && value !== undefined && value !== ''
+      const hasError = fieldErrors.value[field.name]
+      return hasValue && !hasError
+    })
+})
+
+// Watch for external model changes
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue && newValue !== formData) {
+      Object.assign(formData, newValue)
+    }
+  },
+  { deep: true },
+)
+
+// Watch for internal form changes
+watch(
+  formData,
+  (newData) => {
+    emit('update:modelValue', { ...newData })
+  },
+  { deep: true },
+)
+
+// Helper functions
+function getDefaultValue(field: FormField) {
+  switch (field.type) {
+    case 'checkbox':
+      return false
+    case 'select':
+      return ''
+    default:
+      return ''
+  }
+}
+
+function getInputType(field: FormField): InputType {
+  // Map field validation to input types
+  if (field.validation?.pattern) {
+    const pattern = field.validation.pattern
+    if (pattern.includes('@')) return 'email'
+    if (pattern.includes('\\d')) return 'tel'
+  }
+  return 'text'
+}
+
+function getFieldError(fieldName: string): string | boolean | undefined {
+  const error = fieldErrors.value[fieldName]
+  return error || undefined
+}
+
+function validateField(fieldName: string): boolean {
+  if (!props.fields) return true
+
+  const field = props.fields.find((f) => f.name === fieldName)
+  if (!field) return true
+
+  touchedFields.value.add(fieldName)
+  const value = formData[fieldName]
+  let error: string | null = null
+
+  // Required validation
+  if (
+    field.required &&
+    (value === null || value === undefined || value === '')
+  ) {
+    error = `${field.label || fieldName} es requerido`
   }
 
-  const props = withDefaults(defineProps<Props>(), {
-    layout: 'vertical',
-    loading: false,
-    showSubmit: true,
-    submitText: 'Enviar',
-    showCancel: false,
-    cancelText: 'Cancelar',
+  // Length validations
+  if (value && field.validation) {
+    const validation = field.validation
+    const valueLength = String(value).length
+
+    if (validation.minLength && valueLength < validation.minLength) {
+      error = `Mínimo ${validation.minLength} caracteres`
+    }
+
+    if (validation.maxLength && valueLength > validation.maxLength) {
+      error = `Máximo ${validation.maxLength} caracteres`
+    }
+
+    if (validation.min && Number(value) < validation.min) {
+      error = `Valor mínimo: ${validation.min}`
+    }
+
+    if (validation.max && Number(value) > validation.max) {
+      error = `Valor máximo: ${validation.max}`
+    }
+
+    // Pattern validation
+    if (validation.pattern && value) {
+      const regex = new RegExp(validation.pattern)
+      if (!regex.test(String(value))) {
+        error = 'Formato no válido'
+      }
+    }
+
+    // Custom validation
+    if (validation.custom) {
+      const customResult = validation.custom(value)
+      if (typeof customResult === 'string') {
+        error = customResult
+      }
+    }
+  }
+
+  if (error) {
+    fieldErrors.value[fieldName] = error
+  } else {
+    delete fieldErrors.value[fieldName]
+  }
+
+  emit('field-error', fieldName, error)
+  return !error
+}
+
+function validateForm(): boolean {
+  if (!props.fields) return true
+
+  let isValid = true
+  props.fields.forEach((field) => {
+    const fieldValid = validateField(field.name)
+    if (!fieldValid) isValid = false
   })
 
-  const emit = defineEmits<{
-    'update:modelValue': [value: Record<string, any>]
-    'submit': [data: Record<string, any>]
-    'cancel': []
-    'field-change': [fieldName: string, value: any]
-    'field-error': [fieldName: string, error: string | null]
-  }>()
+  return isValid
+}
 
-  const formData = reactive<Record<string, any>>({})
-  const fieldErrors = ref<Record<string, string>>({})
-  const touchedFields = ref<Set<string>>(new Set())
+// Event handlers
+function handleSubmit() {
+  if (!validateForm()) return
 
-  // Initialize form data
-  if (props.modelValue) {
-    Object.assign(formData, props.modelValue)
-  }
+  emit('submit', { ...formData })
+}
 
-  // Initialize empty fields
+function handleCancel() {
+  emit('cancel')
+}
+
+// Public methods
+const resetForm = () => {
   if (props.fields) {
     props.fields.forEach((field) => {
-      if (!(field.name in formData)) {
-        formData[field.name] = getDefaultValue(field)
-      }
+      formData[field.name] = getDefaultValue(field)
     })
   }
+  fieldErrors.value = {}
+  touchedFields.value.clear()
+}
 
-  // Computed properties
-  const formClasses = computed(() => [
-    'space-y-6',
-    {
-      'opacity-50 pointer-events-none': props.loading,
-    },
-  ])
+const setFieldValue = (fieldName: string, value: any) => {
+  formData[fieldName] = value
+  emit('field-change', fieldName, value)
+}
 
-  const isFormValid = computed(() => {
-    if (!props.fields) return true
-
-    // Check required fields
-    const hasRequiredFields = props.fields.some((field) => field.required)
-    if (!hasRequiredFields) return true
-
-    // Validate all required fields are filled and have no errors
-    return props.fields
-      .filter((field) => field.required)
-      .every((field) => {
-        const value = formData[field.name]
-        const hasValue = value !== null && value !== undefined && value !== ''
-        const hasError = fieldErrors.value[field.name]
-        return hasValue && !hasError
-      })
-  })
-
-  // Watch for external model changes
-  watch(
-    () => props.modelValue,
-    (newValue) => {
-      if (newValue && newValue !== formData) {
-        Object.assign(formData, newValue)
-      }
-    },
-    { deep: true },
-  )
-
-  // Watch for internal form changes
-  watch(
-    formData,
-    (newData) => {
-      emit('update:modelValue', { ...newData })
-    },
-    { deep: true },
-  )
-
-  // Helper functions
-  function getDefaultValue(field: FormField) {
-    switch (field.type) {
-      case 'checkbox':
-        return false
-      case 'select':
-        return ''
-      default:
-        return ''
-    }
+const setFieldError = (fieldName: string, error: string | null) => {
+  if (error) {
+    fieldErrors.value[fieldName] = error
+  } else {
+    delete fieldErrors.value[fieldName]
   }
+}
 
-  function getInputType(field: FormField): InputType {
-    // Map field validation to input types
-    if (field.validation?.pattern) {
-      const pattern = field.validation.pattern
-      if (pattern.includes('@')) return 'email'
-      if (pattern.includes('\\d')) return 'tel'
-    }
-    return 'text'
-  }
-
-  function getFieldError(fieldName: string): string | boolean | undefined {
-    const error = fieldErrors.value[fieldName]
-    return error || undefined
-  }
-
-  function validateField(fieldName: string): boolean {
-    if (!props.fields) return true
-
-    const field = props.fields.find((f) => f.name === fieldName)
-    if (!field) return true
-
-    touchedFields.value.add(fieldName)
-    const value = formData[fieldName]
-    let error: string | null = null
-
-    // Required validation
-    if (
-      field.required &&
-      (value === null || value === undefined || value === '')
-    ) {
-      error = `${field.label || fieldName} es requerido`
-    }
-
-    // Length validations
-    if (value && field.validation) {
-      const validation = field.validation
-      const valueLength = String(value).length
-
-      if (validation.minLength && valueLength < validation.minLength) {
-        error = `Mínimo ${validation.minLength} caracteres`
-      }
-
-      if (validation.maxLength && valueLength > validation.maxLength) {
-        error = `Máximo ${validation.maxLength} caracteres`
-      }
-
-      if (validation.min && Number(value) < validation.min) {
-        error = `Valor mínimo: ${validation.min}`
-      }
-
-      if (validation.max && Number(value) > validation.max) {
-        error = `Valor máximo: ${validation.max}`
-      }
-
-      // Pattern validation
-      if (validation.pattern && value) {
-        const regex = new RegExp(validation.pattern)
-        if (!regex.test(String(value))) {
-          error = 'Formato no válido'
-        }
-      }
-
-      // Custom validation
-      if (validation.custom) {
-        const customResult = validation.custom(value)
-        if (typeof customResult === 'string') {
-          error = customResult
-        }
-      }
-    }
-
-    if (error) {
-      fieldErrors.value[fieldName] = error
-    } else {
-      delete fieldErrors.value[fieldName]
-    }
-
-    emit('field-error', fieldName, error)
-    return !error
-  }
-
-  function validateForm(): boolean {
-    if (!props.fields) return true
-
-    let isValid = true
-    props.fields.forEach((field) => {
-      const fieldValid = validateField(field.name)
-      if (!fieldValid) isValid = false
-    })
-
-    return isValid
-  }
-
-  // Event handlers
-  function handleSubmit() {
-    if (!validateForm()) return
-
-    emit('submit', { ...formData })
-  }
-
-  function handleCancel() {
-    emit('cancel')
-  }
-
-  // Public methods
-  const resetForm = () => {
-    if (props.fields) {
-      props.fields.forEach((field) => {
-        formData[field.name] = getDefaultValue(field)
-      })
-    }
-    fieldErrors.value = {}
-    touchedFields.value.clear()
-  }
-
-  const setFieldValue = (fieldName: string, value: any) => {
-    formData[fieldName] = value
-    emit('field-change', fieldName, value)
-  }
-
-  const setFieldError = (fieldName: string, error: string | null) => {
-    if (error) {
-      fieldErrors.value[fieldName] = error
-    } else {
-      delete fieldErrors.value[fieldName]
-    }
-  }
-
-  defineExpose({
-    resetForm,
-    validateForm,
-    setFieldValue,
-    setFieldError,
-    formData: computed(() => formData),
-    isValid: isFormValid,
-  })
+defineExpose({
+  resetForm,
+  validateForm,
+  setFieldValue,
+  setFieldError,
+  formData: computed(() => formData),
+  isValid: isFormValid,
+})
 </script>
 
 <script lang="ts">
-  export default {
-    name: 'BaseForm',
-    inheritAttrs: false,
-  }
+export default {
+  name: 'BaseForm',
+  inheritAttrs: false,
+}
 </script>

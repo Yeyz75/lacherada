@@ -308,3 +308,102 @@ export interface DesignTokens {
   shadows: Record<string, string>
   transitions: Record<string, string>
 }
+
+// Avatar types
+export interface AvatarProps extends BaseComponentProps {
+  image?: string
+  icon?: string
+  label?: string
+  size?: 'small' | 'normal' | 'large' | 'xlarge'
+  shape?: 'square' | 'circle'
+  status?: 'online' | 'offline' | 'away' | 'busy'
+  showStatus?: boolean
+  verified?: boolean
+  clickable?: boolean
+  loading?: boolean
+}
+
+// Badge types
+export interface BadgeProps extends BaseComponentProps {
+  value?: string | number
+  label?: string
+  severity?: 'secondary' | 'info' | 'success' | 'warn' | 'danger' | 'contrast'
+  size?: 'small' | 'normal' | 'large'
+  variant?: 'filled' | 'outlined' | 'dot'
+  icon?: string
+  iconPosition?: 'left' | 'right'
+  removable?: boolean
+  clickable?: boolean
+  pulse?: boolean
+}
+
+// Rating types
+export interface RatingProps extends BaseComponentProps {
+  modelValue?: number
+  readonly?: boolean
+  disabled?: boolean
+  stars?: number
+  cancel?: boolean
+  label?: string
+  size?: 'small' | 'normal' | 'large'
+  showText?: boolean
+  showCount?: boolean
+  showBreakdown?: boolean
+  totalRatings?: number
+  breakdown?: Record<number, number>
+  precision?: 'full' | 'half'
+}
+
+// Chip types
+export interface ChipProps extends BaseComponentProps {
+  label?: string
+  icon?: string
+  image?: string
+  removable?: boolean
+  variant?: 'filled' | 'outlined' | 'text'
+  severity?: 'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger'
+  size?: 'small' | 'normal' | 'large'
+  clickable?: boolean
+  selected?: boolean
+  disabled?: boolean
+}
+
+// Modal types
+export interface ModalProps extends BaseComponentProps {
+  visible: boolean
+  title?: string
+  modal?: boolean
+  closable?: boolean
+  dismissableMask?: boolean
+  closeOnEscape?: boolean
+  draggable?: boolean
+  resizable?: boolean
+  maximizable?: boolean
+  position?:
+    | 'center'
+    | 'top'
+    | 'bottom'
+    | 'left'
+    | 'right'
+    | 'topleft'
+    | 'topright'
+    | 'bottomleft'
+    | 'bottomright'
+  size?: 'small' | 'medium' | 'large' | 'fullscreen'
+  icon?: string
+  loading?: boolean
+  loadingText?: string
+  showDefaultActions?: boolean
+  showCancel?: boolean
+  showConfirm?: boolean
+  cancelText?: string
+  confirmText?: string
+  confirmSeverity?:
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'info'
+    | 'warn'
+    | 'danger'
+  actionLoading?: boolean
+}

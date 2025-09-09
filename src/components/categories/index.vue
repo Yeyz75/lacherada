@@ -10,17 +10,16 @@
           v-for="(category, index) in categories"
           :key="category.key"
           class="category-card card animate-fade-up"
-          :style="{ animationDelay: `${index * 0.1}s` }"
-        >
-          <div
-            class="category-icon"
-            :class="`icon-${category.key}`">
+          :style="{ animationDelay: `${index * 0.1}s` }">
+          <div class="category-icon" :class="`icon-${category.key}`">
             <Icon :icon="category.icon" />
           </div>
           <h3 class="category-title">
             {{ t(`home.categories.${category.key}`) }}
           </h3>
-          <p class="category-count">{{ category.count }} {{ t('common.items') || 'elementos' }}</p>
+          <p class="category-count">
+            {{ category.count }} {{ t('common.items') || 'elementos' }}
+          </p>
           <div class="category-overlay">
             <button class="btn btn-primary btn-sm">
               {{ t('common.explore') || 'Explorar' }}

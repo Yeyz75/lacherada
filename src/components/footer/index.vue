@@ -5,9 +5,7 @@
         <!-- Brand Section -->
         <div class="footer-brand">
           <div class="logo">
-            <Icon
-              icon="mdi:handshake"
-              class="logo-icon" />
+            <Icon icon="mdi:handshake" class="logo-icon" />
             <span class="logo-text">LaCherada</span>
           </div>
           <p class="brand-description">
@@ -21,8 +19,7 @@
               :aria-label="social.name"
               class="social-link"
               target="_blank"
-              rel="noopener noreferrer"
-            >
+              rel="noopener noreferrer">
               <Icon :icon="social.icon" />
             </a>
           </div>
@@ -34,32 +31,16 @@
             <h4 class="links-title">{{ t('footer.about') }}</h4>
             <ul class="links-list">
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >{{ t('navbar.howItWorks') }}</a
-                >
+                <a href="#" class="footer-link">{{ t('navbar.howItWorks') }}</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Nuestra Historia</a
-                >
+                <a href="#" class="footer-link">Nuestra Historia</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Equipo</a
-                >
+                <a href="#" class="footer-link">Equipo</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Carreras</a
-                >
+                <a href="#" class="footer-link">Carreras</a>
               </li>
             </ul>
           </div>
@@ -68,32 +49,16 @@
             <h4 class="links-title">{{ t('footer.support') }}</h4>
             <ul class="links-list">
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Centro de Ayuda</a
-                >
+                <a href="#" class="footer-link">Centro de Ayuda</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >{{ t('navbar.contact') }}</a
-                >
+                <a href="#" class="footer-link">{{ t('navbar.contact') }}</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Seguridad</a
-                >
+                <a href="#" class="footer-link">Seguridad</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Reportar Problema</a
-                >
+                <a href="#" class="footer-link">Reportar Problema</a>
               </li>
             </ul>
           </div>
@@ -102,32 +67,16 @@
             <h4 class="links-title">Legal</h4>
             <ul class="links-list">
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >{{ t('footer.privacy') }}</a
-                >
+                <a href="#" class="footer-link">{{ t('footer.privacy') }}</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >{{ t('footer.terms') }}</a
-                >
+                <a href="#" class="footer-link">{{ t('footer.terms') }}</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Cookies</a
-                >
+                <a href="#" class="footer-link">Cookies</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="footer-link"
-                >Licencias</a
-                >
+                <a href="#" class="footer-link">Licencias</a>
               </li>
             </ul>
           </div>
@@ -146,11 +95,8 @@
               type="email"
               placeholder="Tu correo electrónico"
               class="newsletter-input"
-              required
-            />
-            <button
-              type="submit"
-              class="btn btn-primary">
+              required />
+            <button type="submit" class="btn btn-primary">
               Suscribirse
               <Icon icon="mdi:arrow-right" />
             </button>
@@ -161,7 +107,9 @@
       <!-- Bottom -->
       <div class="footer-bottom">
         <div class="footer-bottom-content">
-          <p class="copyright">© 2025 LaCherada. Todos los derechos reservados.</p>
+          <p class="copyright">
+            © 2025 LaCherada. Todos los derechos reservados.
+          </p>
           <div class="footer-badges">
             <div class="security-badge">
               <Icon icon="mdi:shield-check" />
@@ -226,7 +174,11 @@ const socialLinks = [
 }
 
 .logo-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }

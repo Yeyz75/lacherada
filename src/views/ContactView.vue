@@ -19,24 +19,16 @@
             <Card class="form-card">
               <template #header>
                 <div class="card-header">
-                  <Icon
-                    icon="mdi:email-edit"
-                    class="header-icon" />
+                  <Icon icon="mdi:email-edit" class="header-icon" />
                   <h2 class="form-title">Envía un Mensaje</h2>
                 </div>
               </template>
 
               <template #content>
-                <form
-                  @submit.prevent="submitForm"
-                  class="contact-form">
+                <form @submit.prevent="submitForm" class="contact-form">
                   <div class="form-field">
-                    <label
-                      for="name"
-                      class="field-label">
-                      <Icon
-                        icon="mdi:account"
-                        class="label-icon" />
+                    <label for="name" class="field-label">
+                      <Icon icon="mdi:account" class="label-icon" />
                       {{ t('contact.form.name') }}
                     </label>
                     <InputText
@@ -44,17 +36,12 @@
                       v-model="form.name"
                       :placeholder="t('contact.form.namePlaceholder')"
                       required
-                      class="w-full"
-                    />
+                      class="w-full" />
                   </div>
 
                   <div class="form-field">
-                    <label
-                      for="email"
-                      class="field-label">
-                      <Icon
-                        icon="mdi:email"
-                        class="label-icon" />
+                    <label for="email" class="field-label">
+                      <Icon icon="mdi:email" class="label-icon" />
                       {{ t('contact.form.email') }}
                     </label>
                     <InputText
@@ -63,17 +50,12 @@
                       type="email"
                       :placeholder="t('contact.form.emailPlaceholder')"
                       required
-                      class="w-full"
-                    />
+                      class="w-full" />
                   </div>
 
                   <div class="form-field">
-                    <label
-                      for="subject"
-                      class="field-label">
-                      <Icon
-                        icon="mdi:bookmark"
-                        class="label-icon" />
+                    <label for="subject" class="field-label">
+                      <Icon icon="mdi:bookmark" class="label-icon" />
                       {{ t('contact.form.subject') }}
                     </label>
                     <InputText
@@ -81,17 +63,12 @@
                       v-model="form.subject"
                       :placeholder="t('contact.form.subjectPlaceholder')"
                       required
-                      class="w-full"
-                    />
+                      class="w-full" />
                   </div>
 
                   <div class="form-field">
-                    <label
-                      for="message"
-                      class="field-label">
-                      <Icon
-                        icon="mdi:message-text"
-                        class="label-icon" />
+                    <label for="message" class="field-label">
+                      <Icon icon="mdi:message-text" class="label-icon" />
                       {{ t('contact.form.message') }}
                     </label>
                     <Textarea
@@ -100,17 +77,19 @@
                       :placeholder="t('contact.form.messagePlaceholder')"
                       rows="6"
                       required
-                      class="w-full"
-                    />
+                      class="w-full" />
                   </div>
 
                   <Button
                     type="submit"
-                    :label="isSubmitting ? t('contact.form.sending') : t('contact.form.send')"
+                    :label="
+                      isSubmitting
+                        ? t('contact.form.sending')
+                        : t('contact.form.send')
+                    "
                     :loading="isSubmitting"
                     class="w-full"
-                    size="large"
-                  >
+                    size="large">
                     <template #icon>
                       <Icon icon="mdi:send" />
                     </template>
@@ -125,9 +104,7 @@
             <Card class="info-card">
               <template #header>
                 <div class="card-header">
-                  <Icon
-                    icon="mdi:information"
-                    class="header-icon" />
+                  <Icon icon="mdi:information" class="header-icon" />
                   <h2 class="info-title">Información de Contacto</h2>
                 </div>
               </template>
@@ -143,7 +120,8 @@
                         {{ t('contact.info.address') }}
                       </h3>
                       <p class="info-value">
-                        Calle de la Innovación, 123<br />
+                        Calle de la Innovación, 123
+                        <br />
                         28001 Madrid, España
                       </p>
                     </div>
@@ -193,29 +171,25 @@
                       severity="secondary"
                       text
                       rounded
-                      @click="openSocial('twitter')"
-                    />
+                      @click="openSocial('twitter')" />
                     <Button
                       icon="mdi:facebook"
                       severity="secondary"
                       text
                       rounded
-                      @click="openSocial('facebook')"
-                    />
+                      @click="openSocial('facebook')" />
                     <Button
                       icon="mdi:instagram"
                       severity="secondary"
                       text
                       rounded
-                      @click="openSocial('instagram')"
-                    />
+                      @click="openSocial('instagram')" />
                     <Button
                       icon="mdi:linkedin"
                       severity="secondary"
                       text
                       rounded
-                      @click="openSocial('linkedin')"
-                    />
+                      @click="openSocial('linkedin')" />
                   </div>
                 </div>
               </template>
@@ -236,8 +210,7 @@
               <AccordionTab
                 v-for="(_, index) in faqs"
                 :key="index"
-                :header="t(`contact.faq.q${index + 1}.question`)"
-              >
+                :header="t(`contact.faq.q${index + 1}.question`)">
                 <p class="faq-answer">
                   {{ t(`contact.faq.q${index + 1}.answer`) }}
                 </p>
@@ -255,9 +228,7 @@
         <Card class="map-card">
           <template #content>
             <div class="map-placeholder">
-              <Icon
-                icon="mdi:map"
-                class="map-icon" />
+              <Icon icon="mdi:map" class="map-icon" />
               <p class="map-text">Mapa interactivo próximamente</p>
             </div>
           </template>
@@ -478,7 +449,11 @@ const openSocial = (platform: string) => {
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   border-radius: 50%;
   display: flex;
   align-items: center;

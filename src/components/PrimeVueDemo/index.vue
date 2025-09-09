@@ -1,9 +1,7 @@
 <template>
   <div class="primevue-demo">
     <h2 class="demo-title">
-      <Icon
-        icon="lucide:sparkles"
-        class="demo-icon" />
+      <Icon icon="lucide:sparkles" class="demo-icon" />
       {{ $t('primevueDemo.title') }}
     </h2>
 
@@ -11,9 +9,7 @@
     <Card class="demo-card">
       <template #header>
         <div class="card-header">
-          <Icon
-            icon="lucide:user"
-            class="header-icon" />
+          <Icon icon="lucide:user" class="header-icon" />
           <h3>{{ $t('primevueDemo.formTitle') }}</h3>
         </div>
       </template>
@@ -21,29 +17,20 @@
       <template #content>
         <div class="form-grid">
           <div class="form-field">
-            <label
-              for="name"
-              class="field-label">
-              <Icon
-                icon="lucide:user"
-                class="label-icon" />
+            <label for="name" class="field-label">
+              <Icon icon="lucide:user" class="label-icon" />
               {{ $t('primevueDemo.name') }}
             </label>
             <InputText
               id="name"
               v-model="form.name"
               :placeholder="$t('primevueDemo.namePlaceholder')"
-              class="w-full"
-            />
+              class="w-full" />
           </div>
 
           <div class="form-field">
-            <label
-              for="email"
-              class="field-label">
-              <Icon
-                icon="lucide:mail"
-                class="label-icon" />
+            <label for="email" class="field-label">
+              <Icon icon="lucide:mail" class="label-icon" />
               {{ $t('primevueDemo.email') }}
             </label>
             <InputText
@@ -51,17 +38,12 @@
               v-model="form.email"
               type="email"
               :placeholder="$t('primevueDemo.emailPlaceholder')"
-              class="w-full"
-            />
+              class="w-full" />
           </div>
 
           <div class="form-field">
-            <label
-              for="category"
-              class="field-label">
-              <Icon
-                icon="lucide:tag"
-                class="label-icon" />
+            <label for="category" class="field-label">
+              <Icon icon="lucide:tag" class="label-icon" />
               {{ $t('primevueDemo.category') }}
             </label>
             <Select
@@ -71,13 +53,10 @@
               option-label="name"
               option-value="code"
               :placeholder="$t('primevueDemo.categoryPlaceholder')"
-              class="w-full"
-            >
+              class="w-full">
               <template #option="slotProps">
                 <div class="dropdown-option">
-                  <Icon
-                    :icon="slotProps.option.icon"
-                    class="option-icon" />
+                  <Icon :icon="slotProps.option.icon" class="option-icon" />
                   {{ slotProps.option.name }}
                 </div>
               </template>
@@ -85,12 +64,8 @@
           </div>
 
           <div class="form-field">
-            <label
-              for="message"
-              class="field-label">
-              <Icon
-                icon="lucide:message-square"
-                class="label-icon" />
+            <label for="message" class="field-label">
+              <Icon icon="lucide:message-square" class="label-icon" />
               {{ $t('primevueDemo.message') }}
             </label>
             <Textarea
@@ -98,8 +73,7 @@
               v-model="form.message"
               :placeholder="$t('primevueDemo.messagePlaceholder')"
               rows="4"
-              class="w-full"
-            />
+              class="w-full" />
           </div>
         </div>
       </template>
@@ -110,12 +84,9 @@
             type="button"
             :label="$t('primevueDemo.cancel')"
             severity="secondary"
-            @click="resetForm"
-          >
+            @click="resetForm">
             <template #icon>
-              <Icon
-                icon="lucide:x"
-                class="button-icon" />
+              <Icon icon="lucide:x" class="button-icon" />
             </template>
           </Button>
 
@@ -123,12 +94,9 @@
             type="button"
             :label="$t('primevueDemo.submit')"
             @click="submitForm"
-            :loading="isSubmitting"
-          >
+            :loading="isSubmitting">
             <template #icon>
-              <Icon
-                icon="lucide:check"
-                class="button-icon" />
+              <Icon icon="lucide:check" class="button-icon" />
             </template>
           </Button>
         </div>
@@ -139,9 +107,7 @@
     <Card class="demo-card">
       <template #header>
         <div class="card-header">
-          <Icon
-            icon="lucide:table"
-            class="header-icon" />
+          <Icon icon="lucide:table" class="header-icon" />
           <h3>{{ $t('primevueDemo.dataTableTitle') }}</h3>
         </div>
       </template>
@@ -153,38 +119,28 @@
           :rows="5"
           :rows-per-page-options="[5, 10, 20]"
           :loading="isLoadingTable"
-          class="custom-table"
-        >
-          <Column
-            field="id"
-            header="ID"
-            sortable />
-          <Column
-            field="name"
-            :header="$t('primevueDemo.name')"
-            sortable />
+          class="custom-table">
+          <Column field="id" header="ID" sortable />
+          <Column field="name" :header="$t('primevueDemo.name')" sortable />
           <Column
             field="category"
             :header="$t('primevueDemo.category')"
-            sortable
-          >
+            sortable>
             <template #body="slotProps">
               <Tag
                 :value="slotProps.data.category"
-                :severity="getTagSeverity(slotProps.data.category)"
-              />
+                :severity="getTagSeverity(slotProps.data.category)" />
             </template>
           </Column>
-          <Column
-            field="status"
-            :header="$t('primevueDemo.status')"
-            sortable>
+          <Column field="status" :header="$t('primevueDemo.status')" sortable>
             <template #body="slotProps">
               <div class="status-cell">
                 <Icon
                   icon="lucide:circle"
-                  :class="['status-indicator', `status-${slotProps.data.status.toLowerCase()}`]"
-                />
+                  :class="[
+                    'status-indicator',
+                    `status-${slotProps.data.status.toLowerCase()}`,
+                  ]" />
                 {{ slotProps.data.status }}
               </div>
             </template>
@@ -196,12 +152,9 @@
                   severity="info"
                   size="small"
                   @click="editItem(slotProps.data)"
-                  v-tooltip="$t('primevueDemo.edit')"
-                >
+                  v-tooltip="$t('primevueDemo.edit')">
                   <template #icon>
-                    <Icon
-                      icon="lucide:edit"
-                      class="action-icon" />
+                    <Icon icon="lucide:edit" class="action-icon" />
                   </template>
                 </Button>
 
@@ -209,12 +162,9 @@
                   severity="danger"
                   size="small"
                   @click="deleteItem(slotProps.data)"
-                  v-tooltip="$t('primevueDemo.delete')"
-                >
+                  v-tooltip="$t('primevueDemo.delete')">
                   <template #icon>
-                    <Icon
-                      icon="lucide:trash"
-                      class="action-icon" />
+                    <Icon icon="lucide:trash" class="action-icon" />
                   </template>
                 </Button>
               </div>
@@ -318,7 +268,9 @@ const submitForm = async () => {
   resetForm()
 }
 
-const getTagSeverity = (category: string): 'success' | 'info' | 'warn' | 'danger' | undefined => {
+const getTagSeverity = (
+  category: string,
+): 'success' | 'info' | 'warn' | 'danger' | undefined => {
   switch (category) {
     case 'Tecnología':
       return 'info'

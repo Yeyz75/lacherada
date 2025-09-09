@@ -13,7 +13,6 @@
   "embeddedLanguageFormatting": "auto",
   "htmlWhitespaceSensitivity": "css",
   "insertPragma": false,
-  "jsxBracketSameLine": false,
   "jsxSingleQuote": true,
   "proseWrap": "preserve",
   "requirePragma": false,
@@ -23,7 +22,9 @@
       "files": "*.vue",
       "options": {
         "parser": "vue",
-        "vueIndentScriptAndStyle": true
+        "vueIndentScriptAndStyle": false,
+        "htmlWhitespaceSensitivity": "ignore",
+        "singleAttributePerLine": false
       }
     },
     {

@@ -10,16 +10,11 @@
           v-for="(stat, index) in stats"
           :key="stat.key"
           class="stat-card animate-fade-up"
-          :style="{ animationDelay: `${index * 0.1}s` }"
-        >
-          <div
-            class="stat-icon"
-            :class="`icon-${stat.key}`">
+          :style="{ animationDelay: `${index * 0.1}s` }">
+          <div class="stat-icon" :class="`icon-${stat.key}`">
             <Icon :icon="stat.icon" />
           </div>
-          <div
-            class="stat-number"
-            :data-target="stat.value">
+          <div class="stat-number" :data-target="stat.value">
             {{ stat.displayValue }}
           </div>
           <div class="stat-label">
@@ -69,7 +64,11 @@ const stats = [
 <style scoped>
 .stats {
   padding: var(--space-3xl) 0;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   color: white;
   position: relative;
   overflow: hidden;

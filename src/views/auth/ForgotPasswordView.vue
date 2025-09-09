@@ -13,14 +13,9 @@
       <form
         @submit.prevent="handleForgotPassword"
         class="forgot-password-form"
-        v-if="!emailSent"
-      >
+        v-if="!emailSent">
         <div class="form-group">
-          <label
-            for="email"
-            class="form-label"
-          >{{ $t('auth.email') }}</label
-          >
+          <label for="email" class="form-label">{{ $t('auth.email') }}</label>
           <InputText
             id="email"
             v-model="email"
@@ -28,13 +23,10 @@
             :placeholder="$t('auth.emailPlaceholder')"
             :invalid="!!emailError"
             class="form-input"
-            required
-          />
-          <small
-            v-if="emailError"
-            class="error-message"
-          >{{ emailError }}</small
-          >
+            required />
+          <small v-if="emailError" class="error-message">
+            {{ emailError }}
+          </small>
         </div>
 
         <Button
@@ -43,24 +35,17 @@
           :loading="loading"
           :disabled="!isFormValid"
           class="reset-button"
-          severity="primary"
-        />
+          severity="primary" />
 
-        <div
-          v-if="error"
-          class="error-alert">
-          <Message
-            severity="error"
-            :closable="false">
+        <div v-if="error" class="error-alert">
+          <Message severity="error" :closable="false">
             {{ error }}
           </Message>
         </div>
       </form>
 
       <!-- Success state -->
-      <div
-        v-if="emailSent"
-        class="success-content">
+      <div v-if="emailSent" class="success-content">
         <div class="success-icon">
           <i class="pi pi-check-circle"></i>
         </div>
@@ -74,15 +59,12 @@
           @click="resendEmail"
           class="resend-button"
           severity="secondary"
-          outlined
-        />
+          outlined />
       </div>
 
       <div class="forgot-password-footer">
         <p class="back-to-login">
-          <router-link
-            to="/auth/login"
-            class="back-link">
+          <router-link to="/auth/login" class="back-link">
             <i class="pi pi-arrow-left"></i>
             {{ $t('auth.forgotPassword.backToLogin') }}
           </router-link>
@@ -218,7 +200,11 @@ const resendEmail = async () => {
   height: 3rem;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
-  background: linear-gradient(135deg, var(--color-secondary), var(--color-secondary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary),
+    var(--color-secondary-dark)
+  );
   border: none;
   border-radius: var(--radius-lg);
   color: white;

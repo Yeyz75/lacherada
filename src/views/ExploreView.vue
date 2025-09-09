@@ -18,14 +18,12 @@
                   v-model="searchQuery"
                   :placeholder="t('explore.searchPlaceholder')"
                   @keyup.enter="handleSearch"
-                  class="search-input"
-                />
+                  class="search-input" />
                 <Button
                   @click="handleSearch"
                   class="search-btn"
                   icon="mdi:magnify"
-                  size="large"
-                />
+                  size="large" />
               </InputGroup>
             </div>
           </div>
@@ -38,16 +36,15 @@
       <div class="container">
         <div class="filters-container">
           <div class="filter-group">
-            <label class="filter-label">{{ t('explore.filters.category') }}</label>
-            <select
-              v-model="selectedCategory"
-              class="filter-select">
+            <label class="filter-label">
+              {{ t('explore.filters.category') }}
+            </label>
+            <select v-model="selectedCategory" class="filter-select">
               <option value="">{{ t('explore.filters.all') }}</option>
               <option
                 v-for="category in categories"
                 :key="category.key"
-                :value="category.key"
-              >
+                :value="category.key">
                 {{ t(`home.categories.${category.key}`) }}
               </option>
             </select>
@@ -55,9 +52,7 @@
 
           <div class="filter-group">
             <label class="filter-label">{{ t('explore.filters.type') }}</label>
-            <select
-              v-model="selectedType"
-              class="filter-select">
+            <select v-model="selectedType" class="filter-select">
               <option value="">{{ t('explore.filters.all') }}</option>
               <option value="lend">{{ t('explore.filters.lend') }}</option>
               <option value="sell">{{ t('explore.filters.sell') }}</option>
@@ -69,18 +64,17 @@
           </div>
 
           <div class="filter-group">
-            <label class="filter-label">{{ t('explore.filters.location') }}</label>
+            <label class="filter-label">
+              {{ t('explore.filters.location') }}
+            </label>
             <input
               v-model="locationFilter"
               type="text"
               class="filter-input"
-              placeholder="Ciudad, barrio..."
-            />
+              placeholder="Ciudad, barrio..." />
           </div>
 
-          <button
-            @click="clearFilters"
-            class="btn btn-outline btn-sm">
+          <button @click="clearFilters" class="btn btn-outline btn-sm">
             <Icon icon="mdi:filter-remove" />
             Limpiar
           </button>
@@ -103,48 +97,40 @@
                     : t('explore.popular')
               }}
             </h2>
-            <p class="results-count">{{ filteredItems.length }} resultados encontrados</p>
+            <p class="results-count">
+              {{ filteredItems.length }} resultados encontrados
+            </p>
           </div>
 
           <div class="results-tabs">
             <button
               @click="currentSection = 'featured'"
-              :class="['tab-btn', { active: currentSection === 'featured' }]"
-            >
+              :class="['tab-btn', { active: currentSection === 'featured' }]">
               {{ t('explore.featured') }}
             </button>
             <button
               @click="currentSection = 'recent'"
-              :class="['tab-btn', { active: currentSection === 'recent' }]"
-            >
+              :class="['tab-btn', { active: currentSection === 'recent' }]">
               {{ t('explore.recent') }}
             </button>
             <button
               @click="currentSection = 'popular'"
-              :class="['tab-btn', { active: currentSection === 'popular' }]"
-            >
+              :class="['tab-btn', { active: currentSection === 'popular' }]">
               {{ t('explore.popular') }}
             </button>
           </div>
         </div>
 
         <!-- Items Grid -->
-        <div
-          v-if="filteredItems.length > 0"
-          class="items-grid">
+        <div v-if="filteredItems.length > 0" class="items-grid">
           <div
             v-for="(item, index) in displayedItems"
             :key="item.id"
             class="item-card"
-            :style="{ animationDelay: `${index * 0.1}s` }"
-          >
+            :style="{ animationDelay: `${index * 0.1}s` }">
             <div class="item-image">
-              <img
-                :src="item.image"
-                :alt="item.title" />
-              <div
-                class="item-type-badge"
-                :class="item.type">
+              <img :src="item.image" :alt="item.title" />
+              <div class="item-type-badge" :class="item.type">
                 {{ t(`explore.filters.${item.type}`) }}
               </div>
               <div class="item-actions">
@@ -160,9 +146,7 @@
             <div class="item-content">
               <div class="item-header">
                 <h3 class="item-title">{{ item.title }}</h3>
-                <div
-                  class="item-price"
-                  v-if="item.price">
+                <div class="item-price" v-if="item.price">
                   {{ item.price }}
                 </div>
               </div>
@@ -197,40 +181,26 @@
         </div>
 
         <!-- No Results -->
-        <div
-          v-else
-          class="no-results">
-          <Icon
-            icon="mdi:inbox"
-            class="no-results-icon" />
+        <div v-else class="no-results">
+          <Icon icon="mdi:inbox" class="no-results-icon" />
           <h3 class="no-results-title">{{ t('explore.noResults') }}</h3>
           <p class="no-results-text">
             Prueba ajustando los filtros o cambiando los términos de búsqueda
           </p>
-          <button
-            @click="clearFilters"
-            class="btn btn-primary">
+          <button @click="clearFilters" class="btn btn-primary">
             <Icon icon="mdi:filter-remove" />
             Limpiar Filtros
           </button>
         </div>
 
         <!-- Load More Button -->
-        <div
-          v-if="hasMoreItems"
-          class="load-more-container">
+        <div v-if="hasMoreItems" class="load-more-container">
           <button
             @click="loadMoreItems"
             class="btn btn-outline btn-lg"
-            :disabled="loadingMore"
-          >
-            <Icon
-              v-if="loadingMore"
-              icon="mdi:loading"
-              class="spin" />
-            <Icon
-              v-else
-              icon="mdi:plus" />
+            :disabled="loadingMore">
+            <Icon v-if="loadingMore" icon="mdi:loading" class="spin" />
+            <Icon v-else icon="mdi:plus" />
             {{ t('explore.loadMore') }}
           </button>
         </div>
@@ -285,7 +255,8 @@ const allItems = ref([
     category: 'tools',
     price: null,
     location: 'Madrid Centro',
-    image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop',
     user: { name: 'Carlos Méndez', rating: 4.8 },
     featured: true,
     createdAt: new Date('2024-01-15'),
@@ -299,7 +270,8 @@ const allItems = ref([
     category: 'technology',
     price: '850€',
     location: 'Barcelona',
-    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
     user: { name: 'Ana García', rating: 4.9 },
     featured: true,
     createdAt: new Date('2024-01-14'),
@@ -313,7 +285,8 @@ const allItems = ref([
     category: 'services',
     price: '25€/hora',
     location: 'Valencia',
-    image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop',
     user: { name: 'Miguel Rodríguez', rating: 5.0 },
     featured: false,
     createdAt: new Date('2024-01-13'),
@@ -321,12 +294,14 @@ const allItems = ref([
   {
     id: 4,
     title: 'Bicicleta de Montaña',
-    description: 'Bicicleta Trek en buen estado, perfecta para rutas de montaña. Incluye casco.',
+    description:
+      'Bicicleta Trek en buen estado, perfecta para rutas de montaña. Incluye casco.',
     type: 'exchange',
     category: 'sports',
     price: null,
     location: 'Sevilla',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
     user: { name: 'Laura Martín', rating: 4.7 },
     featured: false,
     createdAt: new Date('2024-01-12'),
@@ -340,7 +315,8 @@ const allItems = ref([
     category: 'education',
     price: null,
     location: 'Bilbao',
-    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop',
     user: { name: 'David López', rating: 4.6 },
     featured: true,
     createdAt: new Date('2024-01-11'),
@@ -348,12 +324,14 @@ const allItems = ref([
   {
     id: 6,
     title: 'Sofá 3 Plazas',
-    description: 'Sofá cómodo en excelente estado, color gris. Perfecto para salón o estudio.',
+    description:
+      'Sofá cómodo en excelente estado, color gris. Perfecto para salón o estudio.',
     type: 'lend',
     category: 'home',
     price: null,
     location: 'Málaga',
-    image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
     user: { name: 'Elena Ruiz', rating: 4.8 },
     featured: false,
     createdAt: new Date('2024-01-10'),
@@ -379,7 +357,8 @@ const filteredItems = computed(() => {
     const query = searchQuery.value.toLowerCase()
     items = items.filter(
       (item) =>
-        item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query),
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query),
     )
   }
 
@@ -393,7 +372,9 @@ const filteredItems = computed(() => {
 
   if (locationFilter.value) {
     const location = locationFilter.value.toLowerCase()
-    items = items.filter((item) => item.location.toLowerCase().includes(location))
+    items = items.filter((item) =>
+      item.location.toLowerCase().includes(location),
+    )
   }
 
   return items

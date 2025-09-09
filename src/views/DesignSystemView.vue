@@ -64,7 +64,7 @@
                 Descargar
               </BaseButton>
               <BaseButton icon="mdi:heart" variant="ghost" />
-              <BaseButton icon="mdi:loading" loading> Cargando... </BaseButton>
+              <BaseButton icon="mdi:loading" loading>Cargando...</BaseButton>
             </div>
           </div>
 
@@ -200,7 +200,7 @@
               <BaseCard variant="glass" title="Card Glass">
                 <p>Efecto glassmorphism con transparencia y blur.</p>
                 <template #actions>
-                  <BaseButton size="sm" variant="ghost"> Acción </BaseButton>
+                  <BaseButton size="sm" variant="ghost">Acción</BaseButton>
                 </template>
               </BaseCard>
 
@@ -265,7 +265,7 @@
               @row-select="handleRowSelect"
               @page-change="handlePageChange">
               <template #actions>
-                <BaseButton size="sm" icon="mdi:plus"> Agregar </BaseButton>
+                <BaseButton size="sm" icon="mdi:plus">Agregar</BaseButton>
                 <BaseButton
                   size="sm"
                   variant="ghost"
@@ -356,6 +356,173 @@
           </div>
         </section>
 
+        <!-- Extended Components Section -->
+        <section v-if="activeSection === 'extended'" class="demo-section">
+          <h2>Componentes Extendidos</h2>
+          <p>
+            Componentes especializados para funcionalidades específicas de
+            LaCherada.
+          </p>
+
+          <!-- Avatar Demo -->
+          <div class="demo-group">
+            <h3>BaseAvatar</h3>
+            <div class="demo-row">
+              <BaseAvatar
+                image="https://via.placeholder.com/150"
+                size="small" />
+              <BaseAvatar label="JP" size="normal" />
+              <BaseAvatar icon="mdi:account" size="large" />
+              <BaseAvatar
+                label="MG"
+                size="xlarge"
+                :show-status="true"
+                status="online" />
+              <BaseAvatar
+                image="https://via.placeholder.com/150"
+                :verified="true"
+                :clickable="true" />
+            </div>
+          </div>
+
+          <!-- Badge Demo -->
+          <div class="demo-group">
+            <h3>BaseBadge</h3>
+            <div class="demo-row">
+              <BaseBadge value="5" severity="danger" />
+              <BaseBadge label="Nuevo" severity="success" icon="mdi:star" />
+              <BaseBadge label="Premium" severity="info" variant="outlined" />
+              <BaseBadge value="Beta" severity="warn" :removable="true" />
+              <BaseBadge variant="dot" severity="success" :pulse="true" />
+            </div>
+          </div>
+
+          <!-- Rating Demo -->
+          <div class="demo-group">
+            <h3>BaseRating</h3>
+            <div class="demo-column">
+              <BaseRating
+                :model-value="4.5"
+                :readonly="true"
+                :show-text="true"
+                :show-count="true"
+                :total-ratings="127" />
+
+              <BaseRating
+                v-model="demoRating"
+                label="Califica este producto"
+                size="large" />
+
+              <BaseRating
+                :model-value="3.8"
+                :readonly="true"
+                :show-breakdown="true"
+                :breakdown="{ 5: 50, 4: 30, 3: 15, 2: 8, 1: 2 }"
+                :total-ratings="105" />
+            </div>
+          </div>
+
+          <!-- Chip Demo -->
+          <div class="demo-group">
+            <h3>BaseChip</h3>
+            <div class="demo-row">
+              <BaseChip label="Herramientas" severity="primary" />
+              <BaseChip
+                label="Electrónicos"
+                severity="info"
+                variant="outlined" />
+              <BaseChip label="Hogar" severity="success" icon="mdi:home" />
+              <BaseChip label="Deportes" :removable="true" severity="warn" />
+              <BaseChip
+                label="Disponible"
+                severity="success"
+                :clickable="true"
+                :selected="true" />
+            </div>
+          </div>
+
+          <!-- Modal Demo -->
+          <div class="demo-group">
+            <h3>BaseModal</h3>
+            <div class="demo-row">
+              <BaseButton @click="showSimpleModal = true">
+                Modal Simple
+              </BaseButton>
+              <BaseButton @click="showConfirmModal = true" severity="danger">
+                Modal de Confirmación
+              </BaseButton>
+              <BaseButton @click="showLargeModal = true" severity="info">
+                Modal Grande
+              </BaseButton>
+            </div>
+
+            <!-- Simple Modal -->
+            <BaseModal
+              v-model:visible="showSimpleModal"
+              title="Información"
+              icon="mdi:information">
+              <p>Este es un modal simple con información básica.</p>
+            </BaseModal>
+
+            <!-- Confirm Modal -->
+            <BaseModal
+              v-model:visible="showConfirmModal"
+              title="Confirmar Acción"
+              icon="mdi:alert"
+              :show-default-actions="true"
+              confirm-text="Eliminar"
+              confirm-severity="danger"
+              @confirm="handleConfirmDelete">
+              <p>
+                ¿Estás seguro de que quieres eliminar este elemento? Esta acción
+                no se puede deshacer.
+              </p>
+            </BaseModal>
+
+            <!-- Large Modal -->
+            <BaseModal
+              v-model:visible="showLargeModal"
+              title="Modal Grande"
+              size="large">
+              <div class="demo-column">
+                <BaseInput label="Nombre" placeholder="Tu nombre" />
+                <BaseInput
+                  label="Email"
+                  type="email"
+                  placeholder="tu@email.com" />
+                <BaseInput
+                  label="Mensaje"
+                  type="textarea"
+                  placeholder="Escribe tu mensaje..." />
+              </div>
+              <template #footer>
+                <BaseButton
+                  severity="secondary"
+                  @click="showLargeModal = false">
+                  Cancelar
+                </BaseButton>
+                <BaseButton @click="showLargeModal = false">Enviar</BaseButton>
+              </template>
+            </BaseModal>
+          </div>
+
+          <!-- Code Example -->
+          <div class="demo-code">
+            <h4>Código de Ejemplo:</h4>
+            <pre><code>&lt;BaseAvatar 
+  image="/user-photo.jpg" 
+  :verified="true" 
+  :show-status="true" 
+  status="online" /&gt;
+
+&lt;BaseRating 
+  v-model="rating" 
+  :show-text="true" 
+  :show-count="true" 
+  :total-ratings="127" /&gt;</code></pre>
+          </div>
+        </section>
+
         <!-- Design Tokens -->
         <section v-if="activeSection === 'tokens'" class="demo-section">
           <h2>Design Tokens</h2>
@@ -443,389 +610,407 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive } from 'vue'
-  import {
-    BaseButton,
-    BaseInput,
-    BaseCard,
-    BaseTable,
-    BaseForm,
-    type TableColumn,
-    type FormField,
-  } from '../components/base'
+import { ref, reactive } from 'vue'
+import {
+  BaseButton,
+  BaseInput,
+  BaseCard,
+  BaseTable,
+  BaseForm,
+  BaseAvatar,
+  BaseBadge,
+  BaseRating,
+  BaseChip,
+  BaseModal,
+  type TableColumn,
+  type FormField,
+} from '../components/base'
 
-  // Navigation
-  const activeSection = ref('buttons')
+// Navigation
+const activeSection = ref('buttons')
 
-  const sections = [
-    { id: 'buttons', title: 'Botones' },
-    { id: 'inputs', title: 'Inputs' },
-    { id: 'cards', title: 'Tarjetas' },
-    { id: 'tables', title: 'Tablas' },
-    { id: 'forms', title: 'Formularios' },
-    { id: 'tokens', title: 'Tokens' },
-  ]
+const sections = [
+  { id: 'buttons', title: 'Botones' },
+  { id: 'inputs', title: 'Inputs' },
+  { id: 'cards', title: 'Tarjetas' },
+  { id: 'tables', title: 'Tablas' },
+  { id: 'forms', title: 'Formularios' },
+  { id: 'extended', title: 'Componentes Extendidos' },
+  { id: 'tokens', title: 'Tokens' },
+]
 
-  // Demo data
-  const demoData = reactive({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-  })
+// Demo data
+const demoData = reactive({
+  name: '',
+  email: '',
+  phone: '',
+  password: '',
+  confirmPassword: '',
+})
 
-  // Table demo
-  const tableLoading = ref(false)
-  const tableColumns: TableColumn[] = [
-    { key: 'name', label: 'Nombre', sortable: true },
-    { key: 'email', label: 'Email', sortable: true },
-    { key: 'role', label: 'Rol' },
-    {
-      key: 'status',
-      label: 'Estado',
-      render: (value) => (value === 'active' ? '✅ Activo' : '⏸️ Inactivo'),
-    },
-    { key: 'actions', label: 'Acciones', render: () => '⚙️' },
-  ]
+// Extended components demo data
+const demoRating = ref(0)
+const showSimpleModal = ref(false)
+const showConfirmModal = ref(false)
+const showLargeModal = ref(false)
 
-  const tableData = [
-    {
-      id: 1,
-      name: 'Juan Pérez',
-      email: 'juan@ejemplo.com',
-      role: 'Admin',
-      status: 'active',
-    },
-    {
-      id: 2,
-      name: 'María García',
-      email: 'maria@ejemplo.com',
-      role: 'User',
-      status: 'active',
-    },
-    {
-      id: 3,
-      name: 'Carlos López',
-      email: 'carlos@ejemplo.com',
-      role: 'User',
-      status: 'inactive',
-    },
-    {
-      id: 4,
-      name: 'Ana Martínez',
-      email: 'ana@ejemplo.com',
-      role: 'Moderator',
-      status: 'active',
-    },
-  ]
+// Table demo
+const tableLoading = ref(false)
+const tableColumns: TableColumn[] = [
+  { key: 'name', label: 'Nombre', sortable: true },
+  { key: 'email', label: 'Email', sortable: true },
+  { key: 'role', label: 'Rol' },
+  {
+    key: 'status',
+    label: 'Estado',
+    render: (value) => (value === 'active' ? '✅ Activo' : '⏸️ Inactivo'),
+  },
+  { key: 'actions', label: 'Acciones', render: () => '⚙️' },
+]
 
-  const tablePagination = reactive({
-    page: 1,
-    size: 10,
-    total: 100,
-  })
+const tableData = [
+  {
+    id: 1,
+    name: 'Juan Pérez',
+    email: 'juan@ejemplo.com',
+    role: 'Admin',
+    status: 'active',
+  },
+  {
+    id: 2,
+    name: 'María García',
+    email: 'maria@ejemplo.com',
+    role: 'User',
+    status: 'active',
+  },
+  {
+    id: 3,
+    name: 'Carlos López',
+    email: 'carlos@ejemplo.com',
+    role: 'User',
+    status: 'inactive',
+  },
+  {
+    id: 4,
+    name: 'Ana Martínez',
+    email: 'ana@ejemplo.com',
+    role: 'Moderator',
+    status: 'active',
+  },
+]
 
-  // Form demo
-  const formLoading = ref(false)
-  const formData = ref({})
+const tablePagination = reactive({
+  page: 1,
+  size: 10,
+  total: 100,
+})
 
-  const formFields: FormField[] = [
-    {
-      name: 'name',
-      label: 'Nombre Completo',
-      type: 'input',
-      required: true,
-      placeholder: 'Ingresa tu nombre',
-    },
-    {
-      name: 'email',
-      label: 'Correo Electrónico',
-      type: 'input',
-      required: true,
-      placeholder: 'ejemplo@correo.com',
-    },
-    {
-      name: 'category',
-      label: 'Categoría',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'General', value: 'general' },
-        { label: 'Soporte', value: 'support' },
-        { label: 'Ventas', value: 'sales' },
-      ],
-    },
-    {
-      name: 'message',
-      label: 'Mensaje',
-      type: 'textarea',
-      required: true,
-      placeholder: 'Escribe tu mensaje...',
-    },
-    {
-      name: 'newsletter',
-      label: 'Suscribirse al newsletter',
-      type: 'checkbox',
-    },
-  ]
+// Form demo
+const formLoading = ref(false)
+const formData = ref({})
 
-  // Custom form
-  const customFormLoading = ref(false)
-  const customForm = reactive({
-    username: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-  })
+const formFields: FormField[] = [
+  {
+    name: 'name',
+    label: 'Nombre Completo',
+    type: 'input',
+    required: true,
+    placeholder: 'Ingresa tu nombre',
+  },
+  {
+    name: 'email',
+    label: 'Correo Electrónico',
+    type: 'input',
+    required: true,
+    placeholder: 'ejemplo@correo.com',
+  },
+  {
+    name: 'category',
+    label: 'Categoría',
+    type: 'select',
+    required: true,
+    options: [
+      { label: 'General', value: 'general' },
+      { label: 'Soporte', value: 'support' },
+      { label: 'Ventas', value: 'sales' },
+    ],
+  },
+  {
+    name: 'message',
+    label: 'Mensaje',
+    type: 'textarea',
+    required: true,
+    placeholder: 'Escribe tu mensaje...',
+  },
+  {
+    name: 'newsletter',
+    label: 'Suscribirse al newsletter',
+    type: 'checkbox',
+  },
+]
 
-  // Event handlers
-  const showMessage = (message: string) => {
-    alert(message)
-  }
+// Custom form
+const customFormLoading = ref(false)
+const customForm = reactive({
+  username: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+})
 
-  const handleSort = (column: string, order: 'asc' | 'desc') => {
-    console.log('Sort:', column, order)
-  }
+// Event handlers
+const showMessage = (message: string) => {
+  alert(message)
+}
 
-  const handleRowSelect = (selectedRows: any[]) => {
-    console.log('Selected rows:', selectedRows)
-  }
+const handleSort = (column: string, order: 'asc' | 'desc') => {
+  console.log('Sort:', column, order)
+}
 
-  const handlePageChange = (page: number) => {
-    tablePagination.page = page
-  }
+const handleRowSelect = (selectedRows: any[]) => {
+  console.log('Selected rows:', selectedRows)
+}
 
-  const refreshTable = () => {
-    tableLoading.value = true
-    setTimeout(() => {
-      tableLoading.value = false
-    }, 1000)
-  }
+const handlePageChange = (page: number) => {
+  tablePagination.page = page
+}
 
-  const handleFormSubmit = (data: any) => {
-    console.log('Form submitted:', data)
-    formLoading.value = true
-    setTimeout(() => {
-      formLoading.value = false
-      showMessage('Formulario enviado correctamente!')
-    }, 1500)
-  }
+const refreshTable = () => {
+  tableLoading.value = true
+  setTimeout(() => {
+    tableLoading.value = false
+  }, 1000)
+}
 
-  const handleFormCancel = () => {
-    showMessage('Formulario cancelado')
-  }
+const handleFormSubmit = (data: any) => {
+  console.log('Form submitted:', data)
+  formLoading.value = true
+  setTimeout(() => {
+    formLoading.value = false
+    showMessage('Formulario enviado correctamente!')
+  }, 1500)
+}
 
-  const handleCustomSubmit = (data: any) => {
-    console.log('Custom form submitted:', data)
-    customFormLoading.value = true
-    setTimeout(() => {
-      customFormLoading.value = false
-      showMessage('Registro completado!')
-    }, 1500)
-  }
+const handleFormCancel = () => {
+  showMessage('Formulario cancelado')
+}
+
+const handleCustomSubmit = (data: any) => {
+  console.log('Custom form submitted:', data)
+  customFormLoading.value = true
+  setTimeout(() => {
+    customFormLoading.value = false
+    showMessage('Registro completado!')
+  }, 1500)
+}
+
+// Extended components handlers
+const handleConfirmDelete = () => {
+  showMessage('Elemento eliminado correctamente')
+  showConfirmModal.value = false
+}
 </script>
 
 <style scoped>
-  .design-system-demo {
-    min-height: 100vh;
-    background: var(--color-background);
-  }
+.design-system-demo {
+  min-height: 100vh;
+  background: var(--color-background);
+}
 
-  .demo-header {
-    text-align: center;
-    padding: var(--space-3xl) 0;
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: var(--space-xl);
-  }
+.demo-header {
+  text-align: center;
+  padding: var(--space-3xl) 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-xl);
+}
 
-  .demo-header h1 {
-    font-size: var(--font-size-5xl);
-    margin-bottom: var(--space-md);
-    background: linear-gradient(
-      135deg,
-      var(--color-primary),
-      var(--color-secondary)
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+.demo-header h1 {
+  font-size: var(--font-size-5xl);
+  margin-bottom: var(--space-md);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
+.demo-nav {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);
+}
+
+.demo-nav-btn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.demo-nav-btn:hover,
+.demo-nav-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.demo-section {
+  margin-bottom: var(--space-3xl);
+}
+
+.demo-section h2 {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+}
+
+.demo-section > p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xl);
+}
+
+.demo-group {
+  margin-bottom: var(--space-xl);
+}
+
+.demo-group h3 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+.demo-group h4 {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+}
+
+.demo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+
+.demo-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 400px;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.demo-code {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.demo-code pre {
+  margin: 0;
+  overflow-x: auto;
+}
+
+.demo-code code {
+  font-family: 'Courier New', monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.demo-form-container {
+  max-width: 600px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+/* Design Tokens Styles */
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-lg);
+}
+
+.color-item {
+  text-align: center;
+}
+
+.color-swatch {
+  width: 100%;
+  height: 80px;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-sm);
+  border: 1px solid var(--color-border);
+}
+
+.color-item span {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.color-item code {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-background-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.typography-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.spacing-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.spacing-item {
+  background: var(--color-background-tertiary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
   .demo-nav {
-    display: flex;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-xl);
-    overflow-x: auto;
-    padding-bottom: var(--space-sm);
-  }
-
-  .demo-nav-btn {
-    padding: var(--space-sm) var(--space-lg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-background-secondary);
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    white-space: nowrap;
-  }
-
-  .demo-nav-btn:hover,
-  .demo-nav-btn.active {
-    background: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-  }
-
-  .demo-section {
-    margin-bottom: var(--space-3xl);
-  }
-
-  .demo-section h2 {
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--space-md);
-    color: var(--color-text-primary);
-  }
-
-  .demo-section > p {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-xl);
-  }
-
-  .demo-group {
-    margin-bottom: var(--space-xl);
-  }
-
-  .demo-group h3 {
-    font-size: var(--font-size-xl);
-    margin-bottom: var(--space-lg);
-    color: var(--color-text-primary);
-  }
-
-  .demo-group h4 {
-    font-size: var(--font-size-lg);
-    margin-bottom: var(--space-md);
-    color: var(--color-text-primary);
+    justify-content: flex-start;
   }
 
   .demo-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    flex-wrap: wrap;
-    margin-bottom: var(--space-lg);
-  }
-
-  .demo-column {
-    display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-    max-width: 400px;
-  }
-
-  .demo-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--space-lg);
-  }
-
-  .demo-code {
-    background: var(--color-background-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    margin-top: var(--space-xl);
-  }
-
-  .demo-code pre {
-    margin: 0;
-    overflow-x: auto;
-  }
-
-  .demo-code code {
-    font-family: 'Courier New', monospace;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-  }
-
-  .demo-form-container {
-    max-width: 600px;
+    align-items: stretch;
   }
 
   .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
+    grid-template-columns: 1fr;
   }
-
-  /* Design Tokens Styles */
-  .color-palette {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--space-lg);
-  }
-
-  .color-item {
-    text-align: center;
-  }
-
-  .color-swatch {
-    width: 100%;
-    height: 80px;
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-sm);
-    border: 1px solid var(--color-border);
-  }
-
-  .color-item span {
-    display: block;
-    font-weight: var(--font-weight-medium);
-    margin-bottom: var(--space-xs);
-  }
-
-  .color-item code {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    background: var(--color-background-tertiary);
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
-  }
-
-  .typography-demo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .spacing-demo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-
-  .spacing-item {
-    background: var(--color-background-tertiary);
-    border: 1px dashed var(--color-border);
-    border-radius: var(--radius-md);
-    text-align: center;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-  }
-
-  @media (max-width: 768px) {
-    .demo-nav {
-      justify-content: flex-start;
-    }
-
-    .demo-row {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .form-row {
-      grid-template-columns: 1fr;
-    }
-  }
+}
 </style>

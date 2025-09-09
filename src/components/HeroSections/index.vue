@@ -50,17 +50,13 @@
                 <img
                   src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop&crop=face"
                   alt="Usuario"
-                  class="avatar-image"
-                />
+                  class="avatar-image" />
               </div>
               <div class="user-info">
                 <h4>María González</h4>
                 <p>Arquitecta</p>
                 <div class="rating">
-                  <Icon
-                    icon="mdi:star"
-                    v-for="i in 5"
-                    :key="i" />
+                  <Icon icon="mdi:star" v-for="i in 5" :key="i" />
                   <span>4.9</span>
                 </div>
               </div>
@@ -70,13 +66,14 @@
               <img
                 src="https://images.pexels.com/photos/209235/pexels-photo-209235.jpeg?auto=compress&cs=tinysrgb&w=400"
                 alt="Taladro eléctrico"
-                class="item-image"
-              />
+                class="item-image" />
               <div class="item-info">
                 <h3>Taladro Eléctrico</h3>
                 <p>Perfecto estado, ideal para proyectos de hogar</p>
                 <div class="item-meta">
-                  <span class="item-type">{{ $t('common.lend') || 'Prestar' }}</span>
+                  <span class="item-type">
+                    {{ $t('common.lend') || 'Prestar' }}
+                  </span>
                   <span class="item-location">Barcelona</span>
                 </div>
               </div>
@@ -201,7 +198,11 @@ const { t } = useI18n()
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
   margin-bottom: 0;
-  background: linear-gradient(135deg, var(--color-text-primary), var(--color-text-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-text-primary),
+    var(--color-text-secondary)
+  );
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
