@@ -167,8 +167,19 @@ export type ButtonVariant =
   | 'danger'
   | 'success'
   | 'warning'
+  | 'text'
+  | 'outlined'
+  | 'raised'
 
-export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+export type ButtonSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | 'xl'
 
 export interface ButtonProps extends BaseComponentProps {
   variant?: ButtonVariant
@@ -190,6 +201,7 @@ export type InputType =
   | 'tel'
   | 'url'
   | 'search'
+  | 'textarea'
 
 export type InputSize = 'sm' | 'md' | 'lg'
 

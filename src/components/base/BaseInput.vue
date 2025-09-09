@@ -1,29 +1,31 @@
 <template>
-  <div class="base-input-group" :class="groupClasses">
+  <div class="base-input-wrapper" :class="wrapperClasses">
     <!-- Label -->
     <label
       v-if="label"
       :for="inputId"
-      class="block mb-1 text-sm font-medium text-gray-900 transition-colors duration-200"
+      class="base-input-label"
       :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-0.5">*</span>
+      <span v-if="required" class="text-red-500 ml-1">*</span>
     </label>
 
-    <!-- Input Container -->
-    <div class="base-input-container" :class="containerClasses">
-      <!-- Left Icon -->
-      <Icon
-        v-if="icon && iconPosition === 'left'"
-        :icon="icon"
-        class="text-gray-400 text-base mr-2 flex-shrink-0 z-10" />
+    <!-- Input Group para inputs con iconos -->
+    <InputGroup v-if="hasInputGroup" class="base-input-group">
+      <!-- Left Icon Addon -->
+      <InputGroupAddon v-if="icon && iconPosition === 'left'">
+        <Icon :icon="icon" />
+      </InputGroupAddon>
 
-      <!-- PrimeVue InputText -->
-      <InputText
+      <!-- Input Principal -->
+      <component
+        :is="inputComponent"
         :id="inputId"
         ref="inputRef"
-        :class="inputClasses"
-        :type="inputType"
+        :model-value="String(modelValue)"
+        @update:model-value="
+          (value: string) => $emit('update:modelValue', value)
+        "
         :placeholder="placeholder"
         :disabled="disabled"
         :readonly="readonly"
@@ -32,82 +34,98 @@
         :minlength="minlength"
         :pattern="pattern"
         :autocomplete="autocomplete"
-        :model-value="String(modelValue)"
+        :invalid="hasError"
+        :size="size"
+        :variant="variant"
         :data-testid="testId"
-        @input="handleInput"
+        :toggle-mask="type === 'password' && showPasswordToggle"
+        :feedback="type === 'password' ? false : undefined"
         @blur="handleBlur"
         @focus="handleFocus"
         @keydown="handleKeydown"
-        v-bind="$attrs"
-        class="primevue-input-override" />
+        v-bind="inputProps" />
 
-      <!-- Right Icon / Clear Button / Password Toggle -->
-      <div
-        v-if="showRightIcon || (clearable && modelValue) || showPasswordToggle"
-        class="flex items-center gap-2 z-10">
-        <!-- Clear Button -->
-        <button
-          v-if="clearable && modelValue && !disabled && !readonly"
-          type="button"
-          class="flex items-center justify-center p-0.5 rounded-sm bg-transparent text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200"
+      <!-- Right Icon Addon -->
+      <InputGroupAddon v-if="icon && iconPosition === 'right'">
+        <Icon :icon="icon" />
+      </InputGroupAddon>
+
+      <!-- Clear Button Addon -->
+      <InputGroupAddon v-if="clearable && modelValue && !disabled && !readonly">
+        <Button
+          icon="pi pi-times"
+          severity="secondary"
+          variant="text"
           @click="handleClear"
-          :tabindex="-1">
-          <Icon icon="mdi:close-circle" />
-        </button>
+          :aria-label="'Limpiar campo'" />
+      </InputGroupAddon>
+    </InputGroup>
 
-        <!-- Password Toggle Button -->
-        <button
-          v-if="showPasswordToggle"
-          type="button"
-          class="flex items-center justify-center p-0.5 rounded-sm bg-transparent text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200"
-          @click="togglePasswordVisibility"
-          :tabindex="-1"
-          :aria-label="
-            showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
-          ">
-          <Icon :icon="showPassword ? 'mdi:eye-off' : 'mdi:eye'" />
-        </button>
-
-        <!-- Right Icon -->
-        <Icon
-          v-else-if="icon && iconPosition === 'right'"
-          :icon="icon"
-          class="text-gray-400 text-base ml-2 flex-shrink-0" />
-      </div>
-    </div>
+    <!-- Input Simple sin iconos -->
+    <component
+      v-else
+      :is="inputComponent"
+      :id="inputId"
+      ref="inputRef"
+      :model-value="String(modelValue)"
+      @update:model-value="(value: string) => $emit('update:modelValue', value)"
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :readonly="readonly"
+      :required="required"
+      :maxlength="maxlength"
+      :minlength="minlength"
+      :pattern="pattern"
+      :autocomplete="autocomplete"
+      :invalid="hasError"
+      :size="size"
+      :variant="variant"
+      :data-testid="testId"
+      :toggle-mask="type === 'password' && showPasswordToggle"
+      :feedback="type === 'password' ? false : undefined"
+      @blur="handleBlur"
+      @focus="handleFocus"
+      @keydown="handleKeydown"
+      v-bind="inputProps" />
 
     <!-- Helper Text / Error Message -->
-    <div v-if="helperText || errorMessage" class="mt-1">
-      <span
+    <div v-if="helperText || errorMessage" class="base-input-help">
+      <Message
         v-if="errorMessage"
-        class="flex items-center gap-1 text-sm text-red-600"
-        :id="`${inputId}-error`"
-        role="alert">
-        <Icon icon="mdi:alert-circle" />
+        severity="error"
+        variant="simple"
+        size="small"
+        :id="`${inputId}-error`">
         {{ errorMessage }}
-      </span>
-      <span
+      </Message>
+      <small
         v-else-if="helperText"
-        class="text-sm text-gray-600"
+        class="base-input-helper"
         :id="`${inputId}-helper`">
         {{ helperText }}
-      </span>
+      </small>
     </div>
 
-    <!-- Character Count (if maxlength is set) -->
+    <!-- Character Count -->
     <div
       v-if="maxlength && showCharacterCount"
-      class="mt-1 text-xs text-gray-400 text-right transition-colors duration-200"
-      :class="{ 'text-red-500 font-medium': isOverLimit }">
+      class="base-input-count"
+      :class="{ 'text-red-500': isOverLimit }">
       {{ characterCount }}/{{ maxlength }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, nextTick } from 'vue'
+  import { computed, ref, useAttrs } from 'vue'
   import { Icon } from '@iconify/vue'
   import InputText from 'primevue/inputtext'
+  import Password from 'primevue/password'
+  import Textarea from 'primevue/textarea'
+  import InputGroup from 'primevue/inputgroup'
+  import InputGroupAddon from 'primevue/inputgroupaddon'
+  import Button from 'primevue/button'
+  import Message from 'primevue/message'
   import type { InputProps } from '../../types'
 
   interface Props extends InputProps {
@@ -116,6 +134,7 @@
     helperText?: string
     showCharacterCount?: boolean
     showPasswordToggle?: boolean
+    variant?: 'outlined' | 'filled'
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -128,6 +147,7 @@
     clearable: false,
     showCharacterCount: false,
     showPasswordToggle: false,
+    variant: 'outlined',
     modelValue: '',
   })
 
@@ -141,8 +161,6 @@
   }>()
 
   const inputRef = ref<any>()
-  const isFocused = ref(false)
-  const showPassword = ref(false)
   const inputId = ref(`base-input-${Math.random().toString(36).substr(2, 9)}`)
 
   // Computed properties
@@ -150,26 +168,9 @@
     () => Boolean(props.error) || Boolean(errorMessage.value),
   )
   const hasSuccess = computed(() => props.success && !hasError.value)
-  const showRightIcon = computed(
-    () =>
-      props.icon && props.iconPosition === 'right' && !props.showPasswordToggle,
-  )
   const characterCount = computed(() => String(props.modelValue || '').length)
   const isOverLimit = computed(() =>
     props.maxlength ? characterCount.value > props.maxlength : false,
-  )
-  const inputType = computed(() => {
-    if (props.showPasswordToggle && props.type === 'password') {
-      return showPassword.value ? 'text' : 'password'
-    }
-    return props.type
-  })
-  const showPasswordToggle = computed(
-    () =>
-      props.showPasswordToggle &&
-      props.type === 'password' &&
-      !props.disabled &&
-      !props.readonly,
   )
 
   const errorMessage = computed(() => {
@@ -177,69 +178,60 @@
     return props.error ? 'Este campo contiene errores' : ''
   })
 
+  // Determinar el componente a usar
+  const inputComponent = computed(() => {
+    switch (props.type) {
+      case 'password':
+        return Password
+      case 'textarea':
+        return Textarea
+      default:
+        return InputText
+    }
+  })
+
+  // Verificar si necesitamos InputGroup
+  const hasInputGroup = computed(() => {
+    return (
+      (props.icon && props.type !== 'password') ||
+      (props.clearable && props.type !== 'password')
+    )
+  })
+
+  // Props adicionales para el input
+  const inputProps = computed(() => {
+    const baseProps = { ...useAttrs() }
+
+    if (props.type === 'textarea') {
+      baseProps.rows = baseProps.rows || 4
+    }
+
+    return baseProps
+  })
+
   // CSS Classes
-  const groupClasses = computed(() => [
-    'flex flex-col w-full',
+  const wrapperClasses = computed(() => [
+    'base-input-wrapper',
     {
-      'opacity-50': props.disabled,
-      'opacity-50 cursor-not-allowed': props.readonly,
-      '': hasError.value,
-      '': hasSuccess.value,
+      'opacity-75': props.disabled,
+      'base-input-error': hasError.value,
+      'base-input-success': hasSuccess.value,
     },
     props.class,
   ])
 
-  const containerClasses = computed(() => [
-    'relative flex items-center border border-gray-300 rounded-md bg-white transition-all duration-200 overflow-hidden',
-    {
-      'pl-2': props.icon && props.iconPosition === 'left',
-      'pr-2':
-        showRightIcon.value ||
-        (props.clearable && props.modelValue) ||
-        showPasswordToggle.value,
-      'border-orange-500 shadow-sm shadow-orange-500/15': isFocused.value,
-      'border-red-500': hasError.value,
-      'border-green-500': hasSuccess.value,
-      'hover:border-orange-500': !props.disabled && !props.readonly,
-      'bg-gray-50 cursor-not-allowed': props.disabled,
-      'bg-gray-100': props.readonly,
-    },
-  ])
-
-  const inputClasses = computed(() => [
-    'flex-1 border-0 outline-none bg-transparent text-gray-900 font-normal transition-all duration-200',
-    {
-      // Size variants
-      'h-8 px-3 text-sm': props.size === 'md',
-      'h-9 px-4 text-base': props.size === 'lg',
-      // Placeholder color
-      'placeholder:text-gray-400': true,
-      // Disabled state
-      'text-gray-400 cursor-not-allowed': props.disabled,
-    },
-  ])
-
   const labelClasses = computed(() => ({
-    'text-red-500': props.required,
+    'text-red-600': hasError.value,
+    'text-green-600': hasSuccess.value,
   }))
 
   // Event handlers
-  const handleInput = (event: Event) => {
-    const target = event.target as HTMLInputElement
-    const value = target.value
-    const finalValue = props.type === 'number' ? Number(value) : value
-    emit('update:modelValue', finalValue)
-    emit('input', value)
+  const handleBlur = (event: FocusEvent) => {
+    emit('blur', event)
   }
 
   const handleFocus = (event: FocusEvent) => {
-    isFocused.value = true
     emit('focus', event)
-  }
-
-  const handleBlur = (event: FocusEvent) => {
-    isFocused.value = false
-    emit('blur', event)
   }
 
   const handleKeydown = (event: KeyboardEvent) => {
@@ -249,26 +241,23 @@
   const handleClear = () => {
     emit('update:modelValue', '')
     emit('clear')
-    nextTick(() => {
-      inputRef.value?.$el?.focus()
-    })
-  }
-
-  const togglePasswordVisibility = () => {
-    showPassword.value = !showPassword.value
+    // Focus the input after clearing
+    setTimeout(() => {
+      inputRef.value?.$el?.focus() || inputRef.value?.focus()
+    }, 10)
   }
 
   // Public methods
   const focus = () => {
-    inputRef.value?.$el?.focus()
+    inputRef.value?.$el?.focus() || inputRef.value?.focus()
   }
 
   const blur = () => {
-    inputRef.value?.$el?.blur()
+    inputRef.value?.$el?.blur() || inputRef.value?.blur()
   }
 
   const select = () => {
-    inputRef.value?.$el?.select()
+    inputRef.value?.$el?.select() || inputRef.value?.select()
   }
 
   defineExpose({
@@ -287,46 +276,62 @@
 </script>
 
 <style scoped>
-  /* Override PrimeVue default styles */
-  ::v-deep(.primevue-input-override) {
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    outline: none !important;
-    width: 100% !important;
-    font-size: inherit !important;
-    line-height: inherit !important;
+  /* Usar el diseño nativo de PrimeVue, solo agregar espaciado y utilidades */
+  .base-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
   }
 
-  ::v-deep(.primevue-input-override:focus) {
-    box-shadow: none !important;
-    outline: none !important;
+  .base-input-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--p-text-color);
+    margin-bottom: 0.25rem;
+    transition: color 0.2s;
   }
 
-  /* Size variants for PrimeVue input */
-  ::v-deep(.primevue-input-override.h-8) {
-    height: 2rem !important;
-    padding: 0 0.75rem !important;
-    font-size: 0.875rem !important;
+  .base-input-group {
+    width: 100%;
   }
 
-  ::v-deep(.primevue-input-override.h-9) {
-    height: 2.25rem !important;
-    padding: 0 1rem !important;
-    font-size: 1rem !important;
+  .base-input-help {
+    margin-top: 0.25rem;
   }
 
-  /* Disabled state */
-  ::v-deep(.primevue-input-override:disabled) {
-    background: transparent !important;
-    color: rgb(156 163 175) !important;
-    cursor: not-allowed !important;
+  .base-input-helper {
+    font-size: 0.75rem;
+    color: var(--p-text-muted-color);
+    display: block;
   }
 
-  /* Placeholder color */
-  ::v-deep(.primevue-input-override::placeholder) {
-    color: rgb(156 163 175) !important;
+  .base-input-count {
+    font-size: 0.75rem;
+    color: var(--p-text-muted-color);
+    text-align: right;
+    margin-top: 0.25rem;
+    transition: color 0.2s;
+  }
+
+  /* Estados de error y éxito */
+  .base-input-error .base-input-label {
+    color: var(--p-red-500);
+  }
+
+  .base-input-success .base-input-label {
+    color: var(--p-green-500);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .base-input-label {
+      font-size: 0.8125rem;
+    }
+
+    .base-input-helper,
+    .base-input-count {
+      font-size: 0.6875rem;
+    }
   }
 </style>
