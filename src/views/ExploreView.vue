@@ -7,24 +7,24 @@
           <h1 class="hero-title">{{ t('explore.title') }}</h1>
           <p class="hero-subtitle">{{ t('explore.subtitle') }}</p>
 
-          <!-- Search Bar using PrimeVue -->
+          <!-- Search Bar -->
           <div class="search-container">
             <div class="search-input-wrapper">
-              <InputGroup>
-                <InputGroupAddon>
-                  <Icon icon="mdi:magnify" />
-                </InputGroupAddon>
-                <BaseInput
-                  v-model="searchQuery"
-                  :placeholder="t('explore.searchPlaceholder')"
-                  @keyup.enter="handleSearch"
-                  class="search-input" />
-                <BaseButton
-                  @click="handleSearch"
-                  class="search-btn"
-                  icon="mdi:magnify"
-                  size="large" />
-              </InputGroup>
+              <BaseInput
+                v-model="searchQuery"
+                :placeholder="t('explore.searchPlaceholder')"
+                @keyup.enter="handleSearch"
+                icon="mdi:magnify"
+                icon-position="left"
+                class="search-input" />
+              <BaseButton
+                @click="handleSearch"
+                variant="primary"
+                size="large"
+                icon="mdi:magnify"
+                class="search-btn">
+                Buscar
+              </BaseButton>
             </div>
           </div>
         </div>
@@ -61,13 +61,15 @@
               class="filter-input" />
           </div>
 
-          <BaseButton
-            @click="clearFilters"
-            variant="outlined"
-            size="small"
-            icon="mdi:filter-remove">
-            Limpiar
-          </BaseButton>
+          <div class="filter-group">
+            <BaseButton
+              @click="clearFilters"
+              variant="outlined"
+              size="md"
+              icon="mdi:filter-remove">
+              Limpiar
+            </BaseButton>
+          </div>
         </div>
       </div>
     </section>
@@ -96,19 +98,22 @@
             <BaseButton
               @click="currentSection = 'featured'"
               :variant="currentSection === 'featured' ? 'primary' : 'outlined'"
-              size="small">
+              size="sm"
+              class="tab-button">
               {{ t('explore.featured') }}
             </BaseButton>
             <BaseButton
               @click="currentSection = 'recent'"
               :variant="currentSection === 'recent' ? 'primary' : 'outlined'"
-              size="small">
+              size="sm"
+              class="tab-button">
               {{ t('explore.recent') }}
             </BaseButton>
             <BaseButton
               @click="currentSection = 'popular'"
               :variant="currentSection === 'popular' ? 'primary' : 'outlined'"
-              size="small">
+              size="sm"
+              class="tab-button">
               {{ t('explore.popular') }}
             </BaseButton>
           </div>
@@ -131,12 +136,12 @@
                   class="action-btn"
                   icon="mdi:heart-outline"
                   variant="ghost"
-                  size="small" />
+                  size="sm" />
                 <BaseButton
                   class="action-btn"
                   icon="mdi:share-variant"
                   variant="ghost"
-                  size="small" />
+                  size="sm" />
               </div>
             </div>
 
@@ -168,10 +173,7 @@
                   </div>
                   <span class="user-name">{{ item.user.name }}</span>
                 </div>
-                <BaseButton
-                  variant="primary"
-                  size="small"
-                  icon="mdi:message-text">
+                <BaseButton variant="primary" size="sm" icon="mdi:message-text">
                   Contactar
                 </BaseButton>
               </div>
@@ -189,6 +191,7 @@
           <BaseButton
             @click="clearFilters"
             variant="primary"
+            size="md"
             icon="mdi:filter-remove">
             Limpiar Filtros
           </BaseButton>
@@ -199,7 +202,7 @@
           <BaseButton
             @click="loadMoreItems"
             variant="outlined"
-            size="large"
+            size="lg"
             :disabled="loadingMore"
             :loading="loadingMore"
             :icon="loadingMore ? 'mdi:loading' : 'mdi:plus'">
@@ -219,8 +222,7 @@ import { Icon } from '@iconify/vue'
 import { BaseInput, BaseButton, BaseSelect } from '@/components/base'
 
 // PrimeVue components
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
+// Removed InputGroup and InputGroupAddon - no longer needed
 
 const { t } = useI18n()
 
@@ -473,33 +475,27 @@ onMounted(() => {
   opacity: 0.9;
 }
 
+/* Search Section */
 .search-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
 .search-input-wrapper {
   display: flex;
+  gap: var(--space-sm);
+  align-items: flex-end;
   width: 100%;
 }
 
 .search-input {
   flex: 1;
-  font-size: var(--font-size-md);
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
+  min-width: 0;
 }
 
 .search-btn {
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
-  background: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
-}
-
-.search-btn:hover {
-  background: var(--color-primary-dark) !important;
-  border-color: var(--color-primary-dark) !important;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* Filters Section */
@@ -512,15 +508,31 @@ onMounted(() => {
 .filters-container {
   display: flex;
   gap: var(--space-md);
-  align-items: end;
+  align-items: flex-end;
   flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .filters-container {
+    justify-content: flex-start;
+  }
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  min-width: 160px;
+  min-width: 180px;
+  flex: 1;
+  max-width: 250px;
+}
+
+@media (max-width: 768px) {
+  .filter-group {
+    min-width: 100%;
+    max-width: none;
+  }
 }
 
 .filter-label {
@@ -575,6 +587,12 @@ onMounted(() => {
 .results-tabs {
   display: flex;
   gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  white-space: nowrap;
+  min-width: 100px;
 }
 
 .tab-btn {
@@ -677,22 +695,25 @@ onMounted(() => {
 }
 
 .action-btn {
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--transition-fast) !important;
+  color: var(--color-text-primary) !important;
 }
 
 .action-btn:hover {
-  background: white;
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.1) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .item-content {
@@ -828,24 +849,40 @@ onMounted(() => {
     font-size: var(--font-size-2xl);
   }
 
+  .hero-section {
+    padding: var(--space-xl) 0;
+  }
+
+  .search-input-wrapper {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .search-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .filters-container {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .filter-group {
-    min-width: auto;
-  }
-
   .results-header {
     flex-direction: column;
     align-items: start;
+    gap: var(--space-md);
   }
 
   .results-tabs {
     order: -1;
     width: 100%;
     justify-content: center;
+  }
+
+  .tab-button {
+    flex: 1;
+    min-width: auto;
   }
 
   .items-grid {
@@ -856,19 +893,21 @@ onMounted(() => {
 
 @media (max-width: 480px) {
   .hero-section {
-    padding: var(--space-xl) 0;
+    padding: var(--space-lg) 0;
   }
 
-  .search-input-wrapper {
-    padding: var(--space-xs);
-  }
-
-  .search-input {
-    padding: var(--space-sm);
+  .search-container {
+    padding: 0 var(--space-sm);
   }
 
   .item-content {
     padding: var(--space-sm);
+  }
+
+  .action-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
   }
 }
 </style>

@@ -7,13 +7,18 @@
           <h1 class="hero-title">{{ t('howItWorks.title') }}</h1>
           <p class="hero-subtitle">{{ t('howItWorks.subtitle') }}</p>
           <div class="hero-actions">
-            <BaseButton variant="primary" icon="mdi:rocket-launch" size="large">
+            <BaseButton
+              variant="primary"
+              icon="mdi:rocket-launch"
+              size="large"
+              class="hero-cta-btn">
               {{ t('howItWorks.getStarted') }}
             </BaseButton>
             <BaseButton
               variant="outlined"
               icon="mdi:book-open-variant"
-              size="large">
+              size="large"
+              class="hero-cta-btn">
               {{ t('howItWorks.learnMore') }}
             </BaseButton>
           </div>
@@ -60,7 +65,8 @@
               to="/auth/register"
               variant="primary"
               icon="mdi:account-plus"
-              size="large">
+              size="large"
+              class="cta-btn">
               {{ t('navbar.register') }}
             </BaseButton>
             <BaseButton
@@ -68,7 +74,8 @@
               to="/explore"
               variant="outlined"
               icon="mdi:compass"
-              size="large">
+              size="large"
+              class="cta-btn">
               {{ t('navbar.explore') }}
             </BaseButton>
           </div>
@@ -151,6 +158,21 @@ const benefits = [
   justify-content: center;
   gap: var(--space-md);
   flex-wrap: wrap;
+}
+
+/* Estilos específicos para botones del hero */
+.hero-cta-btn {
+  padding: var(--space-md) var(--space-xl) !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  min-width: 180px !important;
+  white-space: nowrap !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.hero-cta-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 /* Custom button styles for primary orange color */
@@ -275,6 +297,14 @@ const benefits = [
   flex-wrap: wrap;
 }
 
+/* Estilos para botones CTA */
+.cta-btn {
+  padding: var(--space-md) var(--space-xl) !important;
+  font-size: var(--font-size-lg) !important;
+  min-width: 160px !important;
+  white-space: nowrap !important;
+}
+
 /* Animations */
 @keyframes fadeInUp {
   to {
@@ -298,6 +328,12 @@ const benefits = [
     align-items: center;
   }
 
+  .hero-cta-btn {
+    width: 100% !important;
+    max-width: 280px !important;
+    min-width: auto !important;
+  }
+
   .benefits-grid {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -310,6 +346,12 @@ const benefits = [
   .cta-actions {
     flex-direction: column;
     align-items: center;
+  }
+
+  .cta-btn {
+    width: 100% !important;
+    max-width: 250px !important;
+    min-width: auto !important;
   }
 }
 

@@ -85,9 +85,11 @@ const isOutlinedVariant = computed(() => props.variant === 'outlined')
 const isRaisedVariant = computed(() => props.variant === 'raised')
 
 const buttonClasses = computed(() => [
+  'base-button',
   {
     'w-full': props.fullWidth,
     'aspect-square p-0': props.icon && !slots.default,
+    'auto-width': !props.fullWidth, // Clase para ancho automático
   },
   props.class,
 ])
@@ -119,6 +121,18 @@ export default {
 .base-button {
   /* Extensiones opcionales al diseño de PrimeVue */
   transition: transform 0.15s ease;
+  /* Permitir que el botón se adapte al contenido por defecto */
+  width: auto;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+/* Clase para botones con ancho automático */
+.auto-width {
+  width: auto !important;
+  min-width: fit-content !important;
+  max-width: 100%;
+  flex-shrink: 0;
 }
 
 .base-button:hover:not(:disabled) {
@@ -133,6 +147,12 @@ export default {
 @media (max-width: 768px) {
   .base-button {
     min-height: 44px; /* Touch-friendly on mobile */
+  }
+
+  /* En móviles, permitir que algunos botones ocupen todo el ancho */
+  .auto-width {
+    width: 100% !important;
+    max-width: none;
   }
 }
 </style>
