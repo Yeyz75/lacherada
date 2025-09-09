@@ -4,10 +4,10 @@
     <label
       v-if="label"
       :for="inputId"
-      class="base-input-label"
+      class="block mb-1 text-sm font-medium text-gray-900 transition-colors duration-200"
       :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="base-input-required">*</span>
+      <span v-if="required" class="text-red-500 ml-0.5">*</span>
     </label>
 
     <!-- Input Container -->
@@ -16,14 +16,14 @@
       <Icon
         v-if="icon && iconPosition === 'left'"
         :icon="icon"
-        class="base-input-icon base-input-icon--left" />
+        class="text-gray-400 text-base mr-2 flex-shrink-0 z-10" />
 
-      <!-- Input Element -->
-      <input
+      <!-- PrimeVue InputText -->
+      <InputText
         :id="inputId"
         ref="inputRef"
         :class="inputClasses"
-        :type="type"
+        :type="inputType"
         :placeholder="placeholder"
         :disabled="disabled"
         :readonly="readonly"
@@ -32,41 +32,55 @@
         :minlength="minlength"
         :pattern="pattern"
         :autocomplete="autocomplete"
-        :value="modelValue"
+        :model-value="String(modelValue)"
         :data-testid="testId"
         @input="handleInput"
         @blur="handleBlur"
         @focus="handleFocus"
         @keydown="handleKeydown"
-        v-bind="$attrs" />
+        v-bind="$attrs"
+        class="primevue-input-override" />
 
-      <!-- Right Icon / Clear Button -->
+      <!-- Right Icon / Clear Button / Password Toggle -->
       <div
-        v-if="showRightIcon || (clearable && modelValue)"
-        class="base-input-icon-container">
+        v-if="showRightIcon || (clearable && modelValue) || showPasswordToggle"
+        class="flex items-center gap-2 z-10">
         <!-- Clear Button -->
         <button
           v-if="clearable && modelValue && !disabled && !readonly"
           type="button"
-          class="base-input-clear"
+          class="flex items-center justify-center p-0.5 rounded-sm bg-transparent text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200"
           @click="handleClear"
           :tabindex="-1">
           <Icon icon="mdi:close-circle" />
+        </button>
+
+        <!-- Password Toggle Button -->
+        <button
+          v-if="showPasswordToggle"
+          type="button"
+          class="flex items-center justify-center p-0.5 rounded-sm bg-transparent text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200"
+          @click="togglePasswordVisibility"
+          :tabindex="-1"
+          :aria-label="
+            showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+          ">
+          <Icon :icon="showPassword ? 'mdi:eye-off' : 'mdi:eye'" />
         </button>
 
         <!-- Right Icon -->
         <Icon
           v-else-if="icon && iconPosition === 'right'"
           :icon="icon"
-          class="base-input-icon base-input-icon--right" />
+          class="text-gray-400 text-base ml-2 flex-shrink-0" />
       </div>
     </div>
 
     <!-- Helper Text / Error Message -->
-    <div v-if="helperText || errorMessage" class="base-input-message">
+    <div v-if="helperText || errorMessage" class="mt-1">
       <span
         v-if="errorMessage"
-        class="base-input-error"
+        class="flex items-center gap-1 text-sm text-red-600"
         :id="`${inputId}-error`"
         role="alert">
         <Icon icon="mdi:alert-circle" />
@@ -74,7 +88,7 @@
       </span>
       <span
         v-else-if="helperText"
-        class="base-input-helper"
+        class="text-sm text-gray-600"
         :id="`${inputId}-helper`">
         {{ helperText }}
       </span>
@@ -83,8 +97,8 @@
     <!-- Character Count (if maxlength is set) -->
     <div
       v-if="maxlength && showCharacterCount"
-      class="base-input-count"
-      :class="{ 'base-input-count--over': isOverLimit }">
+      class="mt-1 text-xs text-gray-400 text-right transition-colors duration-200"
+      :class="{ 'text-red-500 font-medium': isOverLimit }">
       {{ characterCount }}/{{ maxlength }}
     </div>
   </div>
@@ -93,6 +107,7 @@
 <script setup lang="ts">
   import { computed, ref, nextTick } from 'vue'
   import { Icon } from '@iconify/vue'
+  import InputText from 'primevue/inputtext'
   import type { InputProps } from '../../types'
 
   interface Props extends InputProps {
@@ -100,6 +115,7 @@
     label?: string
     helperText?: string
     showCharacterCount?: boolean
+    showPasswordToggle?: boolean
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -111,20 +127,22 @@
     required: false,
     clearable: false,
     showCharacterCount: false,
+    showPasswordToggle: false,
     modelValue: '',
   })
 
   const emit = defineEmits<{
     'update:modelValue': [value: string | number]
-    'input': [event: Event]
+    'input': [value: string]
     'blur': [event: FocusEvent]
     'focus': [event: FocusEvent]
     'clear': []
     'keydown': [event: KeyboardEvent]
   }>()
 
-  const inputRef = ref<HTMLInputElement>()
+  const inputRef = ref<any>()
   const isFocused = ref(false)
+  const showPassword = ref(false)
   const inputId = ref(`base-input-${Math.random().toString(36).substr(2, 9)}`)
 
   // Computed properties
@@ -133,11 +151,25 @@
   )
   const hasSuccess = computed(() => props.success && !hasError.value)
   const showRightIcon = computed(
-    () => props.icon && props.iconPosition === 'right',
+    () =>
+      props.icon && props.iconPosition === 'right' && !props.showPasswordToggle,
   )
   const characterCount = computed(() => String(props.modelValue || '').length)
   const isOverLimit = computed(() =>
     props.maxlength ? characterCount.value > props.maxlength : false,
+  )
+  const inputType = computed(() => {
+    if (props.showPasswordToggle && props.type === 'password') {
+      return showPassword.value ? 'text' : 'password'
+    }
+    return props.type
+  })
+  const showPasswordToggle = computed(
+    () =>
+      props.showPasswordToggle &&
+      props.type === 'password' &&
+      !props.disabled &&
+      !props.readonly,
   )
 
   const errorMessage = computed(() => {
@@ -147,43 +179,57 @@
 
   // CSS Classes
   const groupClasses = computed(() => [
-    'base-input-group',
-    `base-input-group--${props.size}`,
+    'flex flex-col w-full',
     {
-      'base-input-group--disabled': props.disabled,
-      'base-input-group--readonly': props.readonly,
-      'base-input-group--error': hasError.value,
-      'base-input-group--success': hasSuccess.value,
-      'base-input-group--focused': isFocused.value,
+      'opacity-50': props.disabled,
+      'opacity-50 cursor-not-allowed': props.readonly,
+      '': hasError.value,
+      '': hasSuccess.value,
     },
     props.class,
   ])
 
   const containerClasses = computed(() => [
-    'base-input-container',
+    'relative flex items-center border border-gray-300 rounded-md bg-white transition-all duration-200 overflow-hidden',
     {
-      'base-input-container--has-left-icon':
-        props.icon && props.iconPosition === 'left',
-      'base-input-container--has-right-icon':
-        showRightIcon.value || (props.clearable && props.modelValue),
+      'pl-2': props.icon && props.iconPosition === 'left',
+      'pr-2':
+        showRightIcon.value ||
+        (props.clearable && props.modelValue) ||
+        showPasswordToggle.value,
+      'border-orange-500 shadow-sm shadow-orange-500/15': isFocused.value,
+      'border-red-500': hasError.value,
+      'border-green-500': hasSuccess.value,
+      'hover:border-orange-500': !props.disabled && !props.readonly,
+      'bg-gray-50 cursor-not-allowed': props.disabled,
+      'bg-gray-100': props.readonly,
     },
   ])
 
   const inputClasses = computed(() => [
-    'base-input',
-    `base-input--${props.size}`,
+    'flex-1 border-0 outline-none bg-transparent text-gray-900 font-normal transition-all duration-200',
+    {
+      // Size variants
+      'h-8 px-3 text-sm': props.size === 'md',
+      'h-9 px-4 text-base': props.size === 'lg',
+      // Placeholder color
+      'placeholder:text-gray-400': true,
+      // Disabled state
+      'text-gray-400 cursor-not-allowed': props.disabled,
+    },
   ])
 
   const labelClasses = computed(() => ({
-    'base-input-label--required': props.required,
+    'text-red-500': props.required,
   }))
 
   // Event handlers
   const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement
-    const value = props.type === 'number' ? Number(target.value) : target.value
-    emit('update:modelValue', value)
-    emit('input', event)
+    const value = target.value
+    const finalValue = props.type === 'number' ? Number(value) : value
+    emit('update:modelValue', finalValue)
+    emit('input', value)
   }
 
   const handleFocus = (event: FocusEvent) => {
@@ -204,21 +250,25 @@
     emit('update:modelValue', '')
     emit('clear')
     nextTick(() => {
-      inputRef.value?.focus()
+      inputRef.value?.$el?.focus()
     })
+  }
+
+  const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value
   }
 
   // Public methods
   const focus = () => {
-    inputRef.value?.focus()
+    inputRef.value?.$el?.focus()
   }
 
   const blur = () => {
-    inputRef.value?.blur()
+    inputRef.value?.$el?.blur()
   }
 
   const select = () => {
-    inputRef.value?.select()
+    inputRef.value?.$el?.select()
   }
 
   defineExpose({
@@ -237,272 +287,46 @@
 </script>
 
 <style scoped>
-  .base-input-group {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  /* Override PrimeVue default styles */
+  ::v-deep(.primevue-input-override) {
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: 100% !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
   }
 
-  /* =============================================================================
-     LABEL STYLES
-     ============================================================================= */
-
-  .base-input-label {
-    display: block;
-    margin-bottom: var(--form-label-spacing);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    transition: color var(--transition-fast);
+  ::v-deep(.primevue-input-override:focus) {
+    box-shadow: none !important;
+    outline: none !important;
   }
 
-  .base-input-label--required {
-    .base-input-required {
-      color: var(--color-error);
-      margin-left: 2px;
-    }
+  /* Size variants for PrimeVue input */
+  ::v-deep(.primevue-input-override.h-8) {
+    height: 2rem !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.875rem !important;
   }
 
-  /* =============================================================================
-     INPUT CONTAINER
-     ============================================================================= */
-
-  .base-input-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    border: var(--input-border-width) solid var(--input-border-color);
-    border-radius: var(--radius-md);
-    background: var(--color-background);
-    transition: all var(--transition-fast);
-    overflow: hidden;
-  }
-
-  .base-input-container:hover:not(
-      .base-input-group--disabled .base-input-container
-    ) {
-    border-color: var(--color-primary);
-  }
-
-  .base-input-container--has-left-icon {
-    padding-left: var(--space-xs);
-  }
-
-  .base-input-container--has-right-icon {
-    padding-right: var(--space-xs);
-  }
-
-  /* =============================================================================
-     INPUT ELEMENT
-     ============================================================================= */
-
-  .base-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: var(--color-text-primary);
-    font-family: var(--font-family-primary);
-    font-weight: var(--font-weight-normal);
-    transition: all var(--transition-fast);
-
-    &::placeholder {
-      color: var(--color-text-tertiary);
-    }
-
-    &:disabled {
-      color: var(--state-disabled-color);
-      cursor: var(--state-disabled-cursor);
-
-      &::placeholder {
-        color: var(--state-disabled-color);
-      }
-    }
-  }
-
-  /* Size variants */
-  .base-input--sm {
-    height: var(--input-height-sm);
-    padding: var(--input-padding-sm);
-    font-size: var(--font-size-sm);
-  }
-
-  .base-input--md {
-    height: var(--input-height-md);
-    padding: var(--input-padding-md);
-    font-size: var(--font-size-base);
-  }
-
-  .base-input--lg {
-    height: var(--input-height-lg);
-    padding: var(--input-padding-lg);
-    font-size: var(--font-size-lg);
-  }
-
-  /* =============================================================================
-     ICON STYLES
-     ============================================================================= */
-
-  .base-input-icon {
-    color: var(--color-text-secondary);
-    font-size: 18px;
-    transition: color var(--transition-fast);
-  }
-
-  .base-input-icon--left {
-    margin-right: var(--space-xs);
-  }
-
-  .base-input-icon--right {
-    margin-left: var(--space-xs);
-  }
-
-  .base-input-icon-container {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-  }
-
-  /* Clear button */
-  .base-input-clear {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--color-text-tertiary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-
-    &:hover {
-      color: var(--color-text-secondary);
-      background: var(--color-background-tertiary);
-    }
-  }
-
-  /* =============================================================================
-     STATE VARIANTS
-     ============================================================================= */
-
-  /* Focused state */
-  .base-input-group--focused .base-input-container {
-    border-color: var(--input-border-color-focus);
-    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
-  }
-
-  .base-input-group--focused .base-input-icon {
-    color: var(--color-primary);
-  }
-
-  /* Error state */
-  .base-input-group--error .base-input-container {
-    border-color: var(--input-border-color-error);
-  }
-
-  .base-input-group--error .base-input-container:hover {
-    border-color: var(--input-border-color-error);
-  }
-
-  .base-input-group--error .base-input-label {
-    color: var(--color-error);
-  }
-
-  .base-input-group--error .base-input-icon {
-    color: var(--color-error);
-  }
-
-  /* Success state */
-  .base-input-group--success .base-input-container {
-    border-color: var(--input-border-color-success);
-  }
-
-  .base-input-group--success .base-input-icon {
-    color: var(--color-success);
+  ::v-deep(.primevue-input-override.h-9) {
+    height: 2.25rem !important;
+    padding: 0 1rem !important;
+    font-size: 1rem !important;
   }
 
   /* Disabled state */
-  .base-input-group--disabled {
-    opacity: var(--state-disabled-opacity);
-
-    .base-input-container {
-      background: var(--state-disabled-bg);
-      cursor: var(--state-disabled-cursor);
-    }
-
-    .base-input-label {
-      color: var(--state-disabled-color);
-    }
+  ::v-deep(.primevue-input-override:disabled) {
+    background: transparent !important;
+    color: rgb(156 163 175) !important;
+    cursor: not-allowed !important;
   }
 
-  /* Readonly state */
-  .base-input-group--readonly .base-input-container {
-    background: var(--color-background-secondary);
-  }
-
-  /* =============================================================================
-     MESSAGE STYLES
-     ============================================================================= */
-
-  .base-input-message {
-    margin-top: calc(var(--space-xs) / 2);
-  }
-
-  .base-input-error {
-    display: flex;
-    align-items: center;
-    gap: calc(var(--space-xs) / 2);
-    font-size: var(--font-size-sm);
-    color: var(--form-error-color);
-  }
-
-  .base-input-helper {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-  }
-
-  /* Character count */
-  .base-input-count {
-    margin-top: calc(var(--space-xs) / 2);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-    text-align: right;
-    transition: color var(--transition-fast);
-  }
-
-  .base-input-count--over {
-    color: var(--color-error);
-    font-weight: var(--font-weight-medium);
-  }
-
-  /* =============================================================================
-     SIZE ADJUSTMENTS
-     ============================================================================= */
-
-  .base-input-group--sm {
-    .base-input-icon {
-      font-size: 16px;
-    }
-  }
-
-  .base-input-group--lg {
-    .base-input-icon {
-      font-size: 20px;
-    }
-  }
-
-  /* =============================================================================
-     RESPONSIVE ADJUSTMENTS
-     ============================================================================= */
-
-  @media (max-width: 640px) {
-    .base-input-group--lg {
-      .base-input {
-        height: var(--input-height-md);
-        padding: var(--input-padding-md);
-        font-size: var(--font-size-base);
-      }
-    }
+  /* Placeholder color */
+  ::v-deep(.primevue-input-override::placeholder) {
+    color: rgb(156 163 175) !important;
   }
 </style>

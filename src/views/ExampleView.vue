@@ -30,6 +30,13 @@
             label="Email"
             placeholder="ejemplo@correo.com"
             icon="mdi:email" />
+
+          <BaseInput
+            v-model="exampleData.password"
+            type="password"
+            label="Contraseña"
+            placeholder="Tu contraseña segura"
+            :show-password-toggle="true" />
         </div>
       </section>
 
@@ -80,6 +87,7 @@
   const exampleData = reactive({
     name: '',
     email: '',
+    password: '',
   })
 
   const formData = ref({})

@@ -1,29 +1,31 @@
 <template>
-  <div class="base-table-container" :class="containerClasses">
+  <div class="w-full" :class="containerClasses">
     <!-- Table Header (if title or actions provided) -->
-    <div v-if="$slots.header || title" class="base-table-header">
-      <div class="base-table-title">
-        <h3 v-if="title">{{ title }}</h3>
+    <div
+      v-if="$slots.header || title"
+      class="flex items-center justify-between mb-4">
+      <div class="flex-1">
+        <h3 v-if="title" class="text-lg font-semibold text-gray-900">
+          {{ title }}
+        </h3>
         <slot name="header" />
       </div>
-      <div v-if="$slots.actions" class="base-table-actions">
+      <div v-if="$slots.actions" class="flex items-center gap-2">
         <slot name="actions" />
       </div>
     </div>
 
     <!-- Table Wrapper for responsiveness -->
-    <div class="base-table-wrapper">
-      <table class="base-table" :id="id" :data-testid="testId">
+    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+      <table class="w-full" :id="id" :data-testid="testId">
         <!-- Table Header -->
-        <thead class="base-table-thead">
-          <tr class="base-table-tr base-table-tr--header">
+        <thead class="bg-gray-50">
+          <tr class="border-b border-gray-200">
             <!-- Selection column -->
-            <th
-              v-if="selectable"
-              class="base-table-th base-table-th--selection">
+            <th v-if="selectable" class="px-4 py-3 text-left">
               <input
                 type="checkbox"
-                class="base-table-checkbox"
+                class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
                 :checked="isAllSelected"
                 :indeterminate="isSomeSelected"
                 @change="handleSelectAll" />
@@ -33,21 +35,25 @@
             <th
               v-for="column in columns"
               :key="column.key"
-              class="base-table-th"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               :class="[
-                `base-table-th--${column.align || 'left'}`,
-                { 'base-table-th--sortable': column.sortable },
+                {
+                  'text-left': column.align === 'left' || !column.align,
+                  'text-center': column.align === 'center',
+                  'text-right': column.align === 'right',
+                  'cursor-pointer hover:bg-gray-100': column.sortable,
+                },
               ]"
               :style="{ width: column.width }"
               @click="column.sortable ? handleSort(column.key) : null">
-              <div class="base-table-th-content">
+              <div class="flex items-center gap-1">
                 <span>{{ column.label }}</span>
                 <Icon
                   v-if="column.sortable"
                   :icon="getSortIcon(column.key)"
-                  class="base-table-sort-icon"
+                  class="w-4 h-4 text-gray-400"
                   :class="{
-                    'base-table-sort-icon--active': sortBy === column.key,
+                    'text-orange-600': sortBy === column.key,
                   }" />
               </div>
             </th>
@@ -55,28 +61,22 @@
         </thead>
 
         <!-- Table Body -->
-        <tbody class="base-table-tbody">
+        <tbody class="bg-white divide-y divide-gray-200">
           <!-- Loading state -->
-          <tr v-if="loading" class="base-table-tr base-table-tr--loading">
-            <td
-              :colspan="totalColumns"
-              class="base-table-td base-table-td--loading">
-              <div class="base-table-loading">
-                <Icon icon="mdi:loading" class="animate-spin" />
+          <tr v-if="loading">
+            <td :colspan="totalColumns" class="px-4 py-8 text-center">
+              <div class="flex items-center justify-center gap-2 text-gray-500">
+                <Icon icon="mdi:loading" class="w-5 h-5 animate-spin" />
                 <span>Cargando...</span>
               </div>
             </td>
           </tr>
 
           <!-- Empty state -->
-          <tr
-            v-else-if="data.length === 0"
-            class="base-table-tr base-table-tr--empty">
-            <td
-              :colspan="totalColumns"
-              class="base-table-td base-table-td--empty">
-              <div class="base-table-empty">
-                <Icon icon="mdi:database-off" />
+          <tr v-else-if="data.length === 0">
+            <td :colspan="totalColumns" class="px-4 py-8 text-center">
+              <div class="flex items-center justify-center gap-2 text-gray-500">
+                <Icon icon="mdi:database-off" class="w-5 h-5" />
                 <span>{{ emptyMessage || 'No hay datos disponibles' }}</span>
               </div>
             </td>
@@ -87,20 +87,16 @@
             v-else
             v-for="(row, index) in data"
             :key="getRowKey(row, index)"
-            class="base-table-tr base-table-tr--data"
+            class="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
             :class="{
-              'base-table-tr--selected': selectedRows.has(
-                getRowKey(row, index),
-              ),
+              'bg-orange-50': selectedRows.has(getRowKey(row, index)),
             }"
             @click="handleRowClick(row, index)">
             <!-- Selection column -->
-            <td
-              v-if="selectable"
-              class="base-table-td base-table-td--selection">
+            <td v-if="selectable" class="px-4 py-3">
               <input
                 type="checkbox"
-                class="base-table-checkbox"
+                class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
                 :checked="selectedRows.has(getRowKey(row, index))"
                 @change="handleRowSelect(row, index, $event)"
                 @click.stop />
@@ -110,8 +106,12 @@
             <td
               v-for="column in columns"
               :key="column.key"
-              class="base-table-td"
-              :class="`base-table-td--${column.align || 'left'}`">
+              class="px-4 py-3 text-sm text-gray-900"
+              :class="{
+                'text-left': column.align === 'left' || !column.align,
+                'text-center': column.align === 'center',
+                'text-right': column.align === 'right',
+              }">
               <!-- Custom render function -->
               <template v-if="column.render">
                 <component
@@ -137,8 +137,10 @@
     </div>
 
     <!-- Table Footer with pagination -->
-    <div v-if="pagination && !loading" class="base-table-footer">
-      <div class="base-table-info">
+    <div
+      v-if="pagination && !loading"
+      class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+      <div class="text-sm text-gray-700">
         <span>
           Mostrando {{ (pagination.page - 1) * pagination.size + 1 }} -
           {{ Math.min(pagination.page * pagination.size, pagination.total) }}
@@ -146,7 +148,7 @@
         </span>
       </div>
 
-      <div class="base-table-pagination">
+      <div class="flex items-center gap-2">
         <BaseButton
           variant="ghost"
           size="sm"
@@ -156,7 +158,7 @@
           Anterior
         </BaseButton>
 
-        <span class="base-table-page-info">
+        <span class="text-sm text-gray-700">
           Página {{ pagination.page }} de
           {{ Math.ceil(pagination.total / pagination.size) }}
         </span>
@@ -209,10 +211,8 @@
   })
 
   const containerClasses = computed(() => [
-    'base-table-container',
     {
-      'base-table-container--loading': props.loading,
-      'base-table-container--selectable': props.selectable,
+      'opacity-50 pointer-events-none': props.loading,
     },
     props.class,
   ])
@@ -318,302 +318,3 @@
     inheritAttrs: false,
   }
 </script>
-
-<style scoped>
-  .base-table-container {
-    display: flex;
-    flex-direction: column;
-    background: var(--color-background);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-  }
-
-  /* =============================================================================
-     TABLE HEADER
-     ============================================================================= */
-
-  .base-table-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-background-secondary);
-  }
-
-  .base-table-title h3 {
-    margin: 0;
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-  }
-
-  .base-table-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
-  /* =============================================================================
-     TABLE WRAPPER
-     ============================================================================= */
-
-  .base-table-wrapper {
-    overflow-x: auto;
-    border-radius: inherit;
-  }
-
-  .base-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--font-size-sm);
-  }
-
-  /* =============================================================================
-     TABLE HEAD
-     ============================================================================= */
-
-  .base-table-thead {
-    background: var(--table-header-bg);
-    border-bottom: 2px solid var(--color-border);
-  }
-
-  .base-table-tr--header {
-    height: var(--table-header-height);
-  }
-
-  .base-table-th {
-    padding: var(--table-cell-padding);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-    border-right: 1px solid var(--color-border);
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-
-  .base-table-th--left {
-    text-align: left;
-  }
-
-  .base-table-th--center {
-    text-align: center;
-  }
-
-  .base-table-th--right {
-    text-align: right;
-  }
-
-  .base-table-th--sortable {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color var(--transition-fast);
-
-    &:hover {
-      background: var(--table-row-hover-bg);
-    }
-  }
-
-  .base-table-th--selection {
-    width: 48px;
-    text-align: center;
-  }
-
-  .base-table-th-content {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-  }
-
-  .base-table-sort-icon {
-    opacity: 0.5;
-    transition: opacity var(--transition-fast);
-  }
-
-  .base-table-sort-icon--active {
-    opacity: 1;
-    color: var(--color-primary);
-  }
-
-  /* =============================================================================
-     TABLE BODY
-     ============================================================================= */
-
-  .base-table-tbody {
-    background: var(--color-background);
-  }
-
-  .base-table-tr--data {
-    height: var(--table-row-height);
-    border-bottom: 1px solid var(--table-border-color);
-    transition: background-color var(--transition-fast);
-    cursor: pointer;
-
-    &:hover {
-      background: var(--table-row-hover-bg);
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .base-table-tr--selected {
-    background: var(--table-selected-bg) !important;
-  }
-
-  .base-table-td {
-    padding: var(--table-cell-padding);
-    border-right: 1px solid var(--table-border-color);
-    color: var(--color-text-primary);
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-
-  .base-table-td--left {
-    text-align: left;
-  }
-
-  .base-table-td--center {
-    text-align: center;
-  }
-
-  .base-table-td--right {
-    text-align: right;
-  }
-
-  .base-table-td--selection {
-    width: 48px;
-    text-align: center;
-  }
-
-  /* =============================================================================
-     SPECIAL STATES
-     ============================================================================= */
-
-  .base-table-td--loading,
-  .base-table-td--empty {
-    text-align: center;
-    padding: var(--space-3xl) var(--space-lg);
-  }
-
-  .base-table-loading,
-  .base-table-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-md);
-    color: var(--color-text-secondary);
-  }
-
-  .base-table-loading .animate-spin {
-    animation: spin 1s linear infinite;
-    font-size: var(--font-size-2xl);
-    color: var(--color-primary);
-  }
-
-  .base-table-empty {
-    font-size: var(--font-size-2xl);
-    opacity: 0.6;
-  }
-
-  /* =============================================================================
-     TABLE FOOTER
-     ============================================================================= */
-
-  .base-table-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md) var(--space-lg);
-    border-top: 1px solid var(--color-border);
-    background: var(--color-background-secondary);
-  }
-
-  .base-table-info {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-  }
-
-  .base-table-pagination {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-  }
-
-  .base-table-page-info {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    white-space: nowrap;
-  }
-
-  /* =============================================================================
-     CHECKBOX STYLING
-     ============================================================================= */
-
-  .base-table-checkbox {
-    width: 16px;
-    height: 16px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-border);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-
-    &:checked {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-    }
-
-    &:indeterminate {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-    }
-  }
-
-  /* =============================================================================
-     RESPONSIVE DESIGN
-     ============================================================================= */
-
-  @media (max-width: 768px) {
-    .base-table-header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: var(--space-md);
-    }
-
-    .base-table-footer {
-      flex-direction: column;
-      gap: var(--space-md);
-      align-items: stretch;
-    }
-
-    .base-table-pagination {
-      justify-content: center;
-    }
-
-    .base-table {
-      font-size: var(--font-size-xs);
-    }
-
-    .base-table-th,
-    .base-table-td {
-      padding: var(--space-xs) var(--space-sm);
-    }
-  }
-
-  /* =============================================================================
-     ANIMATIONS
-     ============================================================================= */
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-</style>

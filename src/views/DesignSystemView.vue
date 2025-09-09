@@ -148,17 +148,37 @@
             </div>
           </div>
 
+          <div class="demo-group">
+            <h3>Campo de Contraseña con Toggle</h3>
+            <div class="demo-column">
+              <BaseInput
+                v-model="demoData.password"
+                type="password"
+                label="Contraseña"
+                placeholder="Ingresa tu contraseña"
+                :show-password-toggle="true"
+                required />
+
+              <BaseInput
+                v-model="demoData.confirmPassword"
+                type="password"
+                label="Confirmar Contraseña"
+                placeholder="Confirma tu contraseña"
+                :show-password-toggle="true"
+                required />
+            </div>
+          </div>
+
           <!-- Code Example -->
           <div class="demo-code">
             <h4>Código de Ejemplo:</h4>
             <pre><code>&lt;BaseInput
-  v-model="email"
-  type="email"
-  label="Correo Electrónico"
-  placeholder="ejemplo@correo.com"
-  icon="mdi:email"
-  required
-  :error="emailError" /&gt;</code></pre>
+  v-model="password"
+  type="password"
+  label="Contraseña"
+  placeholder="Ingresa tu contraseña"
+  :show-password-toggle="true"
+  required /&gt;</code></pre>
           </div>
         </section>
 
@@ -451,6 +471,8 @@
     name: '',
     email: '',
     phone: '',
+    password: '',
+    confirmPassword: '',
   })
 
   // Table demo

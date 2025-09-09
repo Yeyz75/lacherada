@@ -1,33 +1,29 @@
 <template>
-  <button
+  <Button
     :class="buttonClasses"
     :disabled="disabled || loading"
     :type="type"
     :id="id"
     :data-testid="testId"
+    :loading="loading"
     @click="handleClick"
     v-bind="$attrs"
-  >
-    <!-- Loading Spinner -->
-    <span
-      v-if="loading"
-      class="btn-spinner">
-      <Icon
-        icon="mdi:loading"
-        class="animate-spin" />
-    </span>
-
+    class="primevue-button-override">
     <!-- Left Icon -->
     <Icon
       v-if="icon && iconPosition === 'left' && !loading"
       :icon="icon"
-      class="btn-icon btn-icon-left"
-    />
+      class="flex items-center justify-center flex-shrink-0"
+      :class="{
+        'text-xs': props.size === 'xs',
+        'text-sm': props.size === 'sm',
+        'text-base': props.size === 'md',
+        'text-lg': props.size === 'lg',
+        'text-xl': props.size === 'xl',
+      }" />
 
     <!-- Button Content -->
-    <span
-      class="btn-content"
-      :class="{ 'btn-content-hidden': loading }">
+    <span class="flex items-center gap-2">
       <slot />
     </span>
 
@@ -35,337 +31,140 @@
     <Icon
       v-if="icon && iconPosition === 'right' && !loading"
       :icon="icon"
-      class="btn-icon btn-icon-right"
-    />
-  </button>
+      class="flex items-center justify-center flex-shrink-0"
+      :class="{
+        'text-xs': props.size === 'xs',
+        'text-sm': props.size === 'sm',
+        'text-base': props.size === 'md',
+        'text-lg': props.size === 'lg',
+        'text-xl': props.size === 'xl',
+      }" />
+  </Button>
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
-import { Icon } from '@iconify/vue'
-import type { ButtonProps } from '../../types'
+  import { computed, useSlots } from 'vue'
+  import { Icon } from '@iconify/vue'
+  import Button from 'primevue/button'
+  import type { ButtonProps } from '../../types'
 
-interface Props extends ButtonProps {
-  // Extender props específicas del componente si es necesario
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  size: 'md',
-  type: 'button',
-  iconPosition: 'left',
-  disabled: false,
-  loading: false,
-  fullWidth: false,
-})
-
-const emit = defineEmits<{
-  click: [event: MouseEvent]
-}>()
-
-const slots = useSlots()
-
-const buttonClasses = computed(() => [
-  'base-btn',
-  `base-btn--${props.variant}`,
-  `base-btn--${props.size}`,
-  {
-    'base-btn--full-width': props.fullWidth,
-    'base-btn--loading': props.loading,
-    'base-btn--disabled': props.disabled,
-    'base-btn--icon-only': props.icon && !slots.default,
-  },
-  props.class,
-])
-
-const handleClick = (event: MouseEvent) => {
-  if (!props.disabled && !props.loading) {
-    emit('click', event)
+  interface Props extends ButtonProps {
+    // Extender props específicas del componente si es necesario
   }
-}
+
+  const props = withDefaults(defineProps<Props>(), {
+    variant: 'primary',
+    size: 'md',
+    type: 'button',
+    iconPosition: 'left',
+    disabled: false,
+    loading: false,
+    fullWidth: false,
+  })
+
+  const emit = defineEmits<{
+    click: [event: MouseEvent]
+  }>()
+
+  const slots = useSlots()
+
+  const buttonClasses = computed(() => [
+    // Base styles
+    'relative inline-flex items-center justify-center gap-2 border-0 rounded-md font-medium text-decoration-none cursor-pointer outline-none overflow-hidden select-none transition-all duration-200',
+    // Focus ring
+    'focus-visible:outline-2 focus-visible:outline-orange-500 focus-visible:outline-offset-2',
+
+    // Size variants
+    {
+      'h-7 px-2.5 text-xs': props.size === 'xs',
+      'h-8 px-3 text-sm': props.size === 'sm',
+      'h-9 px-4 text-sm': props.size === 'md',
+      'h-10 px-5 text-base': props.size === 'lg',
+      'h-11 px-6 text-lg': props.size === 'xl',
+    },
+
+    // Variant styles
+    {
+      // Primary
+      'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm hover:shadow-md hover:shadow-orange-500/25 hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm':
+        props.variant === 'primary' && !props.disabled && !props.loading,
+      // Secondary
+      'bg-gray-100 text-gray-900 border border-gray-300 hover:bg-gray-50 hover:-translate-y-0.5 active:translate-y-0':
+        props.variant === 'secondary' && !props.disabled && !props.loading,
+      // Ghost
+      'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900':
+        props.variant === 'ghost' && !props.disabled && !props.loading,
+      // Danger
+      'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm hover:shadow-md hover:shadow-red-500/25 hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm':
+        props.variant === 'danger' && !props.disabled && !props.loading,
+      // Success
+      'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm hover:shadow-md hover:shadow-green-500/25 hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm':
+        props.variant === 'success' && !props.disabled && !props.loading,
+      // Warning
+      'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-sm hover:shadow-md hover:shadow-yellow-500/25 hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm':
+        props.variant === 'warning' && !props.disabled && !props.loading,
+    },
+
+    // State variants
+    {
+      'w-full': props.fullWidth,
+      'opacity-50 cursor-not-allowed translate-y-0 shadow-none pointer-events-none':
+        props.disabled,
+      'cursor-default': props.loading,
+      'aspect-square p-0': props.icon && !slots.default,
+    },
+
+    props.class,
+  ])
+
+  const handleClick = (event: MouseEvent) => {
+    if (!props.disabled && !props.loading) {
+      emit('click', event)
+    }
+  }
 </script>
 
 <script lang="ts">
-export default {
-  name: 'BaseButton',
-  inheritAttrs: false,
-}
+  export default {
+    name: 'BaseButton',
+    inheritAttrs: false,
+  }
 </script>
 
 <style scoped>
-.base-btn {
-  /* Base styles */
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  outline: none;
-  overflow: hidden;
-  user-select: none;
-
-  /* Focus ring */
-  &:focus-visible {
-    outline: var(--focus-ring-width) solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
-  }
-}
-
-/* =============================================================================
-     SIZE VARIANTS
-     ============================================================================= */
-
-.base-btn--xs {
-  height: var(--btn-height-xs);
-  padding: var(--btn-padding-xs);
-  font-size: var(--btn-font-size-xs);
-
-  .btn-icon {
-    font-size: 14px;
-  }
-}
-
-.base-btn--sm {
-  height: var(--btn-height-sm);
-  padding: var(--btn-padding-sm);
-  font-size: var(--btn-font-size-sm);
-
-  .btn-icon {
-    font-size: 16px;
-  }
-}
-
-.base-btn--md {
-  height: var(--btn-height-md);
-  padding: var(--btn-padding-md);
-  font-size: var(--btn-font-size-md);
-
-  .btn-icon {
-    font-size: 18px;
-  }
-}
-
-.base-btn--lg {
-  height: var(--btn-height-lg);
-  padding: var(--btn-padding-lg);
-  font-size: var(--btn-font-size-lg);
-
-  .btn-icon {
-    font-size: 20px;
-  }
-}
-
-.base-btn--xl {
-  height: var(--btn-height-xl);
-  padding: var(--btn-padding-xl);
-  font-size: var(--btn-font-size-xl);
-
-  .btn-icon {
-    font-size: 22px;
-  }
-}
-
-/* =============================================================================
-     COLOR VARIANTS
-     ============================================================================= */
-
-.base-btn--primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  color: var(--color-white);
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(.base-btn--disabled):not(.base-btn--loading) {
-    transform: var(--hover-lift);
-    box-shadow: var(--shadow-md), var(--shadow-glow);
+  /* Override PrimeVue default styles */
+  ::v-deep(.primevue-button-override) {
+    border: none !important;
+    border-radius: 0.375rem !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-family: inherit !important;
+    font-weight: 500 !important;
+    transition: all 200ms !important;
   }
 
-  &:active {
-    transform: var(--state-active-scale);
-    box-shadow: var(--state-active-shadow);
-  }
-}
-
-.base-btn--secondary {
-  background: var(--color-background-tertiary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-
-  &:hover:not(.base-btn--disabled):not(.base-btn--loading) {
-    background: var(--color-background-secondary);
-    transform: var(--hover-lift);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-.base-btn--ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-
-  &:hover:not(.base-btn--disabled):not(.base-btn--loading) {
-    background: var(--color-background-tertiary);
-    color: var(--color-text-primary);
-  }
-}
-
-.base-btn--danger {
-  background: linear-gradient(135deg, var(--color-error), var(--color-error-dark));
-  color: var(--color-white);
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(.base-btn--disabled):not(.base-btn--loading) {
-    transform: var(--hover-lift);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-.base-btn--success {
-  background: linear-gradient(135deg, var(--color-success), var(--color-success-dark));
-  color: var(--color-white);
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(.base-btn--disabled):not(.base-btn--loading) {
-    transform: var(--hover-lift);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-.base-btn--warning {
-  background: linear-gradient(135deg, var(--color-warning), var(--color-warning-dark));
-  color: var(--color-white);
-  box-shadow: var(--shadow-sm);
-
-  &:hover:not(.base-btn--disabled):not(.base-btn--loading) {
-    transform: var(--hover-lift);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-/* =============================================================================
-     STATE VARIANTS
-     ============================================================================= */
-
-.base-btn--full-width {
-  width: 100%;
-}
-
-.base-btn--disabled {
-  opacity: var(--state-disabled-opacity);
-  cursor: var(--state-disabled-cursor);
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-.base-btn--loading {
-  cursor: default;
-
-  .btn-content {
-    visibility: hidden;
-  }
-}
-
-.base-btn--icon-only {
-  aspect-ratio: 1;
-  padding: 0;
-}
-
-/* =============================================================================
-     BUTTON ELEMENTS
-     ============================================================================= */
-
-.btn-spinner {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-}
-
-.btn-content {
-  display: flex;
-  align-items: center;
-  gap: inherit;
-}
-
-.btn-content-hidden {
-  visibility: hidden;
-}
-
-.btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.btn-icon-left {
-  margin-right: calc(var(--space-xs) * -0.5);
-}
-
-.btn-icon-right {
-  margin-left: calc(var(--space-xs) * -0.5);
-}
-
-/* =============================================================================
-     ANIMATIONS
-     ============================================================================= */
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Ripple effect */
-.base-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transition:
-    width 0.6s,
-    height 0.6s,
-    top 0.6s,
-    left 0.6s;
-  transform: translate(-50%, -50%);
-}
-
-.base-btn:active::before {
-  width: 300px;
-  height: 300px;
-}
-
-/* =============================================================================
-     RESPONSIVE ADJUSTMENTS
-     ============================================================================= */
-
-@media (max-width: 640px) {
-  .base-btn--lg {
-    height: var(--btn-height-md);
-    padding: var(--btn-padding-md);
-    font-size: var(--btn-font-size-md);
+  ::v-deep(.primevue-button-override:focus) {
+    box-shadow: none !important;
+    outline: none !important;
   }
 
-  .base-btn--xl {
-    height: var(--btn-height-lg);
-    padding: var(--btn-padding-lg);
-    font-size: var(--btn-font-size-lg);
+  ::v-deep(.primevue-button-override:disabled) {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
   }
-}
+
+  /* Loading spinner override */
+  ::v-deep(.primevue-button-override .p-button-loading-icon) {
+    display: none !important;
+  }
+
+  /* Remove PrimeVue default loading overlay */
+  ::v-deep(.primevue-button-override.p-button-loading) {
+    position: relative !important;
+  }
 </style>
