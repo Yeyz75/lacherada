@@ -2,57 +2,55 @@
   <div class="profile-container">
     <!-- Profile Header -->
     <BaseCard class="profile-header-card">
-      <template #content>
-        <div class="profile-header">
-          <div class="profile-avatar-section">
-            <BaseAvatar
-              :image="userProfile.avatarUrl"
-              :size="'xlarge'"
-              :verified="userProfile.verified"
-              class="profile-avatar" />
-            <BaseButton
-              icon="mdi:camera"
-              variant="secondary"
-              size="small"
-              class="change-avatar-btn"
-              @click="openAvatarUpload">
-              {{ t('profile.changePhoto') }}
-            </BaseButton>
-          </div>
+      <div class="profile-header">
+        <div class="profile-avatar-section">
+          <BaseAvatar
+            :image="userProfile.avatarUrl"
+            :size="'xlarge'"
+            :verified="userProfile.verified"
+            class="profile-avatar" />
+          <BaseButton
+            icon="mdi:camera"
+            variant="secondary"
+            size="small"
+            class="change-avatar-btn"
+            @click="openAvatarUpload">
+            {{ t('profile.changePhoto') }}
+          </BaseButton>
+        </div>
 
-          <div class="profile-info">
-            <h1 class="profile-name">{{ userProfile.displayName }}</h1>
-            <p class="profile-email">{{ userProfile.email }}</p>
+        <div class="profile-info">
+          <h1 class="profile-name">{{ userProfile.displayName }}</h1>
+          <p class="profile-email">{{ userProfile.email }}</p>
 
-            <div class="profile-stats">
-              <div class="stat-item">
-                <span class="stat-value">
-                  {{ userProfile.stats.exchanges }}
-                </span>
-                <span class="stat-label">
-                  {{ t('profile.stats.exchanges') }}
-                </span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-value">
-                  {{ userProfile.stats.reputation }}
-                </span>
-                <span class="stat-label">
-                  {{ t('profile.stats.reputation') }}
-                </span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-value">
-                  {{ userProfile.stats.memberSince }}
-                </span>
-                <span class="stat-label">
-                  {{ t('profile.stats.memberSince') }}
-                </span>
-              </div>
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-value">
+                {{ userProfile.stats.exchanges }}
+              </span>
+              <span class="stat-label">
+                {{ t('profile.stats.exchanges') }}
+              </span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">
+                {{ userProfile.stats.reputation }}
+              </span>
+              <span class="stat-label">
+                {{ t('profile.stats.reputation') }}
+              </span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">
+                {{ userProfile.stats.memberSince }}
+              </span>
+              <span class="stat-label">
+                {{ t('profile.stats.memberSince') }}
+              </span>
             </div>
           </div>
         </div>
-      </template>
+      </div>
     </BaseCard>
 
     <!-- Profile Content -->
@@ -63,115 +61,111 @@
         <BaseCard
           :title="t('profile.personalInfo.title')"
           class="profile-section">
-          <template #content>
-            <div class="profile-form">
-              <div class="form-row">
-                <BaseInput
-                  v-model="profileForm.firstName"
-                  :label="t('profile.personalInfo.firstName')"
-                  :placeholder="t('profile.personalInfo.firstNamePlaceholder')"
-                  class="form-field" />
-
-                <BaseInput
-                  v-model="profileForm.lastName"
-                  :label="t('profile.personalInfo.lastName')"
-                  :placeholder="t('profile.personalInfo.lastNamePlaceholder')"
-                  class="form-field" />
-              </div>
-
+          <div class="profile-form">
+            <div class="form-row">
               <BaseInput
-                v-model="profileForm.bio"
-                :label="t('profile.personalInfo.bio')"
-                :placeholder="t('profile.personalInfo.bioPlaceholder')"
-                type="textarea"
+                v-model="profileForm.firstName"
+                :label="t('profile.personalInfo.firstName')"
+                :placeholder="t('profile.personalInfo.firstNamePlaceholder')"
                 class="form-field" />
 
-              <div class="form-actions">
-                <BaseButton
-                  @click="saveProfile"
-                  :loading="savingProfile"
-                  class="save-btn">
-                  {{ t('profile.saveChanges') }}
-                </BaseButton>
-              </div>
+              <BaseInput
+                v-model="profileForm.lastName"
+                :label="t('profile.personalInfo.lastName')"
+                :placeholder="t('profile.personalInfo.lastNamePlaceholder')"
+                class="form-field" />
             </div>
-          </template>
+
+            <BaseInput
+              v-model="profileForm.bio"
+              :label="t('profile.personalInfo.bio')"
+              :placeholder="t('profile.personalInfo.bioPlaceholder')"
+              type="textarea"
+              class="form-field" />
+
+            <div class="form-actions">
+              <BaseButton
+                @click="saveProfile"
+                :loading="savingProfile"
+                class="save-btn">
+                {{ t('profile.saveChanges') }}
+              </BaseButton>
+            </div>
+          </div>
         </BaseCard>
 
         <!-- Verification Status -->
         <BaseCard
           :title="t('profile.verification.title')"
           class="profile-section">
-          <template #content>
-            <div class="verification-section">
-              <div class="verification-item">
-                <div class="verification-info">
-                  <Icon icon="mdi:email" class="verification-icon" />
-                  <div>
-                    <h4 class="verification-title">
-                      {{ t('profile.verification.email') }}
-                    </h4>
-                    <p class="verification-status verified">
-                      {{ t('profile.verification.verified') }}
-                    </p>
-                  </div>
+          <div class="verification-section">
+            <div class="verification-item">
+              <div class="verification-info">
+                <Icon icon="mdi:email" class="verification-icon" />
+                <div>
+                  <h4 class="verification-title">
+                    {{ t('profile.verification.email') }}
+                  </h4>
+                  <p class="verification-status verified">
+                    {{ t('profile.verification.verified') }}
+                  </p>
                 </div>
-                <BaseBadge value="Verified" severity="success" />
               </div>
-
-              <div class="verification-item">
-                <div class="verification-info">
-                  <Icon icon="mdi:phone" class="verification-icon" />
-                  <div>
-                    <h4 class="verification-title">
-                      {{ t('profile.verification.phone') }}
-                    </h4>
-                    <p
-                      class="verification-status"
-                      :class="{ verified: profileForm.phoneVerified }">
-                      {{
-                        profileForm.phoneVerified
-                          ? t('profile.verification.verified')
-                          : t('profile.verification.notVerified')
-                      }}
-                    </p>
-                  </div>
-                </div>
-                <BaseButton
-                  v-if="!profileForm.phoneVerified"
-                  :label="t('profile.verification.verify')"
-                  variant="secondary"
-                  size="small" />
-                <BaseBadge v-else value="Verified" severity="success" />
-              </div>
-
-              <div class="verification-item">
-                <div class="verification-info">
-                  <Icon icon="mdi:map-marker" class="verification-icon" />
-                  <div>
-                    <h4 class="verification-title">
-                      {{ t('profile.verification.address') }}
-                    </h4>
-                    <p
-                      class="verification-status"
-                      :class="{ verified: profileForm.addressVerified }">
-                      {{
-                        profileForm.addressVerified
-                          ? t('profile.verification.verified')
-                          : t('profile.verification.notVerified')
-                      }}
-                    </p>
-                  </div>
-                </div>
-                <BaseButton
-                  v-if="!profileForm.addressVerified"
-                  :label="t('profile.verification.verify')"
-                  variant="secondary"
-                  size="small" />
-                <BaseBadge v-else value="Verified" severity="success" />
-              </div>
+              <BaseBadge value="Verified" severity="success" />
             </div>
-          </template>
+
+            <div class="verification-item">
+              <div class="verification-info">
+                <Icon icon="mdi:phone" class="verification-icon" />
+                <div>
+                  <h4 class="verification-title">
+                    {{ t('profile.verification.phone') }}
+                  </h4>
+                  <p
+                    class="verification-status"
+                    :class="{ verified: profileForm.phoneVerified }">
+                    {{
+                      profileForm.phoneVerified
+                        ? t('profile.verification.verified')
+                        : t('profile.verification.notVerified')
+                    }}
+                  </p>
+                </div>
+              </div>
+              <BaseButton
+                v-if="!profileForm.phoneVerified"
+                :label="t('profile.verification.verify')"
+                variant="secondary"
+                size="small" />
+              <BaseBadge v-else value="Verified" severity="success" />
+            </div>
+
+            <div class="verification-item">
+              <div class="verification-info">
+                <Icon icon="mdi:map-marker" class="verification-icon" />
+                <div>
+                  <h4 class="verification-title">
+                    {{ t('profile.verification.address') }}
+                  </h4>
+                  <p
+                    class="verification-status"
+                    :class="{ verified: profileForm.addressVerified }">
+                    {{
+                      profileForm.addressVerified
+                        ? t('profile.verification.verified')
+                        : t('profile.verification.notVerified')
+                    }}
+                  </p>
+                </div>
+              </div>
+              <BaseButton
+                v-if="!profileForm.addressVerified"
+                :label="t('profile.verification.verify')"
+                variant="secondary"
+                size="small" />
+              <BaseBadge v-else value="Verified" severity="success" />
+            </div>
+          </div>
         </BaseCard>
       </div>
 
@@ -181,76 +175,72 @@
         <BaseCard
           :title="t('profile.reputation.title')"
           class="profile-section">
-          <template #content>
-            <div class="reputation-section">
-              <div class="reputation-score">
-                <BaseRating
-                  :model-value="userProfile.reputation.rating"
-                  readonly
-                  :stars="5"
-                  class="rating-display" />
-                <span class="reputation-value">
-                  {{ userProfile.reputation.rating }}/{{
-                    userProfile.reputation.maxRating
-                  }}
+          <div class="reputation-section">
+            <div class="reputation-score">
+              <BaseRating
+                :model-value="userProfile.reputation.rating"
+                readonly
+                :stars="5"
+                class="rating-display" />
+              <span class="reputation-value">
+                {{ userProfile.reputation.rating }}/{{
+                  userProfile.reputation.maxRating
+                }}
+              </span>
+            </div>
+
+            <p class="reputation-text">
+              {{ userProfile.reputation.description }}
+            </p>
+
+            <div class="reputation-details">
+              <div class="reputation-item">
+                <span class="reputation-label">
+                  {{ t('profile.reputation.reviews') }}
+                </span>
+                <span class="reputation-count">
+                  {{ userProfile.reputation.reviews }}
                 </span>
               </div>
-
-              <p class="reputation-text">
-                {{ userProfile.reputation.description }}
-              </p>
-
-              <div class="reputation-details">
-                <div class="reputation-item">
-                  <span class="reputation-label">
-                    {{ t('profile.reputation.reviews') }}
-                  </span>
-                  <span class="reputation-count">
-                    {{ userProfile.reputation.reviews }}
-                  </span>
-                </div>
-                <div class="reputation-item">
-                  <span class="reputation-label">
-                    {{ t('profile.reputation.onTime') }}
-                  </span>
-                  <span class="reputation-count">
-                    {{ userProfile.reputation.onTime }}%
-                  </span>
-                </div>
-                <div class="reputation-item">
-                  <span class="reputation-label">
-                    {{ t('profile.reputation.positive') }}
-                  </span>
-                  <span class="reputation-count">
-                    {{ userProfile.reputation.positive }}%
-                  </span>
-                </div>
+              <div class="reputation-item">
+                <span class="reputation-label">
+                  {{ t('profile.reputation.onTime') }}
+                </span>
+                <span class="reputation-count">
+                  {{ userProfile.reputation.onTime }}%
+                </span>
+              </div>
+              <div class="reputation-item">
+                <span class="reputation-label">
+                  {{ t('profile.reputation.positive') }}
+                </span>
+                <span class="reputation-count">
+                  {{ userProfile.reputation.positive }}%
+                </span>
               </div>
             </div>
-          </template>
+          </div>
         </BaseCard>
 
         <!-- Badges -->
         <BaseCard :title="t('profile.badges.title')" class="profile-section">
-          <template #content>
-            <div class="badges-section">
-              <div
-                v-for="badge in userProfile.badges"
-                :key="badge.id"
-                class="badge-item"
-                :class="{ earned: badge.earned }">
-                <Icon :icon="badge.icon" class="badge-icon" />
-                <div class="badge-info">
-                  <h4 class="badge-name">
-                    {{ t(`profile.badges.names.${badge.key}`) }}
-                  </h4>
-                  <p class="badge-description">
-                    {{ t(`profile.badges.descriptions.${badge.key}`) }}
-                  </p>
-                </div>
+          <div class="badges-section">
+            <div
+              v-for="badge in userProfile.badges"
+              :key="badge.id"
+              class="badge-item"
+              :class="{ earned: badge.earned }">
+              <Icon :icon="badge.icon" class="badge-icon" />
+              <div class="badge-info">
+                <h4 class="badge-name">
+                  {{ t(`profile.badges.names.${badge.key}`) }}
+                </h4>
+                <p class="badge-description">
+                  {{ t(`profile.badges.descriptions.${badge.key}`) }}
+                </p>
               </div>
             </div>
-          </template>
+          </div>
         </BaseCard>
       </div>
     </div>
