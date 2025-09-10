@@ -333,6 +333,56 @@
       "sports": "Deportes"
     }
   },
+  "profile": {
+    "anonymousUser": "Usuario Anónimo",
+    "changePhoto": "Cambiar Foto",
+    "saveChanges": "Guardar Cambios",
+    "stats": {
+      "exchanges": "Intercambios",
+      "reputation": "Reputación",
+      "memberSince": "Miembro desde"
+    },
+    "personalInfo": {
+      "title": "Información Personal",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Ingresa tu nombre",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "Ingresa tu apellido",
+      "bio": "Biografía",
+      "bioPlaceholder": "Cuéntanos un poco sobre ti..."
+    },
+    "verification": {
+      "title": "Verificación",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "verified": "Verificado",
+      "notVerified": "No verificado",
+      "verify": "Verificar"
+    },
+    "reputation": {
+      "title": "Reputación",
+      "description": "Basada en reseñas de otros usuarios en intercambios pasados",
+      "reviews": "Reseñas",
+      "onTime": "A tiempo",
+      "positive": "Positivas"
+    },
+    "badges": {
+      "title": "Insignias",
+      "names": {
+        "firstExchange": "Primer Intercambio",
+        "trustedMember": "Miembro Confiable",
+        "helpfulNeighbor": "Vecino Servicial",
+        "communityLeader": "Líder Comunitario"
+      },
+      "descriptions": {
+        "firstExchange": "Completaste tu primer intercambio",
+        "trustedMember": "Más de 10 intercambios completados",
+        "helpfulNeighbor": "Recibiste 20 reseñas positivas",
+        "communityLeader": "Organizaste 5 eventos comunitarios"
+      }
+    }
+  },
   "comingSoon": {
     "whatToExpect": "¿Qué puedes esperar?",
     "backToDashboard": "Volver al Dashboard",
