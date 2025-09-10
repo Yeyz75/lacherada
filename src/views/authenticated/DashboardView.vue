@@ -26,17 +26,15 @@
         :key="stat.key"
         class="stat-card"
         :class="`stat-${stat.key}`">
-        <template #content>
-          <div class="stat-content">
-            <div class="stat-icon">
-              <Icon :icon="stat.icon" />
-            </div>
-            <div class="stat-info">
-              <h3 class="stat-value">{{ stat.value }}</h3>
-              <p class="stat-label">{{ t(`dashboard.stats.${stat.key}`) }}</p>
-            </div>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <Icon :icon="stat.icon" />
           </div>
-        </template>
+          <div class="stat-info">
+            <h3 class="stat-value">{{ stat.value }}</h3>
+            <p class="stat-label">{{ t(`dashboard.stats.${stat.key}`) }}</p>
+          </div>
+        </div>
       </BaseCard>
     </div>
 
@@ -50,21 +48,19 @@
             {{ t('dashboard.quickActions') }}
           </h2>
         </template>
-        <template #content>
-          <div class="quick-actions">
-            <router-link
-              v-for="action in quickActions"
-              :key="action.key"
-              :to="action.path"
-              class="action-button"
-              :class="`action-${action.key}`">
-              <Icon :icon="action.icon" class="action-icon" />
-              <span class="action-label">
-                {{ t(`dashboard.actions.${action.key}`) }}
-              </span>
-            </router-link>
-          </div>
-        </template>
+        <div class="quick-actions">
+          <router-link
+            v-for="action in quickActions"
+            :key="action.key"
+            :to="action.path"
+            class="action-button"
+            :class="`action-${action.key}`">
+            <Icon :icon="action.icon" class="action-icon" />
+            <span class="action-label">
+              {{ t(`dashboard.actions.${action.key}`) }}
+            </span>
+          </router-link>
+        </div>
       </BaseCard>
 
       <!-- Recent Activity -->
@@ -75,35 +71,33 @@
             {{ t('dashboard.recentActivity') }}
           </h2>
         </template>
-        <template #content>
-          <div class="activity-list">
-            <div
-              v-for="activity in recentActivities"
-              :key="activity.id"
-              class="activity-item">
-              <div class="activity-icon">
-                <Icon :icon="activity.icon" />
-              </div>
-              <div class="activity-details">
-                <p class="activity-title">{{ activity.title }}</p>
-                <p class="activity-time">{{ activity.time }}</p>
-              </div>
-              <div class="activity-status">
-                <BaseBadge
-                  :value="activity.status"
-                  :severity="getActivitySeverity(activity.type)" />
-              </div>
+        <div class="activity-list">
+          <div
+            v-for="activity in recentActivities"
+            :key="activity.id"
+            class="activity-item">
+            <div class="activity-icon">
+              <Icon :icon="activity.icon" />
             </div>
-
-            <div v-if="recentActivities.length === 0" class="empty-state">
-              <Icon icon="mdi:inbox-outline" class="empty-icon" />
-              <p class="empty-text">{{ t('dashboard.noActivity') }}</p>
-              <router-link to="/explore" class="empty-action">
-                {{ t('dashboard.startExploring') }}
-              </router-link>
+            <div class="activity-details">
+              <p class="activity-title">{{ activity.title }}</p>
+              <p class="activity-time">{{ activity.time }}</p>
+            </div>
+            <div class="activity-status">
+              <BaseBadge
+                :value="activity.status"
+                :severity="getActivitySeverity(activity.type)" />
             </div>
           </div>
-        </template>
+
+          <div v-if="recentActivities.length === 0" class="empty-state">
+            <Icon icon="mdi:inbox-outline" class="empty-icon" />
+            <p class="empty-text">{{ t('dashboard.noActivity') }}</p>
+            <router-link to="/explore" class="empty-action">
+              {{ t('dashboard.startExploring') }}
+            </router-link>
+          </div>
+        </div>
       </BaseCard>
 
       <!-- Reputation & Community -->
@@ -114,55 +108,51 @@
             {{ t('dashboard.reputation') }}
           </h2>
         </template>
-        <template #content>
-          <div class="reputation-content">
-            <div class="reputation-score">
-              <BaseRating
-                :model-value="userReputation.rating"
-                readonly
-                :stars="5"
-                class="rating-display" />
-              <div class="score-info">
-                <span class="score-value">{{ userReputation.rating }}/5</span>
-                <span class="score-reviews">
-                  ({{ userReputation.reviews }} {{ t('dashboard.reviews') }})
-                </span>
-              </div>
+        <div class="reputation-content">
+          <div class="reputation-score">
+            <BaseRating
+              :model-value="userReputation.rating"
+              readonly
+              :stars="5"
+              class="rating-display" />
+            <div class="score-info">
+              <span class="score-value">{{ userReputation.rating }}/5</span>
+              <span class="score-reviews">
+                ({{ userReputation.reviews }} {{ t('dashboard.reviews') }})
+              </span>
             </div>
+          </div>
 
-            <div class="reputation-progress">
-              <div class="progress-info">
-                <span class="progress-label">
-                  {{ t('dashboard.nextLevel') }}
-                </span>
-                <span class="progress-value">
-                  {{ userReputation.progress }}%
-                </span>
-              </div>
-              <div class="progress-bar">
-                <div
-                  class="progress-fill"
-                  :style="{ width: `${userReputation.progress}%` }"></div>
-              </div>
+          <div class="reputation-progress">
+            <div class="progress-info">
+              <span class="progress-label">
+                {{ t('dashboard.nextLevel') }}
+              </span>
+              <span class="progress-value">{{ userReputation.progress }}%</span>
             </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                :style="{ width: `${userReputation.progress}%` }"></div>
+            </div>
+          </div>
 
-            <div class="badges-section">
-              <h4 class="badges-title">{{ t('dashboard.badges') }}</h4>
-              <div class="badges-grid">
-                <div
-                  v-for="badge in userBadges"
-                  :key="badge.key"
-                  class="badge-item"
-                  :class="{ earned: badge.earned }">
-                  <Icon :icon="badge.icon" class="badge-icon" />
-                  <span class="badge-name">
-                    {{ t(`dashboard.badgeNames.${badge.key}`) }}
-                  </span>
-                </div>
+          <div class="badges-section">
+            <h4 class="badges-title">{{ t('dashboard.badges') }}</h4>
+            <div class="badges-grid">
+              <div
+                v-for="badge in userBadges"
+                :key="badge.key"
+                class="badge-item"
+                :class="{ earned: badge.earned }">
+                <Icon :icon="badge.icon" class="badge-icon" />
+                <span class="badge-name">
+                  {{ t(`dashboard.badgeNames.${badge.key}`) }}
+                </span>
               </div>
             </div>
           </div>
-        </template>
+        </div>
       </BaseCard>
 
       <!-- Recommendations -->
@@ -173,43 +163,41 @@
             {{ t('dashboard.recommendations') }}
           </h2>
         </template>
-        <template #content>
-          <div class="recommendations-list">
-            <div
-              v-for="item in recommendations"
-              :key="item.id"
-              class="recommendation-item">
-              <div class="recommendation-image">
-                <Icon :icon="item.icon" />
-              </div>
-              <div class="recommendation-details">
-                <h4 class="recommendation-title">{{ item.title }}</h4>
-                <p class="recommendation-description">{{ item.description }}</p>
-                <div class="recommendation-meta">
-                  <span class="recommendation-distance">
-                    <Icon icon="mdi:map-marker" />
-                    {{ item.distance }}
-                  </span>
-                  <span class="recommendation-category">
-                    {{ item.category }}
-                  </span>
-                </div>
-              </div>
-              <BaseButton
-                icon="mdi:heart-outline"
-                class="favorite-btn"
-                severity="secondary"
-                text />
+        <div class="recommendations-list">
+          <div
+            v-for="item in recommendations"
+            :key="item.id"
+            class="recommendation-item">
+            <div class="recommendation-image">
+              <Icon :icon="item.icon" />
             </div>
-
-            <div class="recommendations-footer">
-              <router-link to="/explore" class="view-more-link">
-                {{ t('dashboard.viewMore') }}
-                <Icon icon="mdi:arrow-right" />
-              </router-link>
+            <div class="recommendation-details">
+              <h4 class="recommendation-title">{{ item.title }}</h4>
+              <p class="recommendation-description">{{ item.description }}</p>
+              <div class="recommendation-meta">
+                <span class="recommendation-distance">
+                  <Icon icon="mdi:map-marker" />
+                  {{ item.distance }}
+                </span>
+                <span class="recommendation-category">
+                  {{ item.category }}
+                </span>
+              </div>
             </div>
+            <BaseButton
+              icon="mdi:heart-outline"
+              class="favorite-btn"
+              severity="secondary"
+              text />
           </div>
-        </template>
+
+          <div class="recommendations-footer">
+            <router-link to="/explore" class="view-more-link">
+              {{ t('dashboard.viewMore') }}
+              <Icon icon="mdi:arrow-right" />
+            </router-link>
+          </div>
+        </div>
       </BaseCard>
     </div>
   </div>
