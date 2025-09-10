@@ -80,6 +80,25 @@
           class="register-button"
           severity="primary" />
 
+        <div class="or-divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">{{ $t('auth.orDivider') }}</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <Button
+          type="button"
+          :loading="googleLoading"
+          class="google-button"
+          severity="secondary"
+          outlined
+          @click="handleGoogleRegister">
+          <template #default>
+            <Icon icon="simple-icons:google" class="google-icon" />
+            {{ $t('auth.googleRegister') }}
+          </template>
+        </Button>
+
         <div v-if="error" class="error-alert">
           <Message severity="error" :closable="false">
             {{ error }}
@@ -103,13 +122,14 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../../composables/useAuth'
+import { Icon } from '@iconify/vue'
 import BaseInput from '../../components/base/BaseInput.vue'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import Checkbox from 'primevue/checkbox'
 
 const router = useRouter()
-const { signUp, loading, error } = useAuth()
+const { signUp, signInWithGoogle, loading, error, clearError } = useAuth()
 
 // Form data
 const displayName = ref('')
@@ -117,6 +137,7 @@ const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const acceptTerms = ref(false)
+const googleLoading = ref(false)
 
 // Form validation
 const displayNameError = ref('')
@@ -203,10 +224,33 @@ const handleRegister = async () => {
   if (!isFormValid.value) return
 
   try {
+    clearError()
     await signUp(email.value, password.value, displayName.value)
     router.push('/auth/login')
   } catch (err) {
     console.error('Registration failed:', err)
+  }
+}
+
+// Handle Google registration
+const handleGoogleRegister = async () => {
+  googleLoading.value = true
+
+  try {
+    clearError()
+    const result = await signInWithGoogle()
+
+    if (result.needsPasswordSetup) {
+      // Redirect to password setup if user needs to set password
+      router.push('/auth/set-password')
+    } else {
+      // Redirect to dashboard if password is already set
+      router.push('/dashboard')
+    }
+  } catch (err) {
+    console.error('Google registration failed:', err)
+  } finally {
+    googleLoading.value = false
   }
 }
 </script>
@@ -324,6 +368,59 @@ const handleRegister = async () => {
 .register-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.divider-text {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.google-button {
+  width: 100%;
+  height: 3rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.google-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-background-secondary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.google-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  color: #4285f4;
 }
 
 .error-alert {

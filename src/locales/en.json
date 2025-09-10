@@ -137,6 +137,7 @@
     "lowerCase": "At least one lowercase letter",
     "hasNumber": "At least one number",
     "googleLogin": "Continue with Google",
+    "googleRegister": "Sign up with Google",
     "orDivider": "OR",
     "setPasswordWelcome": "Welcome! Complete your registration",
     "setPasswordTitle": "Set Your Password",

@@ -55,13 +55,16 @@
 
         <Button
           type="button"
-          :label="$t('auth.googleLogin')"
           :loading="googleLoading"
-          icon="mdi:google"
           class="google-button"
           severity="secondary"
           outlined
-          @click="handleGoogleLogin" />
+          @click="handleGoogleLogin">
+          <template #default>
+            <Icon icon="simple-icons:google" class="google-icon" />
+            {{ $t('auth.googleLogin') }}
+          </template>
+        </Button>
 
         <div v-if="error" class="error-alert">
           <Message severity="error" :closable="false">
@@ -86,6 +89,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../../composables/useAuth'
+import { Icon } from '@iconify/vue'
 import BaseInput from '../../components/base/BaseInput.vue'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
@@ -305,7 +309,7 @@ const handleGoogleLogin = async () => {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: white;
+  background: var(--color-background);
   color: var(--color-text-primary);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -317,6 +321,12 @@ const handleGoogleLogin = async () => {
   background: var(--color-background-secondary);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+}
+
+.google-icon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  color: #4285f4;
 }
 
 .google-button:disabled {
