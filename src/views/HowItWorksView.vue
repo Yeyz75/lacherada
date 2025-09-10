@@ -160,38 +160,6 @@ const benefits = [
   flex-wrap: wrap;
 }
 
-/* Estilos específicos para botones del hero */
-.hero-cta-btn {
-  padding: var(--space-md) var(--space-xl) !important;
-  font-size: var(--font-size-lg) !important;
-  font-weight: var(--font-weight-semibold) !important;
-  min-width: 180px !important;
-  white-space: nowrap !important;
-  transition: all var(--transition-normal) !important;
-}
-
-.hero-cta-btn:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--shadow-lg) !important;
-}
-
-/* Custom button styles for primary orange color */
-.btn-primary-custom {
-  background: var(--color-primary) !important;
-  border-color: var(--color-primary) !important;
-  color: white !important;
-}
-
-.btn-primary-custom:hover {
-  background: var(--color-primary-dark) !important;
-  border-color: var(--color-primary-dark) !important;
-  color: white !important;
-}
-
-.btn-primary-custom:focus {
-  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
-}
-
 /* Benefits Section */
 .benefits-section {
   padding: var(--space-3xl) 0;
@@ -203,7 +171,6 @@ const benefits = [
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-2xl);
-  color: var(--color-text-primary);
 }
 
 .benefits-grid {
@@ -215,13 +182,6 @@ const benefits = [
 }
 
 .benefit-card {
-  background: var(--color-background);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
-  text-align: center;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--color-border);
-  transition: all var(--transition-normal);
   animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
   transform: translateY(30px);
@@ -230,11 +190,11 @@ const benefits = [
   align-items: center;
   justify-content: flex-start;
   min-height: 300px;
+  transition: transform var(--transition-normal);
 }
 
 .benefit-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
 }
 
 .benefit-icon {
@@ -253,23 +213,6 @@ const benefits = [
   font-size: var(--font-size-2xl);
   color: white;
   flex-shrink: 0;
-}
-
-.benefit-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-md);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-tight);
-}
-
-.benefit-description {
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  text-align: center;
 }
 
 /* CTA Section */
@@ -292,12 +235,10 @@ const benefits = [
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
-  color: var(--color-text-primary);
 }
 
 .cta-subtitle {
   font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
   margin-bottom: var(--space-2xl);
   line-height: 1.6;
 }
@@ -307,14 +248,6 @@ const benefits = [
   justify-content: center;
   gap: var(--space-md);
   flex-wrap: wrap;
-}
-
-/* Estilos para botones CTA */
-.cta-btn {
-  padding: var(--space-md) var(--space-xl) !important;
-  font-size: var(--font-size-lg) !important;
-  min-width: 160px !important;
-  white-space: nowrap !important;
 }
 
 /* Animations */
@@ -340,12 +273,6 @@ const benefits = [
     align-items: center;
   }
 
-  .hero-cta-btn {
-    width: 100% !important;
-    max-width: 280px !important;
-    min-width: auto !important;
-  }
-
   .benefits-grid {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -353,7 +280,6 @@ const benefits = [
 
   .benefit-card {
     min-height: 280px;
-    padding: var(--space-lg);
   }
 
   .benefit-icon {
@@ -368,12 +294,6 @@ const benefits = [
     flex-direction: column;
     align-items: center;
   }
-
-  .cta-btn {
-    width: 100% !important;
-    max-width: 250px !important;
-    min-width: auto !important;
-  }
 }
 
 @media (max-width: 480px) {
@@ -387,10 +307,6 @@ const benefits = [
 
   .cta-section {
     padding: var(--space-2xl) 0;
-  }
-
-  .benefit-card {
-    padding: var(--space-lg);
   }
 
   .benefit-icon {

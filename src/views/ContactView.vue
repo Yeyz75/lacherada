@@ -17,174 +17,166 @@
           <!-- Contact Form using Base Components -->
           <div class="contact-form-section">
             <BaseCard class="form-card">
-              <template #header>
-                <div class="card-header">
-                  <Icon icon="mdi:email-edit" class="header-icon" />
-                  <h2 class="form-title">Envía un Mensaje</h2>
+              <div class="card-header">
+                <Icon icon="mdi:email-edit" class="header-icon" />
+                <h2 class="form-title">Envía un Mensaje</h2>
+              </div>
+
+              <form @submit.prevent="submitForm" class="contact-form">
+                <div class="form-field">
+                  <BaseInput
+                    id="name"
+                    v-model="form.name"
+                    :label="t('contact.form.name')"
+                    :placeholder="t('contact.form.namePlaceholder')"
+                    icon="mdi:account"
+                    clearable
+                    required
+                    class="w-full" />
                 </div>
-              </template>
 
-              <template #content>
-                <form @submit.prevent="submitForm" class="contact-form">
-                  <div class="form-field">
-                    <BaseInput
-                      id="name"
-                      v-model="form.name"
-                      :label="t('contact.form.name')"
-                      :placeholder="t('contact.form.namePlaceholder')"
-                      icon="mdi:account"
-                      clearable
-                      required
-                      class="w-full" />
-                  </div>
+                <div class="form-field">
+                  <BaseInput
+                    id="email"
+                    v-model="form.email"
+                    type="email"
+                    :label="t('contact.form.email')"
+                    :placeholder="t('contact.form.emailPlaceholder')"
+                    icon="mdi:email"
+                    clearable
+                    required
+                    class="w-full" />
+                </div>
 
-                  <div class="form-field">
-                    <BaseInput
-                      id="email"
-                      v-model="form.email"
-                      type="email"
-                      :label="t('contact.form.email')"
-                      :placeholder="t('contact.form.emailPlaceholder')"
-                      icon="mdi:email"
-                      clearable
-                      required
-                      class="w-full" />
-                  </div>
+                <div class="form-field">
+                  <BaseInput
+                    id="subject"
+                    v-model="form.subject"
+                    :label="t('contact.form.subject')"
+                    :placeholder="t('contact.form.subjectPlaceholder')"
+                    icon="mdi:bookmark"
+                    clearable
+                    required
+                    class="w-full" />
+                </div>
 
-                  <div class="form-field">
-                    <BaseInput
-                      id="subject"
-                      v-model="form.subject"
-                      :label="t('contact.form.subject')"
-                      :placeholder="t('contact.form.subjectPlaceholder')"
-                      icon="mdi:bookmark"
-                      clearable
-                      required
-                      class="w-full" />
-                  </div>
+                <div class="form-field">
+                  <BaseTextarea
+                    id="message"
+                    v-model="form.message"
+                    :label="t('contact.form.message')"
+                    :placeholder="t('contact.form.messagePlaceholder')"
+                    :rows="6"
+                    :maxlength="500"
+                    show-character-count
+                    clearable
+                    required
+                    class="w-full" />
+                </div>
 
-                  <div class="form-field">
-                    <BaseTextarea
-                      id="message"
-                      v-model="form.message"
-                      :label="t('contact.form.message')"
-                      :placeholder="t('contact.form.messagePlaceholder')"
-                      :rows="6"
-                      :maxlength="500"
-                      show-character-count
-                      clearable
-                      required
-                      class="w-full" />
-                  </div>
-
-                  <BaseButton
-                    type="submit"
-                    :loading="isSubmitting"
-                    icon="mdi:send"
-                    variant="primary"
-                    size="large"
-                    full-width>
-                    {{
-                      isSubmitting
-                        ? t('contact.form.sending')
-                        : t('contact.form.send')
-                    }}
-                  </BaseButton>
-                </form>
-              </template>
+                <BaseButton
+                  type="submit"
+                  :loading="isSubmitting"
+                  icon="mdi:send"
+                  variant="primary"
+                  size="large"
+                  full-width>
+                  {{
+                    isSubmitting
+                      ? t('contact.form.sending')
+                      : t('contact.form.send')
+                  }}
+                </BaseButton>
+              </form>
             </BaseCard>
           </div>
 
           <!-- Contact Information using Base Components -->
           <div class="contact-info-section">
             <BaseCard class="info-card">
-              <template #header>
-                <div class="card-header">
-                  <Icon icon="mdi:information" class="header-icon" />
-                  <h2 class="info-title">Información de Contacto</h2>
-                </div>
-              </template>
+              <div class="card-header">
+                <Icon icon="mdi:information" class="header-icon" />
+                <h2 class="info-title">Información de Contacto</h2>
+              </div>
 
-              <template #content>
-                <div class="info-items">
-                  <div class="info-item">
-                    <div class="info-icon">
-                      <Icon icon="mdi:map-marker" />
-                    </div>
-                    <div class="info-content">
-                      <h3 class="info-label">
-                        {{ t('contact.info.address') }}
-                      </h3>
-                      <p class="info-value">
-                        Calle de la Innovación, 123
-                        <br />
-                        28001 Madrid, España
-                      </p>
-                    </div>
+              <div class="info-items">
+                <div class="info-item">
+                  <div class="info-icon">
+                    <Icon icon="mdi:map-marker" />
                   </div>
-
-                  <div class="info-item">
-                    <div class="info-icon">
-                      <Icon icon="mdi:email" />
-                    </div>
-                    <div class="info-content">
-                      <h3 class="info-label">{{ t('contact.info.email') }}</h3>
-                      <p class="info-value">contacto@lacherada.com</p>
-                    </div>
-                  </div>
-
-                  <div class="info-item">
-                    <div class="info-icon">
-                      <Icon icon="mdi:phone" />
-                    </div>
-                    <div class="info-content">
-                      <h3 class="info-label">{{ t('contact.info.phone') }}</h3>
-                      <p class="info-value">+34 91 123 45 67</p>
-                    </div>
-                  </div>
-
-                  <div class="info-item">
-                    <div class="info-icon">
-                      <Icon icon="mdi:clock" />
-                    </div>
-                    <div class="info-content">
-                      <h3 class="info-label">{{ t('contact.info.hours') }}</h3>
-                      <p class="info-value">
-                        {{ t('contact.info.hoursValue') }}
-                      </p>
-                    </div>
+                  <div class="info-content">
+                    <h3 class="info-label">
+                      {{ t('contact.info.address') }}
+                    </h3>
+                    <p class="info-value">
+                      Calle de la Innovación, 123
+                      <br />
+                      28001 Madrid, España
+                    </p>
                   </div>
                 </div>
 
-                <BaseDivider />
-
-                <!-- Social Links using Base Components -->
-                <div class="social-links">
-                  <h3 class="social-title">Síguenos</h3>
-                  <div class="social-icons">
-                    <BaseButton
-                      icon="mdi:twitter"
-                      variant="outlined"
-                      size="small"
-                      @click="openSocial('twitter')" />
-                    <BaseButton
-                      icon="mdi:facebook"
-                      variant="outlined"
-                      size="small"
-                      @click="openSocial('facebook')" />
-                    <BaseButton
-                      icon="mdi:instagram"
-                      variant="outlined"
-                      size="small"
-                      @click="openSocial('instagram')" />
-                    <BaseButton
-                      icon="mdi:linkedin"
-                      variant="outlined"
-                      size="small"
-                      @click="openSocial('linkedin')" />
+                <div class="info-item">
+                  <div class="info-icon">
+                    <Icon icon="mdi:email" />
+                  </div>
+                  <div class="info-content">
+                    <h3 class="info-label">{{ t('contact.info.email') }}</h3>
+                    <p class="info-value">contacto@lacherada.com</p>
                   </div>
                 </div>
-              </template>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <Icon icon="mdi:phone" />
+                  </div>
+                  <div class="info-content">
+                    <h3 class="info-label">{{ t('contact.info.phone') }}</h3>
+                    <p class="info-value">+34 91 123 45 67</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <Icon icon="mdi:clock" />
+                  </div>
+                  <div class="info-content">
+                    <h3 class="info-label">{{ t('contact.info.hours') }}</h3>
+                    <p class="info-value">
+                      {{ t('contact.info.hoursValue') }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <BaseDivider />
+
+              <!-- Social Links using Base Components -->
+              <div class="social-links">
+                <h3 class="social-title">Síguenos</h3>
+                <div class="social-icons">
+                  <BaseButton
+                    icon="mdi:twitter"
+                    variant="outlined"
+                    size="small"
+                    @click="openSocial('twitter')" />
+                  <BaseButton
+                    icon="mdi:facebook"
+                    variant="outlined"
+                    size="small"
+                    @click="openSocial('facebook')" />
+                  <BaseButton
+                    icon="mdi:instagram"
+                    variant="outlined"
+                    size="small"
+                    @click="openSocial('instagram')" />
+                  <BaseButton
+                    icon="mdi:linkedin"
+                    variant="outlined"
+                    size="small"
+                    @click="openSocial('linkedin')" />
+                </div>
+              </div>
             </BaseCard>
           </div>
         </div>
@@ -197,18 +189,16 @@
         <h2 class="section-title">{{ t('contact.faq.title') }}</h2>
 
         <BaseCard class="faq-card">
-          <template #content>
-            <Accordion>
-              <AccordionTab
-                v-for="(_, index) in faqs"
-                :key="index"
-                :header="t(`contact.faq.q${index + 1}.question`)">
-                <p class="faq-answer">
-                  {{ t(`contact.faq.q${index + 1}.answer`) }}
-                </p>
-              </AccordionTab>
-            </Accordion>
-          </template>
+          <Accordion>
+            <AccordionTab
+              v-for="(_, index) in faqs"
+              :key="index"
+              :header="t(`contact.faq.q${index + 1}.question`)">
+              <p class="faq-answer">
+                {{ t(`contact.faq.q${index + 1}.answer`) }}
+              </p>
+            </AccordionTab>
+          </Accordion>
         </BaseCard>
       </div>
     </section>
@@ -218,12 +208,10 @@
       <div class="container">
         <h2 class="section-title">Nuestra Ubicación</h2>
         <BaseCard class="map-card">
-          <template #content>
-            <div class="map-placeholder">
-              <Icon icon="mdi:map" class="map-icon" />
-              <p class="map-text">Mapa interactivo próximamente</p>
-            </div>
-          </template>
+          <div class="map-placeholder">
+            <Icon icon="mdi:map" class="map-icon" />
+            <p class="map-text">Mapa interactivo próximamente</p>
+          </div>
         </BaseCard>
       </div>
     </section>
@@ -361,7 +349,7 @@ const openSocial = (platform: string) => {
   opacity: 0.9;
 }
 
-/* Main Content */
+/* Main Content Layout */
 .main-content {
   padding: var(--space-3xl) 0;
 }
@@ -375,22 +363,12 @@ const openSocial = (platform: string) => {
   margin: 0 auto;
 }
 
-/* Card styling */
-.form-card,
-.info-card {
-  height: fit-content;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-border);
-}
-
+/* Card Layout */
 .card-header {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-xl) var(--space-xl) var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-background-secondary);
+  gap: 1rem;
+  margin-bottom: var(--space-lg);
 }
 
 .header-icon {
@@ -398,34 +376,18 @@ const openSocial = (platform: string) => {
   color: var(--color-primary);
 }
 
-.form-title,
-.info-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-/* Form styling */
+/* Form Layout */
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
+  gap: var(--space-lg);
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Contact Information */
+/* Info Items Layout */
 .info-items {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
-  margin-bottom: var(--space-xl);
-  padding: var(--space-xl);
+  gap: var(--space-lg);
 }
 
 .info-item {
@@ -455,30 +417,12 @@ const openSocial = (platform: string) => {
   flex: 1;
 }
 
-.info-label {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-xs);
-}
-
-.info-value {
-  color: var(--color-text-secondary);
-  line-height: 1.5;
-}
-
-/* Social Links */
+/* Social Links Layout */
 .social-links {
-  margin-top: var(--space-xl);
-  padding: var(--space-xl);
-  background: var(--color-background-secondary);
-  border-radius: var(--radius-md);
+  margin-top: var(--space-lg);
 }
 
 .social-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
   margin-bottom: var(--space-lg);
   text-align: center;
 }
@@ -500,19 +444,12 @@ const openSocial = (platform: string) => {
   text-align: center;
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
   margin-bottom: var(--space-2xl);
 }
 
 .faq-card {
   max-width: 800px;
   margin: 0 auto;
-}
-
-.faq-answer {
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-  margin: 0;
 }
 
 /* Map Section */
@@ -526,25 +463,19 @@ const openSocial = (platform: string) => {
 }
 
 .map-placeholder {
-  background: var(--color-background-secondary);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
   height: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-md);
+  gap: var(--space-lg);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 .map-icon {
   font-size: 4rem;
   color: var(--color-text-tertiary);
-}
-
-.map-text {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-lg);
 }
 
 /* Responsive Design */
@@ -568,23 +499,6 @@ const openSocial = (platform: string) => {
     padding: var(--space-2xl) 0;
   }
 
-  .contact-form {
-    padding: var(--space-lg);
-    gap: var(--space-lg);
-  }
-
-  .info-items {
-    padding: var(--space-lg);
-  }
-
-  .card-header {
-    padding: var(--space-lg);
-  }
-
-  .social-links {
-    padding: var(--space-lg);
-  }
-
   .faq-section {
     padding: var(--space-2xl) 0;
   }
@@ -596,19 +510,11 @@ const openSocial = (platform: string) => {
   .map-placeholder {
     height: 250px;
   }
-
-  .social-icons {
-    gap: var(--space-sm);
-  }
 }
 
 @media (max-width: 480px) {
   .hero-section {
     padding: var(--space-xl) 0;
-  }
-
-  .card-header {
-    padding: var(--space-md);
   }
 
   .info-icon {
