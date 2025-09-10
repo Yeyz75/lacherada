@@ -5,8 +5,6 @@
     <Categories />
     <Testimonials />
     <StatsSection />
-    <!-- Componente demo de PrimeVue -->
-    <PrimeVueDemo />
   </div>
 </template>
 
