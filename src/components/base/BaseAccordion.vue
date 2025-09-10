@@ -53,9 +53,11 @@ watch(
 )
 
 // Manejar cambios de valor
-const handleValueChange = (value: string | string[]) => {
-  internalValue.value = value
-  emit('update:modelValue', value)
+const handleValueChange = (value: string | string[] | null | undefined) => {
+  // Normalizar el valor - PrimeVue puede pasar null/undefined
+  const normalizedValue = value ?? (props.multiple ? [] : '')
+  internalValue.value = normalizedValue
+  emit('update:modelValue', normalizedValue)
 }
 
 // Clases computadas para el accordion

@@ -56,7 +56,7 @@
 
             <!-- Authenticated -->
             <template v-else>
-              <div class="user-menu">
+              <div class="user-menu" @click="toggleUserDropdown">
                 <div class="user-info">
                   <div class="user-avatar">
                     <Icon icon="mdi:account-circle" />
@@ -64,14 +64,37 @@
                   <span class="user-name">
                     {{ user?.displayName || user?.email }}
                   </span>
+                  <Icon
+                    icon="mdi:chevron-down"
+                    class="dropdown-icon"
+                    :class="{ rotated: isUserDropdownOpen }" />
                 </div>
-                <button
-                  @click="handleSignOut"
-                  class="btn btn-ghost sign-out-btn"
-                  :disabled="loading">
-                  <Icon icon="mdi:logout" />
-                  {{ t('navbar.signOut', 'Sign Out') }}
-                </button>
+
+                <!-- User Dropdown -->
+                <div v-if="isUserDropdownOpen" class="user-dropdown">
+                  <router-link
+                    to="/profile"
+                    class="dropdown-item"
+                    @click="closeUserDropdown">
+                    <Icon icon="mdi:account" />
+                    {{ t('navbar.profile') }}
+                  </router-link>
+                  <router-link
+                    to="/my-items"
+                    class="dropdown-item"
+                    @click="closeUserDropdown">
+                    <Icon icon="mdi:package-variant" />
+                    {{ t('navbar.myItems') }}
+                  </router-link>
+                  <div class="dropdown-divider"></div>
+                  <button
+                    @click="handleSignOut"
+                    class="dropdown-item sign-out-item"
+                    :disabled="loading">
+                    <Icon icon="mdi:logout" />
+                    {{ t('navbar.signOut', 'Sign Out') }}
+                  </button>
+                </div>
               </div>
             </template>
           </div>
@@ -116,6 +139,24 @@
                 <Icon icon="mdi:account-circle" class="user-avatar-mobile" />
                 <span>{{ user?.displayName || user?.email }}</span>
               </div>
+
+              <div class="mobile-user-links">
+                <router-link
+                  to="/profile"
+                  class="mobile-nav-link"
+                  @click="closeMobileMenu">
+                  <Icon icon="mdi:account" />
+                  {{ t('navbar.profile') }}
+                </router-link>
+                <router-link
+                  to="/my-items"
+                  class="mobile-nav-link"
+                  @click="closeMobileMenu">
+                  <Icon icon="mdi:package-variant" />
+                  {{ t('navbar.myItems') }}
+                </router-link>
+              </div>
+
               <button
                 @click="handleSignOut"
                 class="btn btn-ghost btn-full"
@@ -132,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
@@ -145,13 +186,26 @@ const { user, isAuthenticated, signOut, loading } = useAuth()
 const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
+const isUserDropdownOpen = ref(false)
 
-const navItems = [
-  { key: 'home', path: '/' },
-  { key: 'explore', path: '/explore' },
-  { key: 'howItWorks', path: '/how-it-works' },
-  { key: 'contact', path: '/contact' },
-]
+const navItems = computed(() => {
+  if (isAuthenticated.value) {
+    return [
+      { key: 'dashboard', path: '/dashboard' },
+      { key: 'explore', path: '/explore' },
+      { key: 'publish', path: '/publish' },
+      { key: 'messages', path: '/messages' },
+      { key: 'favorites', path: '/favorites' },
+    ]
+  } else {
+    return [
+      { key: 'home', path: '/' },
+      { key: 'explore', path: '/explore' },
+      { key: 'howItWorks', path: '/how-it-works' },
+      { key: 'contact', path: '/contact' },
+    ]
+  }
+})
 
 const toggleLanguage = () => {
   locale.value = locale.value === 'es' ? 'en' : 'es'
@@ -161,9 +215,18 @@ const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
+const toggleUserDropdown = () => {
+  isUserDropdownOpen.value = !isUserDropdownOpen.value
+}
+
+const closeUserDropdown = () => {
+  isUserDropdownOpen.value = false
+}
+
 const handleSignOut = async () => {
   try {
     await signOut()
+    closeUserDropdown()
     router.push('/')
   } catch (error) {
     console.error('Sign out failed:', error)
@@ -182,6 +245,7 @@ const goToRegister = () => {
 
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
+  closeUserDropdown()
 }
 </script>
 
@@ -305,6 +369,7 @@ const closeMobileMenu = () => {
 }
 
 .user-menu {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-md);
@@ -318,6 +383,12 @@ const closeMobileMenu = () => {
   background: var(--color-background-secondary);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-info:hover {
+  background: var(--color-background-tertiary);
 }
 
 .user-avatar {
@@ -333,6 +404,65 @@ const closeMobileMenu = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.dropdown-icon {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-fast);
+}
+
+.dropdown-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-xs);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  font-size: var(--font-size-sm);
+}
+
+.dropdown-item:hover {
+  background: var(--color-background-secondary);
+}
+
+.dropdown-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-xs) 0;
+}
+
+.sign-out-item {
+  color: var(--color-danger);
 }
 
 .sign-out-btn {
@@ -386,6 +516,12 @@ const closeMobileMenu = () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+.mobile-user-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .user-display {

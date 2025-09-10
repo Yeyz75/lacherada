@@ -62,6 +62,12 @@
     "explore": "Explorar",
     "howItWorks": "Cómo Funciona",
     "contact": "Contacto",
+    "dashboard": "Dashboard",
+    "publish": "Publicar",
+    "messages": "Mensajes",
+    "favorites": "Favoritos",
+    "profile": "Perfil",
+    "myItems": "Mis Elementos",
     "login": "Iniciar Sesión",
     "register": "Registrarse",
     "signOut": "Cerrar Sesión"
@@ -241,5 +247,119 @@
     "formSubmitted": "Formulario enviado correctamente",
     "editing": "Editando",
     "deleting": "Eliminando"
+  },
+  "dashboard": {
+    "welcome": "¡Bienvenido, {name}!",
+    "user": "Usuario",
+    "subtitle": "Gestiona tu actividad y conecta con tu comunidad",
+    "quickActions": "Acciones Rápidas",
+    "recentActivity": "Actividad Reciente",
+    "reputation": "Reputación",
+    "recommendations": "Recomendaciones",
+    "noActivity": "No hay actividad reciente",
+    "startExploring": "Comenzar a Explorar",
+    "viewMore": "Ver Más",
+    "nextLevel": "Siguiente Nivel",
+    "reviews": "reseñas",
+    "badges": "Insignias",
+    "stats": {
+      "published": "Publicados",
+      "exchanges": "Intercambios",
+      "favorites": "Favoritos",
+      "messages": "Mensajes"
+    },
+    "actions": {
+      "publish": "Publicar Elemento",
+      "explore": "Explorar Comunidad",
+      "messages": "Ver Mensajes",
+      "profile": "Editar Perfil"
+    },
+    "activityExamples": {
+      "exchange": "Intercambio completado con Ana",
+      "message": "Nuevo mensaje de Carlos",
+      "favorite": "Elemento agregado a favoritos"
+    },
+    "timeAgo": {
+      "hours": "hace {count} horas",
+      "days": "hace {count} días"
+    },
+    "statusLabels": {
+      "completed": "Completado",
+      "new": "Nuevo",
+      "saved": "Guardado"
+    },
+    "badgeNames": {
+      "firstExchange": "Primer Intercambio",
+      "trustedMember": "Miembro Confiable",
+      "helpfulNeighbor": "Vecino Servicial",
+      "communityLeader": "Líder Comunitario"
+    },
+    "exampleItems": {
+      "drill": "Taladro Inalámbrico",
+      "drillDescription": "Taladro en excelente estado para préstamo",
+      "book": "Libro de Cocina",
+      "bookDescription": "Recetas caseras tradicionales",
+      "bike": "Bicicleta de Montaña",
+      "bikeDescription": "Perfecta para rutas de fin de semana"
+    },
+    "categories": {
+      "tools": "Herramientas",
+      "books": "Libros",
+      "sports": "Deportes"
+    }
+  },
+  "comingSoon": {
+    "whatToExpect": "¿Qué puedes esperar?",
+    "backToDashboard": "Volver al Dashboard",
+    "profile": {
+      "title": "Perfil de Usuario",
+      "description": "Pronto podrás gestionar toda tu información personal, ver tu reputación y personalizar tu experiencia en LaCherada.",
+      "features": {
+        "photo": "Foto de perfil personalizable",
+        "reputation": "Sistema de reputación y reseñas",
+        "history": "Historial completo de intercambios",
+        "verification": "Verificación de identidad y contacto"
+      }
+    },
+    "publish": {
+      "title": "Publicar Elementos",
+      "description": "Próximamente podrás publicar tus elementos de manera fácil e intuitiva, con múltiples fotos y configuraciones avanzadas.",
+      "features": {
+        "photos": "Subida de múltiples fotos",
+        "categories": "Categorización automática",
+        "availability": "Configuración de disponibilidad",
+        "location": "Configuración de alcance y ubicación"
+      }
+    },
+    "messages": {
+      "title": "Sistema de Mensajería",
+      "description": "Chat en tiempo real con otros usuarios, historial de conversaciones y proposiciones de intercambio estructuradas.",
+      "features": {
+        "realtime": "Chat en tiempo real",
+        "history": "Historial de conversaciones",
+        "location": "Compartir ubicación para encuentros",
+        "notifications": "Notificaciones push"
+      }
+    },
+    "favorites": {
+      "title": "Favoritos y Lista de Deseos",
+      "description": "Guarda elementos que te interesan, crea listas de deseos y recibe alertas cuando aparezcan elementos similares.",
+      "features": {
+        "saved": "Elementos guardados",
+        "wishlist": "Lista de deseos personalizada",
+        "searches": "Búsquedas guardadas con alertas",
+        "users": "Seguimiento de usuarios de confianza"
+      }
+    },
+    "myItems": {
+      "title": "Gestión de Mis Elementos",
+      "description": "Administra todos tus elementos publicados, ve solicitudes recibidas y organiza tu calendario de préstamos.",
+      "features": {
+        "manage": "Gestión completa de elementos",
+        "requests": "Solicitudes recibidas",
+        "calendar": "Calendario de préstamos",
+        "analytics": "Estadísticas de popularidad"
+      }
+    }
   }
 }
