@@ -1,117 +1,235 @@
 import { ref, computed } from 'vue'
+import {
+  FirebaseAuthService,
+  UserData,
+  AuthResult,
+} from '../services/authService'
 
-// User interface - to be used with Firebase Auth
-export interface User {
-  uid: string
-  email: string | null
-  displayName: string | null
-  photoURL: string | null
-  emailVerified: boolean
-  createdAt: Date
-}
-
-const user = ref<User | null>(null)
+// Estado global de autenticación
+const user = ref<UserData | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+const initialized = ref(false)
+
+// Inicializar el listener de autenticación una sola vez
+let unsubscribe: (() => void) | null = null
 
 export function useAuth() {
   const isAuthenticated = computed(() => Boolean(user.value))
+  const needsPasswordSetup = computed(() => {
+    return (
+      user.value &&
+      !user.value.hasPassword &&
+      user.value.loginMethod === 'google'
+    )
+  })
 
-  const signIn = async (email: string, password: string): Promise<void> => {
+  // Inicializar el listener de Firebase si no está inicializado
+  const initialize = () => {
+    if (!initialized.value) {
+      unsubscribe = FirebaseAuthService.onAuthStateChanged((userData) => {
+        user.value = userData
+        initialized.value = true
+      })
+    }
+  }
+
+  // Limpiar el listener
+  const cleanup = () => {
+    if (unsubscribe) {
+      unsubscribe()
+      unsubscribe = null
+      initialized.value = false
+    }
+  }
+
+  /**
+   * Iniciar sesión con email y contraseña
+   */
+  const signIn = async (
+    email: string,
+    password: string,
+  ): Promise<AuthResult> => {
     loading.value = true
     error.value = null
 
     try {
-      // TODO: Implement Firebase signInWithEmailAndPassword
-      // eslint-disable-next-line no-console
-      console.log('Sign in with:', email, password)
-
-      // Placeholder success
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Set mock user for development
-      user.value = {
-        uid: '123',
-        email,
-        displayName: null,
-        photoURL: null,
-        emailVerified: true,
-        createdAt: new Date(),
-      }
+      const result = await FirebaseAuthService.signInWithEmail(email, password)
+      user.value = result.user
+      return result
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Authentication failed'
-      throw err
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al iniciar sesión'
+      error.value = errorMessage
+      throw new Error(errorMessage)
     } finally {
       loading.value = false
     }
   }
 
+  /**
+   * Registrarse con email y contraseña
+   */
   const signUp = async (
     email: string,
     password: string,
     displayName?: string,
-  ): Promise<void> => {
+  ): Promise<AuthResult> => {
     loading.value = true
     error.value = null
 
     try {
-      // TODO: Implement Firebase createUserWithEmailAndPassword
-      // eslint-disable-next-line no-console
-      console.log('Sign up with:', email, password, displayName)
-
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const result = await FirebaseAuthService.signUpWithEmail(
+        email,
+        password,
+        displayName,
+      )
+      user.value = result.user
+      return result
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Registration failed'
-      throw err
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al registrarse'
+      error.value = errorMessage
+      throw new Error(errorMessage)
     } finally {
       loading.value = false
     }
   }
 
-  const signOut = async (): Promise<void> => {
+  /**
+   * Iniciar sesión con Google
+   */
+  const signInWithGoogle = async (): Promise<AuthResult> => {
     loading.value = true
+    error.value = null
 
     try {
-      // TODO: Implement Firebase signOut
-      // eslint-disable-next-line no-console
-      console.log('Sign out')
-
-      user.value = null
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      const result = await FirebaseAuthService.signInWithGoogle()
+      user.value = result.user
+      return result
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Sign out failed'
-      throw err
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Error al iniciar sesión con Google'
+      error.value = errorMessage
+      throw new Error(errorMessage)
     } finally {
       loading.value = false
     }
   }
 
+  /**
+   * Establecer contraseña (para usuarios de Google)
+   */
+  const setPassword = async (password: string): Promise<void> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      await FirebaseAuthService.setPassword(password)
+
+      // Actualizar el estado local del usuario
+      if (user.value) {
+        user.value = {
+          ...user.value,
+          hasPassword: true,
+          loginMethod: 'mixed',
+        }
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al establecer contraseña'
+      error.value = errorMessage
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
+   * Cerrar sesión
+   */
+  const signOut = async (): Promise<void> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      await FirebaseAuthService.signOut()
+      user.value = null
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al cerrar sesión'
+      error.value = errorMessage
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
+   * Enviar email de recuperación de contraseña
+   */
   const resetPassword = async (email: string): Promise<void> => {
     loading.value = true
     error.value = null
 
     try {
-      // TODO: Implement Firebase sendPasswordResetEmail
-      // eslint-disable-next-line no-console
-      console.log('Reset password for:', email)
-
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await FirebaseAuthService.sendPasswordReset(email)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Password reset failed'
-      throw err
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Error al enviar email de recuperación'
+      error.value = errorMessage
+      throw new Error(errorMessage)
     } finally {
       loading.value = false
     }
   }
 
+  /**
+   * Verificar si el usuario actual necesita establecer contraseña
+   */
+  const checkPasswordSetupRequired = async (): Promise<boolean> => {
+    try {
+      return await FirebaseAuthService.currentUserNeedsPasswordSetup()
+    } catch (err) {
+      console.error('Error checking password setup requirement:', err)
+      return false
+    }
+  }
+
+  /**
+   * Limpiar errores
+   */
+  const clearError = () => {
+    error.value = null
+  }
+
+  // Inicializar automáticamente
+  initialize()
+
   return {
+    // Estado
     user: computed(() => user.value),
     isAuthenticated,
+    needsPasswordSetup,
     loading: computed(() => loading.value),
     error: computed(() => error.value),
+    initialized: computed(() => initialized.value),
+
+    // Métodos de autenticación
     signIn,
     signUp,
+    signInWithGoogle,
+    setPassword,
     signOut,
     resetPassword,
+
+    // Utilidades
+    checkPasswordSetupRequired,
+    clearError,
+    cleanup,
   }
 }

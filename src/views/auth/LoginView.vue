@@ -47,6 +47,22 @@
           class="login-button"
           severity="primary" />
 
+        <div class="or-divider">
+          <span class="divider-line"></span>
+          <span class="divider-text">{{ $t('auth.orDivider') }}</span>
+          <span class="divider-line"></span>
+        </div>
+
+        <Button
+          type="button"
+          :label="$t('auth.googleLogin')"
+          :loading="googleLoading"
+          icon="mdi:google"
+          class="google-button"
+          severity="secondary"
+          outlined
+          @click="handleGoogleLogin" />
+
         <div v-if="error" class="error-alert">
           <Message severity="error" :closable="false">
             {{ error }}
@@ -75,11 +91,12 @@ import Button from 'primevue/button'
 import Message from 'primevue/message'
 
 const router = useRouter()
-const { signIn, loading, error } = useAuth()
+const { signIn, signInWithGoogle, loading, error, clearError } = useAuth()
 
 // Form data
 const email = ref('')
 const password = ref('')
+const googleLoading = ref(false)
 
 // Form validation
 const emailError = ref('')
@@ -121,10 +138,33 @@ const handleLogin = async () => {
   if (!isFormValid.value) return
 
   try {
+    clearError()
     await signIn(email.value, password.value)
-    router.push('/')
+    router.push('/dashboard')
   } catch (err) {
     console.error('Login failed:', err)
+  }
+}
+
+// Handle Google login
+const handleGoogleLogin = async () => {
+  googleLoading.value = true
+
+  try {
+    clearError()
+    const result = await signInWithGoogle()
+
+    if (result.needsPasswordSetup) {
+      // Redirect to password setup if user needs to set password
+      router.push('/auth/set-password')
+    } else {
+      // Redirect to dashboard if password is already set
+      router.push('/dashboard')
+    }
+  } catch (err) {
+    console.error('Google login failed:', err)
+  } finally {
+    googleLoading.value = false
   }
 }
 </script>
@@ -233,6 +273,53 @@ const handleLogin = async () => {
 }
 
 .login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.divider-text {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.google-button {
+  width: 100%;
+  height: 3rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: white;
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.google-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-background-secondary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.google-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

@@ -1,4 +1,8 @@
-// Firebase configuration - to be implemented when Firebase is set up
+// Firebase configuration
+import { initializeApp } from 'firebase/app'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
+
 export interface FirebaseConfig {
   apiKey: string
   authDomain: string
@@ -8,7 +12,7 @@ export interface FirebaseConfig {
   appId: string
 }
 
-// Placeholder configuration - replace with actual Firebase config
+// Firebase configuration from environment variables
 export const firebaseConfig: FirebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
@@ -18,11 +22,12 @@ export const firebaseConfig: FirebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
 }
 
-// Initialize Firebase when config is ready
-// import { initializeApp } from 'firebase/app'
-// import { getAuth } from 'firebase/auth'
-// import { getFirestore } from 'firebase/firestore'
+// Initialize Firebase
+export const app = initializeApp(firebaseConfig)
+export const auth = getAuth(app)
+export const db = getFirestore(app)
 
-// export const app = initializeApp(firebaseConfig)
-// export const auth = getAuth(app)
-// export const db = getFirestore(app)
+// Configure Google Auth Provider
+export const googleProvider = new GoogleAuthProvider()
+googleProvider.addScope('email')
+googleProvider.addScope('profile')

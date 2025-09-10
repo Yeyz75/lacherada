@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth } from '../composables/useAuth'
+import { requireAuth, requireGuest } from '../middleware/authMiddleware'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -28,56 +28,62 @@ const router = createRouter({
       path: '/auth/login',
       name: 'login',
       component: () => import('../views/auth/LoginView.vue'),
-      meta: { requiresGuest: true },
+      beforeEnter: requireGuest,
     },
     {
       path: '/auth/register',
       name: 'register',
       component: () => import('../views/auth/RegisterView.vue'),
-      meta: { requiresGuest: true },
+      beforeEnter: requireGuest,
     },
     {
       path: '/auth/forgot-password',
       name: 'forgotPassword',
       component: () => import('../views/auth/ForgotPasswordView.vue'),
-      meta: { requiresGuest: true },
+      beforeEnter: requireGuest,
+    },
+    {
+      path: '/auth/set-password',
+      name: 'setPassword',
+      component: () => import('../views/auth/SetPasswordView.vue'),
+      meta: { requiresAuth: true },
     },
     // Protected routes for authenticated users
     {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/authenticated/DashboardView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: requireAuth,
     },
     {
       path: '/profile',
       name: 'profile',
       component: () => import('../views/authenticated/ProfileView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: requireAuth,
     },
     {
       path: '/publish',
       name: 'publish',
       component: () => import('../views/authenticated/PublishView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: requireAuth,
     },
     {
       path: '/messages',
       name: 'messages',
       component: () => import('../views/authenticated/MessagesView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: requireAuth,
     },
     {
       path: '/favorites',
       name: 'favorites',
       component: () => import('../views/authenticated/FavoritesView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: requireAuth,
     },
     {
       path: '/my-items',
       name: 'myItems',
       component: () => import('../views/authenticated/MyItemsView.vue'),
-      meta: { requiresAuth: true },
+      beforeEnter: requireAuth,
     },
     {
       path: '/design-system',
@@ -87,23 +93,7 @@ const router = createRouter({
   ],
 })
 
-// Navigation guards
-router.beforeEach((to, _from, next) => {
-  const { isAuthenticated } = useAuth()
-
-  // Check if route requires authentication
-  if (to.meta.requiresAuth && !isAuthenticated.value) {
-    next({ name: 'login' })
-    return
-  }
-
-  // Check if route is for guests only (login, register)
-  if (to.meta.requiresGuest && isAuthenticated.value) {
-    next({ name: 'dashboard' })
-    return
-  }
-
-  next()
-})
+// No necesitamos navigation guards globales ya que usamos beforeEnter
+// El middleware maneja toda la lógica de autenticación
 
 export default router
