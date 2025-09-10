@@ -19,7 +19,7 @@
             <BaseCard class="form-card">
               <div class="card-header">
                 <Icon icon="mdi:email-edit" class="header-icon" />
-                <h2 class="form-title">Envía un Mensaje</h2>
+                <h2 class="form-title">{{ t('contact.form.title') }}</h2>
               </div>
 
               <form @submit.prevent="submitForm" class="contact-form">
@@ -96,7 +96,7 @@
             <BaseCard class="info-card">
               <div class="card-header">
                 <Icon icon="mdi:information" class="header-icon" />
-                <h2 class="info-title">Información de Contacto</h2>
+                <h2 class="info-title">{{ t('contact.info.title') }}</h2>
               </div>
 
               <div class="info-items">
@@ -153,7 +153,7 @@
 
               <!-- Social Links using Base Components -->
               <div class="social-links">
-                <h3 class="social-title">Síguenos</h3>
+                <h3 class="social-title">{{ t('contact.social.title') }}</h3>
                 <div class="social-icons">
                   <BaseButton
                     icon="mdi:twitter"
@@ -206,11 +206,11 @@
     <!-- Map Section -->
     <section class="map-section">
       <div class="container">
-        <h2 class="section-title">Nuestra Ubicación</h2>
+        <h2 class="section-title">{{ t('contact.location.title') }}</h2>
         <BaseCard class="map-card">
           <div class="map-placeholder">
             <Icon icon="mdi:map" class="map-icon" />
-            <p class="map-text">Mapa interactivo próximamente</p>
+            <p class="map-text">{{ t('contact.location.mapPlaceholder') }}</p>
           </div>
         </BaseCard>
       </div>
@@ -367,13 +367,23 @@ const openSocial = (platform: string) => {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
   margin-bottom: var(--space-lg);
 }
 
 .header-icon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl); /* 20px - Alineado con títulos de tarjeta */
   color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.form-title,
+.info-title {
+  font-size: var(--font-size-xl); /* 20px - Títulos de tarjeta */
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--line-height-tight);
 }
 
 /* Form Layout */
@@ -410,11 +420,22 @@ const openSocial = (platform: string) => {
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-lg); /* 18px - Iconos de información */
 }
 
-.info-content {
-  flex: 1;
+.info-label {
+  font-size: var(--font-size-base); /* 16px - Etiquetas de información */
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs) 0;
+  line-height: var(--line-height-normal);
+}
+
+.info-value {
+  font-size: var(--font-size-sm); /* 14px - Valores de información */
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--line-height-normal);
 }
 
 /* Social Links Layout */
@@ -423,10 +444,12 @@ const openSocial = (platform: string) => {
 }
 
 .social-title {
-  font-size: var(--font-size-xl); /* 20px - Subsection Title */
+  font-size: var(--font-size-lg); /* 18px - Título de sección social */
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--space-lg);
   text-align: center;
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
 }
 
 .social-icons {
@@ -447,11 +470,20 @@ const openSocial = (platform: string) => {
   font-size: var(--font-size-2xl); /* 24px - Section Title */
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-2xl);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
 .faq-card {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.faq-answer {
+  font-size: var(--font-size-base); /* 16px - FAQ Answer */
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  margin: 0;
 }
 
 /* Map Section */

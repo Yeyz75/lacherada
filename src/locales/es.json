@@ -172,6 +172,7 @@
     "title": "Contáctanos",
     "subtitle": "¿Tienes preguntas? Estamos aquí para ayudarte",
     "form": {
+      "title": "Envía un Mensaje",
       "name": "Nombre Completo",
       "namePlaceholder": "Ingresa tu nombre completo",
       "email": "Correo Electrónico",
@@ -186,11 +187,19 @@
       "error": "Error al enviar el mensaje. Inténtalo de nuevo."
     },
     "info": {
+      "title": "Información de Contacto",
       "address": "Dirección",
       "email": "Correo Electrónico",
       "phone": "Teléfono",
       "hours": "Horarios de Atención",
       "hoursValue": "Lunes a Viernes: 9:00 AM - 6:00 PM"
+    },
+    "social": {
+      "title": "Síguenos"
+    },
+    "location": {
+      "title": "Nuestra Ubicación",
+      "mapPlaceholder": "Mapa interactivo próximamente"
     },
     "faq": {
       "title": "Preguntas Frecuentes",

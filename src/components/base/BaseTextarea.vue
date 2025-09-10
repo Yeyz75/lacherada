@@ -198,8 +198,8 @@ export default {
 }
 
 .base-textarea-label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--font-size-sm); /* 14px - Textarea Label */
+  font-weight: var(--font-weight-medium);
   color: var(--p-text-color);
   margin-bottom: 0.25rem;
   transition: color 0.2s;
@@ -210,13 +210,13 @@ export default {
 }
 
 .base-textarea-helper {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs); /* 12px - Helper Text */
   color: var(--p-text-muted-color);
   display: block;
 }
 
 .base-textarea-count {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs); /* 12px - Character Count */
   color: var(--p-text-muted-color);
   text-align: right;
   margin-top: 0.25rem;
@@ -235,12 +235,12 @@ export default {
 /* Responsive */
 @media (max-width: 768px) {
   .base-textarea-label {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-xs); /* 12px - Mobile Label */
   }
 
   .base-textarea-helper,
   .base-textarea-count {
-    font-size: 0.6875rem;
+    font-size: 0.6875rem; /* 11px - Mobile Helper */
   }
 }
 </style>
