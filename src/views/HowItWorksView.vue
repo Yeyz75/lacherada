@@ -140,17 +140,17 @@ const benefits = [
 }
 
 .hero-title {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-5xl); /* 48px - Main Hero Title */
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
-  line-height: 1.2;
+  line-height: var(--line-height-tight);
 }
 
 .hero-subtitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-xl); /* 20px - Hero Subtitle */
   margin-bottom: var(--space-2xl);
   opacity: 0.9;
-  line-height: 1.6;
+  line-height: var(--line-height-normal);
 }
 
 .hero-actions {
@@ -168,7 +168,7 @@ const benefits = [
 
 .section-title {
   text-align: center;
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl); /* 24px - Section Title */
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-2xl);
 }
@@ -232,15 +232,15 @@ const benefits = [
 }
 
 .cta-title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl); /* 24px - CTA Title */
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
 }
 
 .cta-subtitle {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-lg); /* 18px - CTA Subtitle */
   margin-bottom: var(--space-2xl);
-  line-height: 1.6;
+  line-height: var(--line-height-normal);
 }
 
 .cta-actions {
@@ -261,11 +261,11 @@ const benefits = [
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-title {
-    font-size: var(--font-size-3xl);
+    font-size: var(--font-size-4xl); /* 36px - Responsive Hero */
   }
 
   .hero-subtitle {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-lg); /* 18px - Responsive Subtitle */
   }
 
   .hero-actions {
@@ -286,8 +286,12 @@ const benefits = [
     margin-bottom: var(--space-md);
   }
 
+  .section-title {
+    font-size: var(--font-size-xl); /* 20px - Responsive Section */
+  }
+
   .cta-title {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-xl); /* 20px - Responsive CTA */
   }
 
   .cta-actions {
@@ -299,6 +303,14 @@ const benefits = [
 @media (max-width: 480px) {
   .hero-section {
     padding: var(--space-2xl) 0;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-3xl); /* 30px - Mobile Hero */
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-base); /* 16px - Mobile Subtitle */
   }
 
   .benefits-section {

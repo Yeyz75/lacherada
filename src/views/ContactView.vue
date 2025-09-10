@@ -339,13 +339,13 @@ const openSocial = (platform: string) => {
 }
 
 .hero-title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-4xl); /* 36px - Hero Title */
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-sm);
 }
 
 .hero-subtitle {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-lg); /* 18px - Hero Subtitle */
   opacity: 0.9;
 }
 
@@ -423,6 +423,8 @@ const openSocial = (platform: string) => {
 }
 
 .social-title {
+  font-size: var(--font-size-xl); /* 20px - Subsection Title */
+  font-weight: var(--font-weight-semibold);
   margin-bottom: var(--space-lg);
   text-align: center;
 }
@@ -442,7 +444,7 @@ const openSocial = (platform: string) => {
 
 .section-title {
   text-align: center;
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl); /* 24px - Section Title */
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-2xl);
 }
@@ -478,6 +480,11 @@ const openSocial = (platform: string) => {
   color: var(--color-text-tertiary);
 }
 
+.map-text {
+  font-size: var(--font-size-base); /* 16px - Body Text */
+  color: var(--color-text-secondary);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .content-grid {
@@ -487,7 +494,7 @@ const openSocial = (platform: string) => {
 
 @media (max-width: 768px) {
   .hero-title {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-3xl); /* 30px - Responsive Hero */
   }
 
   .content-grid {
@@ -497,6 +504,10 @@ const openSocial = (platform: string) => {
 
   .main-content {
     padding: var(--space-2xl) 0;
+  }
+
+  .section-title {
+    font-size: var(--font-size-xl); /* 20px - Responsive Section */
   }
 
   .faq-section {
@@ -515,6 +526,14 @@ const openSocial = (platform: string) => {
 @media (max-width: 480px) {
   .hero-section {
     padding: var(--space-xl) 0;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-2xl); /* 24px - Mobile Hero */
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-base); /* 16px - Mobile Subtitle */
   }
 
   .info-icon {
