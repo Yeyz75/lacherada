@@ -56,7 +56,10 @@
 
             <!-- Authenticated -->
             <template v-else>
-              <div class="user-menu" @click="toggleUserDropdown">
+              <div
+                class="user-menu"
+                ref="userDropdownRef"
+                @click="toggleUserDropdown">
                 <div class="user-info">
                   <div class="user-avatar">
                     <Icon icon="mdi:account-circle" />
@@ -173,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
@@ -187,6 +190,7 @@ const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
 const isUserDropdownOpen = ref(false)
+const userDropdownRef = ref<HTMLElement | null>(null)
 
 const navItems = computed(() => {
   if (isAuthenticated.value) {
@@ -247,6 +251,26 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
   closeUserDropdown()
 }
+
+// Handle click outside dropdown
+const handleClickOutside = (event: Event) => {
+  if (
+    userDropdownRef.value &&
+    !userDropdownRef.value.contains(event.target as Node)
+  ) {
+    closeUserDropdown()
+  }
+}
+
+// Add event listener on mount
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+// Remove event listener on unmount
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>
