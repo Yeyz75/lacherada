@@ -1,124 +1,131 @@
 <template>
-  <BaseCard class="password-setup-card">
-    <template #header>
-      <div class="password-setup-header">
-        <Icon :icon="icon" class="setup-icon" />
-        <h2 class="setup-title">{{ title }}</h2>
-        <p class="setup-description">{{ description }}</p>
+  <div class="password-setup-container">
+    <!-- Header Section -->
+    <div class="password-setup-header">
+      <Icon :icon="icon" class="setup-icon" />
+      <h2 class="setup-title">{{ title }}</h2>
+      <p class="setup-description">{{ description }}</p>
+    </div>
+
+    <!-- Form Section -->
+    <form @submit.prevent="handleSubmit" class="password-setup-form">
+      <!-- Password Field -->
+      <div class="form-field">
+        <label for="password" class="field-label">
+          {{ $t('auth.password') }}
+          <span class="required-indicator">*</span>
+        </label>
+        <Password
+          id="password"
+          v-model="password"
+          :placeholder="$t('auth.passwordPlaceholder')"
+          :invalid="!!passwordError"
+          :disabled="loading"
+          toggle-mask
+          :feedback="false"
+          class="password-field"
+          @blur="validatePassword" />
+        <small v-if="passwordError" class="field-error">
+          {{ passwordError }}
+        </small>
       </div>
-    </template>
 
-    <template #content>
-      <BaseForm @submit="handleSubmit" class="password-setup-form">
-        <div class="form-group">
-          <BaseInput
-            id="password"
-            v-model="password"
-            type="password"
-            :label="$t('auth.password')"
-            :placeholder="$t('auth.passwordPlaceholder')"
-            :error="passwordError"
-            :show-password-toggle="true"
-            required
-            class="password-input" />
-        </div>
+      <!-- Confirm Password Field -->
+      <div class="form-field">
+        <label for="confirmPassword" class="field-label">
+          {{ $t('auth.confirmPassword') }}
+          <span class="required-indicator">*</span>
+        </label>
+        <Password
+          id="confirmPassword"
+          v-model="confirmPassword"
+          :placeholder="$t('auth.confirmPasswordPlaceholder')"
+          :invalid="!!confirmPasswordError"
+          :disabled="loading"
+          toggle-mask
+          :feedback="false"
+          class="password-field"
+          @blur="validateConfirmPassword" />
+        <small v-if="confirmPasswordError" class="field-error">
+          {{ confirmPasswordError }}
+        </small>
+      </div>
 
-        <div class="form-group">
-          <BaseInput
-            id="confirmPassword"
-            v-model="confirmPassword"
-            type="password"
-            :label="$t('auth.confirmPassword')"
-            :placeholder="$t('auth.confirmPasswordPlaceholder')"
-            :error="confirmPasswordError"
-            :show-password-toggle="true"
-            required
-            class="password-input" />
-        </div>
+      <!-- Password Requirements -->
+      <div class="password-requirements">
+        <h4 class="requirements-title">
+          {{ $t('auth.passwordRequirements') }}
+        </h4>
+        <ul class="requirements-list">
+          <li :class="{ valid: hasMinLength }">
+            <Icon
+              :icon="hasMinLength ? 'mdi:check-circle' : 'mdi:circle-outline'"
+              :class="hasMinLength ? 'check-icon' : 'circle-icon'" />
+            {{ $t('auth.minLength') }}
+          </li>
+          <li :class="{ valid: hasUpperCase }">
+            <Icon
+              :icon="hasUpperCase ? 'mdi:check-circle' : 'mdi:circle-outline'"
+              :class="hasUpperCase ? 'check-icon' : 'circle-icon'" />
+            {{ $t('auth.upperCase') }}
+          </li>
+          <li :class="{ valid: hasLowerCase }">
+            <Icon
+              :icon="hasLowerCase ? 'mdi:check-circle' : 'mdi:circle-outline'"
+              :class="hasLowerCase ? 'check-icon' : 'circle-icon'" />
+            {{ $t('auth.lowerCase') }}
+          </li>
+          <li :class="{ valid: hasNumber }">
+            <Icon
+              :icon="hasNumber ? 'mdi:check-circle' : 'mdi:circle-outline'"
+              :class="hasNumber ? 'check-icon' : 'circle-icon'" />
+            {{ $t('auth.hasNumber') }}
+          </li>
+        </ul>
+      </div>
 
-        <div class="password-requirements">
-          <h4 class="requirements-title">
-            {{ $t('auth.passwordRequirements') }}
-          </h4>
-          <ul class="requirements-list">
-            <li :class="{ valid: hasMinLength }">
-              <Icon
-                icon="mdi:check-circle"
-                v-if="hasMinLength"
-                class="check-icon" />
-              <Icon icon="mdi:circle-outline" v-else class="circle-icon" />
-              {{ $t('auth.minLength') }}
-            </li>
-            <li :class="{ valid: hasUpperCase }">
-              <Icon
-                icon="mdi:check-circle"
-                v-if="hasUpperCase"
-                class="check-icon" />
-              <Icon icon="mdi:circle-outline" v-else class="circle-icon" />
-              {{ $t('auth.upperCase') }}
-            </li>
-            <li :class="{ valid: hasLowerCase }">
-              <Icon
-                icon="mdi:check-circle"
-                v-if="hasLowerCase"
-                class="check-icon" />
-              <Icon icon="mdi:circle-outline" v-else class="circle-icon" />
-              {{ $t('auth.lowerCase') }}
-            </li>
-            <li :class="{ valid: hasNumber }">
-              <Icon
-                icon="mdi:check-circle"
-                v-if="hasNumber"
-                class="check-icon" />
-              <Icon icon="mdi:circle-outline" v-else class="circle-icon" />
-              {{ $t('auth.hasNumber') }}
-            </li>
-          </ul>
-        </div>
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <Button
+          v-if="showCancel"
+          type="button"
+          severity="secondary"
+          :label="$t('common.cancel')"
+          @click="handleCancel"
+          :disabled="loading"
+          class="cancel-button" />
 
-        <div class="form-actions">
-          <BaseButton
-            type="button"
-            variant="outlined"
-            :label="$t('common.cancel')"
-            @click="handleCancel"
-            :disabled="loading"
-            class="cancel-button" />
+        <Button
+          type="submit"
+          :label="$t('auth.setPassword')"
+          :loading="loading"
+          :disabled="!isFormValid"
+          :class="showCancel ? 'submit-button' : 'submit-button-full'" />
+      </div>
 
-          <BaseButton
-            type="submit"
-            variant="primary"
-            :label="$t('auth.setPassword')"
-            :loading="loading"
-            :disabled="!isFormValid"
-            class="submit-button" />
-        </div>
+      <!-- Error Message -->
+      <Message v-if="error" severity="error" :closable="false" class="message">
+        {{ error }}
+      </Message>
 
-        <Message
-          v-if="error"
-          severity="error"
-          :closable="false"
-          class="error-message">
-          {{ error }}
-        </Message>
-
-        <Message
-          v-if="success"
-          severity="success"
-          :closable="false"
-          class="success-message">
-          {{ success }}
-        </Message>
-      </BaseForm>
-    </template>
-  </BaseCard>
+      <!-- Success Message -->
+      <Message
+        v-if="success"
+        severity="success"
+        :closable="false"
+        class="message">
+        {{ success }}
+      </Message>
+    </form>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Icon } from '@iconify/vue'
+import Password from 'primevue/password'
+import Button from 'primevue/button'
 import Message from 'primevue/message'
-import { BaseCard, BaseForm, BaseInput, BaseButton } from '../base'
 
 interface Props {
   title?: string
@@ -138,8 +145,8 @@ interface Emits {
 withDefaults(defineProps<Props>(), {
   title: 'Establece tu contraseña',
   description:
-    'Para completar tu registro, necesitas establecer una contraseña que podrás usar para iniciar sesión más adelante.',
-  icon: 'mdi:lock-outline',
+    'Para completar tu registro con Google, establece una contraseña que podrás usar para iniciar sesión más adelante.',
+  icon: 'mdi:shield-lock-outline',
   loading: false,
   error: null,
   success: null,
@@ -233,35 +240,50 @@ const handleCancel = () => {
 </script>
 
 <style scoped>
-.password-setup-card {
+.password-setup-container {
+  width: 100%;
   max-width: 500px;
   margin: 0 auto;
+  padding: var(--space-xl);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .password-setup-header {
   text-align: center;
-  padding: var(--space-lg) 0;
+  margin-bottom: var(--space-xl);
 }
 
 .setup-icon {
   font-size: 3rem;
   color: var(--color-primary);
   margin-bottom: var(--space-md);
+  display: block;
+  transition: color var(--transition-fast);
 }
 
 .setup-title {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-sm);
+  margin: 0 0 var(--space-sm) 0;
+  line-height: var(--line-height-tight);
 }
 
 .setup-description {
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
+  margin: 0;
   max-width: 400px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .password-setup-form {
@@ -270,14 +292,35 @@ const handleCancel = () => {
   gap: var(--space-lg);
 }
 
-.form-group {
+.form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
 }
 
-.password-input {
+.field-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.required-indicator {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}
+
+.password-field {
   width: 100%;
+}
+
+.field-error {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-xs);
+  display: block;
 }
 
 .password-requirements {
@@ -285,13 +328,16 @@ const handleCancel = () => {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .requirements-title {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-sm);
+  margin: 0 0 var(--space-sm) 0;
 }
 
 .requirements-list {
@@ -319,18 +365,19 @@ const handleCancel = () => {
 .check-icon {
   color: var(--color-success);
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .circle-icon {
   color: var(--color-text-tertiary);
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .form-actions {
   display: flex;
   gap: var(--space-md);
-  justify-content: flex-end;
-  margin-top: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .cancel-button {
@@ -339,22 +386,30 @@ const handleCancel = () => {
 
 .submit-button {
   flex: 1;
-  max-width: 200px;
 }
 
-.error-message,
-.success-message {
+.submit-button-full {
+  flex: 1;
+  width: 100%;
+}
+
+.message {
   margin-top: var(--space-md);
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .password-setup-card {
+  .password-setup-container {
     margin: var(--space-md);
+    padding: var(--space-md);
   }
 
   .setup-title {
     font-size: var(--font-size-xl);
+  }
+
+  .setup-description {
+    font-size: var(--font-size-sm);
   }
 
   .form-actions {
@@ -364,7 +419,17 @@ const handleCancel = () => {
   .cancel-button,
   .submit-button {
     width: 100%;
-    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .password-setup-container {
+    margin: var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .password-setup-form {
+    gap: var(--space-md);
   }
 }
 </style>
