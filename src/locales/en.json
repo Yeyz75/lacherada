@@ -333,6 +333,19 @@
       "sports": "Sports"
     }
   },
+  "fileUpload": {
+    "choose": "Choose",
+    "upload": "Upload",
+    "cancel": "Cancel",
+    "dragAndDrop": "Drag and drop files here to upload",
+    "pending": "Pending",
+    "uploaded": "Uploaded",
+    "removeFile": "Remove file",
+    "invalidFileSize": "File size is too large",
+    "invalidFileType": "Invalid file type",
+    "fileLimit": "File limit reached",
+    "error": "Error uploading file"
+  },
   "comingSoon": {
     "whatToExpect": "What to expect?",
     "backToDashboard": "Back to Dashboard",

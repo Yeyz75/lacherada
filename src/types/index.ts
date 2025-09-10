@@ -223,6 +223,36 @@ export interface InputProps extends BaseComponentProps {
   autocomplete?: string
 }
 
+// File Upload types
+export interface FileUploadProps extends BaseComponentProps {
+  modelValue?: File | File[] | null
+  label?: string
+  helperText?: string
+  name?: string
+  uploadUrl?: string
+  mode?: 'basic' | 'advanced'
+  accept?: string
+  maxFileSize?: number
+  multiple?: boolean
+  disabled?: boolean
+  required?: boolean
+  auto?: boolean
+  chooseLabel?: string
+  uploadLabel?: string
+  cancelLabel?: string
+  invalidFileSizeMessage?: string
+  invalidFileTypeMessage?: string
+  fileLimit?: number
+  fileLimitMessage?: string
+  previewWidth?: number
+  showUploadButton?: boolean
+  showCancelButton?: boolean
+  showProgress?: boolean
+  customUpload?: boolean
+  emptyMessage?: string
+  error?: string | boolean
+}
+
 // Card types
 export type CardVariant = 'default' | 'glass' | 'elevated' | 'outlined'
 

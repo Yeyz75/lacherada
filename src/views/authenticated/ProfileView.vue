@@ -244,6 +244,49 @@
         </BaseCard>
       </div>
     </div>
+
+    <!-- Avatar Upload Modal -->
+    <BaseModal
+      v-model:visible="showAvatarUpload"
+      :title="t('profile.changePhoto')"
+      :modal="true"
+      :closable="true"
+      :dismissable-mask="true"
+      position="center"
+      size="medium">
+      <div class="avatar-upload-modal">
+        <BaseFileUpload
+          v-model="avatarFile"
+          :label="t('profile.changePhoto')"
+          :accept="'image/*'"
+          :max-file-size="2000000"
+          :multiple="false"
+          :auto="false"
+          :mode="'advanced'"
+          :show-upload-button="true"
+          :show-cancel-button="true"
+          @upload="handleAvatarUpload"
+          @select="handleAvatarSelect"
+          @error="handleAvatarError"
+          class="avatar-file-upload" />
+
+        <div class="avatar-upload-actions">
+          <BaseButton
+            @click="uploadAvatar"
+            :disabled="!avatarFile"
+            :loading="uploadingAvatar"
+            variant="primary">
+            {{ t('common.accept') }}
+          </BaseButton>
+          <BaseButton
+            @click="showAvatarUpload = false"
+            variant="secondary"
+            class="ml-2">
+            {{ t('common.cancel') }}
+          </BaseButton>
+        </div>
+      </div>
+    </BaseModal>
   </div>
 </template>
 
@@ -258,12 +301,17 @@ import BaseInput from '../../components/base/BaseInput.vue'
 import BaseAvatar from '../../components/base/BaseAvatar.vue'
 import BaseRating from '../../components/base/BaseRating.vue'
 import BaseBadge from '../../components/base/BaseBadge.vue'
+import BaseModal from '../../components/base/BaseModal.vue'
+import BaseFileUpload from '../../components/base/BaseFileUpload.vue'
 
 const { t } = useI18n()
 const { user } = useAuth()
 
 // Profile state
 const savingProfile = ref(false)
+const showAvatarUpload = ref(false)
+const avatarFile = ref<File | null>(null)
+const uploadingAvatar = ref(false)
 const profileForm = ref({
   firstName: '',
   lastName: '',
@@ -330,8 +378,37 @@ const saveProfile = () => {
 }
 
 const openAvatarUpload = () => {
-  // Implementation for avatar upload
-  console.log('Open avatar upload dialog')
+  showAvatarUpload.value = true
+}
+
+const handleAvatarSelect = (event: { files: FileList }) => {
+  if (event.files && event.files.length > 0) {
+    avatarFile.value = event.files[0]
+  }
+}
+
+const handleAvatarUpload = (event: any) => {
+  console.log('Avatar uploaded:', event)
+  // Handle successful upload
+  uploadingAvatar.value = false
+  showAvatarUpload.value = false
+  // Show success message
+}
+
+const handleAvatarError = (error: any) => {
+  console.error('Avatar upload error:', error)
+  uploadingAvatar.value = false
+  // Show error message
+}
+
+const uploadAvatar = () => {
+  if (!avatarFile.value) return
+
+  uploadingAvatar.value = true
+  // Simulate upload process
+  setTimeout(() => {
+    handleAvatarUpload({ files: [avatarFile.value] })
+  }, 1500)
 }
 
 // Initialize form with user data
@@ -603,6 +680,23 @@ onMounted(() => {
   font-size: var(--font-size-sm);
 }
 
+/* Avatar Upload Modal */
+.avatar-upload-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.avatar-file-upload {
+  width: 100%;
+}
+
+.avatar-upload-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .profile-content-grid {
@@ -641,6 +735,15 @@ onMounted(() => {
 
   .verification-info {
     width: 100%;
+  }
+
+  .avatar-upload-actions {
+    flex-direction: column;
+  }
+
+  .avatar-upload-actions .ml-2 {
+    margin-left: 0;
+    margin-top: var(--space-sm);
   }
 }
 </style>

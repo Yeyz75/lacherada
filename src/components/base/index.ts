@@ -31,6 +31,7 @@ export { default as BaseChip } from './BaseChip.vue'
 export { default as BaseModal } from './BaseModal.vue'
 export { default as BaseDivider } from './BaseDivider.vue'
 export { default as BasePasswordSetup } from './BasePasswordSetup.vue'
+export { default as BaseFileUpload } from './BaseFileUpload.vue'
 
 // Type exports for component props
 export type {
@@ -40,6 +41,7 @@ export type {
   InputProps,
   InputType,
   InputSize,
+  FileUploadProps,
   CardProps,
   CardVariant,
   TableProps,
