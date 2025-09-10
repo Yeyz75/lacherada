@@ -16,12 +16,7 @@
         <div class="content-grid">
           <!-- Contact Form using Base Components -->
           <div class="contact-form-section">
-            <BaseCard class="form-card">
-              <div class="card-header">
-                <Icon icon="mdi:email-edit" class="header-icon" />
-                <h2 class="form-title">{{ t('contact.form.title') }}</h2>
-              </div>
-
+            <BaseCard :title="t('contact.form.title')" class="form-card">
               <form @submit.prevent="submitForm" class="contact-form">
                 <div class="form-field">
                   <BaseInput
@@ -93,12 +88,7 @@
 
           <!-- Contact Information using Base Components -->
           <div class="contact-info-section">
-            <BaseCard class="info-card">
-              <div class="card-header">
-                <Icon icon="mdi:information" class="header-icon" />
-                <h2 class="info-title">{{ t('contact.info.title') }}</h2>
-              </div>
-
+            <BaseCard :title="t('contact.info.title')" class="info-card">
               <div class="info-items">
                 <div class="info-item">
                   <div class="info-icon">

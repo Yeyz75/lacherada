@@ -4,6 +4,105 @@ import vue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
 import prettierConfig from 'eslint-config-prettier'
 
+// Regla personalizada para detectar patrones problemáticos de BaseCard
+function createBaseCardRule() {
+  return {
+    meta: {
+      type: 'problem',
+      docs: {
+        description: 'Detecta patrones problemáticos en el uso de BaseCard',
+        category: 'vue3-recommended',
+        recommended: true,
+      },
+      fixable: null,
+      schema: [],
+      messages: {
+        avoidDirectContent:
+          'Evita colocar contenido directamente dentro de BaseCard. Usa el slot por defecto sin template o envuelve en template #content.',
+        avoidDirectHeader:
+          'Evita usar divs como header en BaseCard. Usa la prop :title o template #header.',
+        mixedSlotUsage:
+          'No mezcles prop :title con template #header en BaseCard.',
+        templateContentNotNeeded:
+          'No uses template #content en BaseCard. Usa el slot por defecto directamente.',
+      },
+    },
+    create(context) {
+      return {
+        // Detectar BaseCard con template #content (problema que encontramos)
+        'VElement[name="BaseCard"] VElement[name="template"]'(node) {
+          const hasContentSlot = node.startTag.attributes.some(
+            (attr) => attr.key.name === '#' && attr.value?.value === 'content',
+          )
+
+          if (hasContentSlot) {
+            context.report({
+              node,
+              messageId: 'templateContentNotNeeded',
+            })
+          }
+        },
+
+        // Detectar divs como header dentro de BaseCard
+        'VElement[name="BaseCard"] > VElement[name="div"]'(node) {
+          const hasHeading = node.children.some(
+            (child) =>
+              child.type === 'VElement' &&
+              ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(child.name),
+          )
+
+          if (hasHeading) {
+            // Verificar si es probablemente un header (está al principio y contiene íconos)
+            const hasIcon = node.children.some(
+              (child) =>
+                (child.type === 'VElement' && child.name === 'Icon') ||
+                (child.type === 'VElement' &&
+                  child.startTag.attributes.some(
+                    (attr) =>
+                      attr.key.name === 'class' &&
+                      attr.value?.value?.includes('icon'),
+                  )),
+            )
+
+            if (hasIcon) {
+              context.report({
+                node,
+                messageId: 'avoidDirectHeader',
+              })
+            }
+          }
+        },
+
+        // Verificar mezcla de prop title y template #header
+        'VElement[name="BaseCard"]'(node) {
+          const hasTitleProp = node.startTag.attributes.some(
+            (attr) =>
+              (attr.key.name === 'title' || attr.key.name === ':title') &&
+              attr.value?.value,
+          )
+
+          const hasHeaderTemplate = node.children.some(
+            (child) =>
+              child.type === 'VElement' &&
+              child.name === 'template' &&
+              child.startTag.attributes.some(
+                (attr) =>
+                  attr.key.name === '#' && attr.value?.value === 'header',
+              ),
+          )
+
+          if (hasTitleProp && hasHeaderTemplate) {
+            context.report({
+              node,
+              messageId: 'mixedSlotUsage',
+            })
+          }
+        },
+      }
+    },
+  }
+}
+
 export default [
   // Archivos a ignorar
   {
@@ -110,6 +209,11 @@ export default [
     plugins: {
       vue,
       '@typescript-eslint': typescript,
+      'base-card-rules': {
+        rules: {
+          'base-card-usage': createBaseCardRule(),
+        },
+      },
     },
     rules: {
       // Reglas básicas de Vue 3
@@ -136,6 +240,9 @@ export default [
       // Desactivar reglas de indentación para Vue - Prettier las maneja
       'indent': 'off',
       '@typescript-eslint/indent': 'off',
+
+      // Regla personalizada para BaseCard
+      'base-card-rules/base-card-usage': 'error',
     },
   },
 
