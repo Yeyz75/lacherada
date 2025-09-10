@@ -189,16 +189,21 @@
         <h2 class="section-title">{{ t('contact.faq.title') }}</h2>
 
         <BaseCard class="faq-card">
-          <Accordion>
-            <AccordionTab
+          <BaseAccordion>
+            <BaseAccordionPanel
               v-for="(_, index) in faqs"
               :key="index"
-              :header="t(`contact.faq.q${index + 1}.question`)">
-              <p class="faq-answer">
-                {{ t(`contact.faq.q${index + 1}.answer`) }}
-              </p>
-            </AccordionTab>
-          </Accordion>
+              :value="index.toString()">
+              <BaseAccordionHeader>
+                {{ t(`contact.faq.q${index + 1}.question`) }}
+              </BaseAccordionHeader>
+              <BaseAccordionContent>
+                <p class="faq-answer">
+                  {{ t(`contact.faq.q${index + 1}.answer`) }}
+                </p>
+              </BaseAccordionContent>
+            </BaseAccordionPanel>
+          </BaseAccordion>
         </BaseCard>
       </div>
     </section>
@@ -233,11 +238,13 @@ import {
   BaseCard,
   BaseTextarea,
   BaseDivider,
+  BaseAccordion,
+  BaseAccordionPanel,
+  BaseAccordionHeader,
+  BaseAccordionContent,
 } from '@/components/base'
 
 // PrimeVue components
-import Accordion from 'primevue/accordion'
-import AccordionTab from 'primevue/accordiontab'
 import Toast from 'primevue/toast'
 
 const { t } = useI18n()

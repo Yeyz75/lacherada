@@ -13,6 +13,10 @@
  */
 
 // Component exports
+export { default as BaseAccordion } from './BaseAccordion.vue'
+export { default as BaseAccordionPanel } from './BaseAccordionPanel.vue'
+export { default as BaseAccordionHeader } from './BaseAccordionHeader.vue'
+export { default as BaseAccordionContent } from './BaseAccordionContent.vue'
 export { default as BaseButton } from './BaseButton.vue'
 export { default as BaseInput } from './BaseInput.vue'
 export { default as BaseSelect } from './BaseSelect.vue'
