@@ -12,6 +12,7 @@ import {
   signOut as firebaseSignOut,
   sendPasswordResetEmail,
   updatePassword,
+  reauthenticateWithPopup,
   onAuthStateChanged,
   User as FirebaseUser,
   UserCredential,
@@ -197,6 +198,28 @@ export class FirebaseAuthService {
     if (!auth.currentUser) throw new Error('No hay usuario autenticado')
 
     try {
+      // Verificar si el usuario necesita reautenticación
+      const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid))
+      const userData = userDoc.data()
+
+      // Si el usuario se registró con Google y no tiene contraseña, necesita reautenticación
+      if (userData?.loginMethod === 'google' && !userData?.hasPassword) {
+        // Reautenticar con Google antes de establecer la contraseña
+        try {
+          await reauthenticateWithPopup(auth.currentUser, googleProvider)
+        } catch (reauthError: any) {
+          // Si la reautenticación falla, intentamos con el flujo alternativo
+          if (reauthError.code === 'auth/popup-closed-by-user') {
+            throw new Error(
+              'Es necesario confirmar tu identidad con Google para establecer la contraseña',
+            )
+          }
+
+          throw this.handleAuthError(reauthError as AuthError)
+        }
+      }
+
+      // Ahora podemos establecer la contraseña
       await updatePassword(auth.currentUser, password)
 
       // Actualizar el estado en Firestore
@@ -205,6 +228,19 @@ export class FirebaseAuthService {
         hasPassword: true,
         loginMethod: 'mixed',
       })
+    } catch (error) {
+      throw this.handleAuthError(error as AuthError)
+    }
+  }
+
+  /**
+   * Reautenticar con Google (para operaciones sensibles)
+   */
+  static async reauthenticateWithGoogle(): Promise<void> {
+    if (!auth.currentUser) throw new Error('No hay usuario autenticado')
+
+    try {
+      await reauthenticateWithPopup(auth.currentUser, googleProvider)
     } catch (error) {
       throw this.handleAuthError(error as AuthError)
     }
@@ -298,6 +334,14 @@ export class FirebaseAuthService {
         break
       case 'auth/too-many-requests':
         message = 'Demasiados intentos. Intenta más tarde'
+        break
+      case 'auth/requires-recent-login':
+        message =
+          'Por seguridad, necesitas confirmar tu identidad para establecer una contraseña'
+        break
+      case 'auth/popup-blocked':
+        message =
+          'La ventana emergente fue bloqueada. Permite ventanas emergentes para continuar'
         break
       default:
         message = error.message || 'Error desconocido'

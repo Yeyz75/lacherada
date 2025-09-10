@@ -149,7 +149,9 @@
     "needHelp": "Need help?",
     "contactSupport": "Contact support",
     "supportTitle": "Technical Support",
-    "supportDescription": "If you're having trouble setting up your password or need help with your account, don't hesitate to contact us."
+    "supportDescription": "If you're having trouble setting up your password or need help with your account, don't hesitate to contact us.",
+    "googleReauthInfo": "Identity Confirmation Required",
+    "googleReauthDescription": "For security, you may need to confirm your identity with Google before setting a password. A popup window will open to complete the verification."
   },
   "explore": {
     "title": "Explore",

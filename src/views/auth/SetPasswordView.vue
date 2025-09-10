@@ -30,6 +30,7 @@
         :error="error"
         :success="success"
         :show-cancel="false"
+        :show-google-info="isGoogleUser"
         @submit="handleSetPassword"
         class="password-setup" />
 
@@ -89,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '../../composables/useAuth'
@@ -106,6 +107,15 @@ const { user, setPassword, loading, error } = useAuth()
 // Local state
 const success = ref<string | null>(null)
 const showSupport = ref(false)
+
+// Computed properties
+const isGoogleUser = computed(() => {
+  return Boolean(
+    user.value?.loginMethod === 'google' ||
+      (user.value?.photoURL &&
+        user.value?.photoURL.includes('googleusercontent')),
+  )
+})
 
 // Check if user is authenticated and needs password setup
 onMounted(async () => {

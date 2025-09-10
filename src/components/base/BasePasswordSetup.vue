@@ -103,6 +103,23 @@
           :class="showCancel ? 'submit-button' : 'submit-button-full'" />
       </div>
 
+      <!-- Info Message for Google Users -->
+      <Message
+        v-if="showGoogleInfo"
+        severity="info"
+        :closable="false"
+        class="message">
+        <div class="google-info-content">
+          <Icon icon="mdi:information" class="info-icon" />
+          <div>
+            <p>
+              <strong>{{ $t('auth.googleReauthInfo') }}</strong>
+            </p>
+            <p>{{ $t('auth.googleReauthDescription') }}</p>
+          </div>
+        </div>
+      </Message>
+
       <!-- Error Message -->
       <Message v-if="error" severity="error" :closable="false" class="message">
         {{ error }}
@@ -135,6 +152,7 @@ interface Props {
   error?: string | null
   success?: string | null
   showCancel?: boolean
+  showGoogleInfo?: boolean
 }
 
 interface Emits {
@@ -151,6 +169,7 @@ withDefaults(defineProps<Props>(), {
   error: null,
   success: null,
   showCancel: true,
+  showGoogleInfo: false,
 })
 
 const emit = defineEmits<Emits>()
@@ -395,6 +414,29 @@ const handleCancel = () => {
 
 .message {
   margin-top: var(--space-md);
+}
+
+.google-info-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.info-icon {
+  color: var(--color-info);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.google-info-content p {
+  margin: 0 0 var(--space-xs) 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.google-info-content p:last-child {
+  margin-bottom: 0;
 }
 
 /* Responsive design */

@@ -149,7 +149,9 @@
     "needHelp": "¿Necesitas ayuda?",
     "contactSupport": "Contactar soporte",
     "supportTitle": "Soporte Técnico",
-    "supportDescription": "Si tienes problemas para establecer tu contraseña o necesitas ayuda con tu cuenta, no dudes en contactarnos."
+    "supportDescription": "Si tienes problemas para establecer tu contraseña o necesitas ayuda con tu cuenta, no dudes en contactarnos.",
+    "googleReauthInfo": "Confirmación de Identidad Requerida",
+    "googleReauthDescription": "Por seguridad, es posible que necesites confirmar tu identidad con Google antes de establecer una contraseña. Se abrirá una ventana emergente para completar la verificación."
   },
   "explore": {
     "title": "Explorar",

@@ -138,8 +138,18 @@ export function useAuth() {
         }
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Error al establecer contraseña'
+      let errorMessage = 'Error al establecer contraseña'
+
+      if (err instanceof Error) {
+        errorMessage = err.message
+
+        // Si es un error de reautenticación requerida, dar instrucciones específicas
+        if (err.message.includes('confirmar tu identidad')) {
+          errorMessage =
+            'Por seguridad, necesitas confirmar tu identidad con Google antes de establecer una contraseña. Se abrirá una ventana para confirmar.'
+        }
+      }
+
       error.value = errorMessage
       throw new Error(errorMessage)
     } finally {
@@ -201,6 +211,25 @@ export function useAuth() {
   }
 
   /**
+   * Reautenticar usuario con Google (para operaciones sensibles)
+   */
+  const reauthenticateWithGoogle = async (): Promise<void> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      await FirebaseAuthService.reauthenticateWithGoogle()
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error al reautenticar'
+      error.value = errorMessage
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
    * Limpiar errores
    */
   const clearError = () => {
@@ -224,6 +253,7 @@ export function useAuth() {
     signUp,
     signInWithGoogle,
     setPassword,
+    reauthenticateWithGoogle,
     signOut,
     resetPassword,
 
@@ -233,3 +263,6 @@ export function useAuth() {
     cleanup,
   }
 }
+
+// Inicializar automáticamente cuando se carga el módulo
+// La inicialización se hace automáticamente dentro de useAuth()
