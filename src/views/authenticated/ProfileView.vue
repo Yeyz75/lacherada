@@ -254,37 +254,34 @@
       :dismissable-mask="true"
       position="center"
       size="medium">
-      <div class="avatar-upload-modal">
-        <BaseFileUpload
-          v-model="avatarFile"
-          :label="t('profile.changePhoto')"
-          :accept="'image/*'"
-          :max-file-size="2000000"
-          :multiple="false"
-          :auto="false"
-          :mode="'advanced'"
-          :show-upload-button="true"
-          :show-cancel-button="true"
-          @upload="handleAvatarUpload"
-          @select="handleAvatarSelect"
-          @error="handleAvatarError"
-          class="avatar-file-upload" />
+      <BaseFileUpload
+        v-model="avatarFile"
+        :label="t('profile.changePhoto')"
+        :accept="'image/*'"
+        :max-file-size="2000000"
+        :multiple="false"
+        :auto="false"
+        :mode="'advanced'"
+        :show-upload-button="true"
+        :show-cancel-button="true"
+        @upload="handleAvatarUpload"
+        @select="handleAvatarSelect"
+        @error="handleAvatarError" />
 
-        <div class="avatar-upload-actions">
-          <BaseButton
-            @click="uploadAvatar"
-            :disabled="!avatarFile"
-            :loading="uploadingAvatar"
-            variant="primary">
-            {{ t('common.accept') }}
-          </BaseButton>
-          <BaseButton
-            @click="showAvatarUpload = false"
-            variant="secondary"
-            class="ml-2">
-            {{ t('common.cancel') }}
-          </BaseButton>
-        </div>
+      <div class="avatar-upload-actions">
+        <BaseButton
+          @click="uploadAvatar"
+          :disabled="!avatarFile"
+          :loading="uploadingAvatar"
+          variant="primary">
+          {{ t('common.accept') }}
+        </BaseButton>
+        <BaseButton
+          @click="showAvatarUpload = false"
+          variant="secondary"
+          class="ml-2">
+          {{ t('common.cancel') }}
+        </BaseButton>
       </div>
     </BaseModal>
   </div>
@@ -685,10 +682,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
-}
-
-.avatar-file-upload {
-  width: 100%;
 }
 
 .avatar-upload-actions {
