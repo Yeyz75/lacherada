@@ -79,34 +79,25 @@ const advancedFiles = ref<File[]>([])
 const customFiles = ref<File[]>([])
 
 // Handlers for basic upload
-const handleBasicSelect = (event: { files: FileList }) => {
-  console.log('Basic file selected:', event.files)
-}
+const handleBasicSelect = () => {}
 
-const handleBasicUpload = (event: any) => {
-  console.log('Basic file uploaded:', event)
-}
+const handleBasicUpload = () => {}
 
 const handleBasicError = (error: any) => {
   console.error('Basic file upload error:', error)
 }
 
 // Handlers for advanced upload
-const handleAdvancedSelect = (event: { files: FileList }) => {
-  console.log('Advanced files selected:', event.files)
-}
+const handleAdvancedSelect = () => {}
 
-const handleAdvancedUpload = (event: any) => {
-  console.log('Advanced files uploaded:', event)
-}
+const handleAdvancedUpload = () => {}
 
 const handleAdvancedError = (error: any) => {
   console.error('Advanced file upload error:', error)
 }
 
 // Handlers for custom upload
-const handleCustomSelect = (event: { files: FileList }) => {
-  console.log('Custom files selected:', event.files)
+const handleCustomSelect = () => {
   // In a real app, you might want to process these files immediately
   // or store them for later processing
 }
@@ -116,10 +107,8 @@ const handleCustomError = (error: any) => {
 }
 
 const processCustomUpload = () => {
-  console.log('Processing custom upload with files:', customFiles.value)
   // Simulate processing
   setTimeout(() => {
-    console.log('Custom upload processed successfully')
     // Clear the files after processing
     customFiles.value = []
   }, 1500)

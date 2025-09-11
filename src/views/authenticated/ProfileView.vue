@@ -384,8 +384,7 @@ const handleAvatarSelect = (event: { files: FileList }) => {
   }
 }
 
-const handleAvatarUpload = (event: any) => {
-  console.log('Avatar uploaded:', event)
+const handleAvatarUpload = () => {
   // Handle successful upload
   uploadingAvatar.value = false
   showAvatarUpload.value = false
@@ -404,7 +403,7 @@ const uploadAvatar = () => {
   uploadingAvatar.value = true
   // Simulate upload process
   setTimeout(() => {
-    handleAvatarUpload({ files: [avatarFile.value] })
+    handleAvatarUpload()
   }, 1500)
 }
 

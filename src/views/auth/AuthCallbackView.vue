@@ -32,7 +32,6 @@ onMounted(async () => {
 
     if (result) {
       // Si hay resultado, el usuario se autenticó correctamente
-      console.log('OAuth callback successful:', result)
 
       // Redirigir al dashboard después de un breve delay
       redirectTimeout = setTimeout(() => {
@@ -40,7 +39,6 @@ onMounted(async () => {
       }, 1500)
     } else {
       // Si no hay resultado, podría haber un error o el usuario canceló
-      console.log('OAuth callback returned null - redirecting to login')
       router.push('/auth/login')
     }
   } catch (error) {

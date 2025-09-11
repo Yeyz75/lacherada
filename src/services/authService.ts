@@ -38,8 +38,6 @@ export class SupabaseAuthService {
 
       if (error)
         throw new Error(`Error de conexión a Supabase: ${error.message}`)
-
-      console.log('Conexión a Supabase verificada correctamente')
     } catch (error) {
       console.error('Error verificando conexión a Supabase:', error)
       throw new Error(
