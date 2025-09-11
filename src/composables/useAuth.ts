@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import {
-  FirebaseAuthService,
+  SupabaseAuthService,
   UserData,
   AuthResult,
 } from '../services/authService'
@@ -24,10 +24,10 @@ export function useAuth() {
     )
   })
 
-  // Inicializar el listener de Firebase si no está inicializado
+  // Inicializar el listener de Supabase si no está inicializado
   const initialize = () => {
     if (!initialized.value) {
-      unsubscribe = FirebaseAuthService.onAuthStateChanged((userData) => {
+      unsubscribe = SupabaseAuthService.onAuthStateChanged((userData) => {
         user.value = userData
         initialized.value = true
       })
@@ -54,7 +54,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      const result = await FirebaseAuthService.signInWithEmail(email, password)
+      const result = await SupabaseAuthService.signInWithEmail(email, password)
       user.value = result.user
       return result
     } catch (err) {
@@ -79,7 +79,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      const result = await FirebaseAuthService.signUpWithEmail(
+      const result = await SupabaseAuthService.signUpWithEmail(
         email,
         password,
         displayName,
@@ -104,7 +104,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      const result = await FirebaseAuthService.signInWithGoogle()
+      const result = await SupabaseAuthService.signInWithGoogle()
       user.value = result.user
       return result
     } catch (err) {
@@ -120,6 +120,28 @@ export function useAuth() {
   }
 
   /**
+   * Manejar callback de OAuth (Google)
+   */
+  const handleOAuthCallback = async (): Promise<AuthResult | null> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const result = await SupabaseAuthService.handleOAuthCallback()
+      if (result)
+        user.value = result.user
+      return result
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Error en callback de OAuth'
+      error.value = errorMessage
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
    * Establecer contraseña (para usuarios de Google)
    */
   const setPassword = async (password: string): Promise<void> => {
@@ -127,7 +149,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      await FirebaseAuthService.setPassword(password)
+      await SupabaseAuthService.setPassword(password)
 
       // Actualizar el estado local del usuario
       if (user.value) {
@@ -140,15 +162,8 @@ export function useAuth() {
     } catch (err) {
       let errorMessage = 'Error al establecer contraseña'
 
-      if (err instanceof Error) {
+      if (err instanceof Error)
         errorMessage = err.message
-
-        // Si es un error de reautenticación requerida, dar instrucciones específicas
-        if (err.message.includes('confirmar tu identidad')) {
-          errorMessage =
-            'Por seguridad, necesitas confirmar tu identidad con Google antes de establecer una contraseña. Se abrirá una ventana para confirmar.'
-        }
-      }
 
       error.value = errorMessage
       throw new Error(errorMessage)
@@ -165,7 +180,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      await FirebaseAuthService.signOut()
+      await SupabaseAuthService.signOut()
       user.value = null
     } catch (err) {
       const errorMessage =
@@ -185,7 +200,7 @@ export function useAuth() {
     error.value = null
 
     try {
-      await FirebaseAuthService.sendPasswordReset(email)
+      await SupabaseAuthService.sendPasswordReset(email)
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -203,7 +218,7 @@ export function useAuth() {
    */
   const checkPasswordSetupRequired = async (): Promise<boolean> => {
     try {
-      return await FirebaseAuthService.currentUserNeedsPasswordSetup()
+      return await SupabaseAuthService.currentUserNeedsPasswordSetup()
     } catch (err) {
       console.error('Error checking password setup requirement:', err)
       return false
@@ -212,13 +227,16 @@ export function useAuth() {
 
   /**
    * Reautenticar usuario con Google (para operaciones sensibles)
+   * Nota: En Supabase esto se maneja diferente que en Firebase
    */
   const reauthenticateWithGoogle = async (): Promise<void> => {
     loading.value = true
     error.value = null
 
     try {
-      await FirebaseAuthService.reauthenticateWithGoogle()
+      // En Supabase, la reautenticación se maneja automáticamente
+      // o se puede implementar solicitando login nuevamente
+      throw new Error('Reautenticación con Google - implementar según necesidades específicas')
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Error al reautenticar'
@@ -252,6 +270,7 @@ export function useAuth() {
     signIn,
     signUp,
     signInWithGoogle,
+    handleOAuthCallback,
     setPassword,
     reauthenticateWithGoogle,
     signOut,
@@ -263,6 +282,3 @@ export function useAuth() {
     cleanup,
   }
 }
-
-// Inicializar automáticamente cuando se carga el módulo
-// La inicialización se hace automáticamente dentro de useAuth()

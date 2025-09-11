@@ -30,7 +30,7 @@ Crear una red comunitaria que facilite:
 - Registro e inicio de sesión seguro
 - Gestión de perfiles de usuario
 - Recuperación de contraseñas
-- Integración con Firebase para autenticación robusta
+- Preparado para integración con Supabase
 
 ### 🎨 **Diseño Moderno**
 - Interfaz responsive para desktop y móvil
@@ -63,7 +63,7 @@ Crear una red comunitaria que facilite:
 - **Vue i18n** (`^11.1.12`) - Internacionalización completa
 
 ### **Backend y Servicios**
-- **Firebase** - Autenticación y servicios en la nube
+- **Supabase** (`@supabase/supabase-js`) - Autenticación y base de datos
 - Variables de entorno configurables
 
 ### **Herramientas de Desarrollo**
@@ -96,18 +96,30 @@ Crear una red comunitaria que facilite:
    pnpm install
    ```
 
-3. **Configurar variables de entorno**
+3. **Configurar Supabase**
+   
+   a. Crear un proyecto en [Supabase](https://supabase.com)
+   
+   b. Ejecutar el esquema de base de datos:
+   ```sql
+   -- Copiar y ejecutar el contenido de supabase-schema.sql
+   -- en el SQL Editor de tu proyecto Supabase
+   ```
+   
+   c. Configurar variables de entorno:
    ```bash
    # Crear archivo .env en la raíz del proyecto
    cp .env.example .env
    
-   # Configurar variables de Firebase
-   VITE_FIREBASE_API_KEY=your_api_key
-   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   VITE_FIREBASE_APP_ID=your_app_id
+   # Configurar variables de Supabase
+   VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+   VITE_SUPABASE_ANON_KEY=tu_clave_publica_anonima
+   ```
+   
+   d. Configurar autenticación con Google (opcional):
+   - En tu proyecto Supabase, ir a Authentication > Providers
+   - Habilitar Google OAuth
+   - Configurar Client ID y Client Secret de Google
    ```
 
 4. **Ejecutar en modo desarrollo**
@@ -164,7 +176,9 @@ src/
 │   └── home/           # Vista principal
 ├── App.vue             # Componente raíz
 ├── main.ts             # Punto de entrada de la aplicación
-└── firebase-config.ts  # Configuración de Firebase
+├── supabase-config.ts  # Configuración de Supabase
+└── services/
+    └── authService.ts   # Servicio de autenticación
 ```
 
 ## 🔧 Configuración de Desarrollo
@@ -195,12 +209,20 @@ Todas las interfaces, formularios y mensajes están completamente traducidos.
 
 ## 🔐 Autenticación
 
-Sistema de autenticación robusto con Firebase:
-- Registro de nuevos usuarios
-- Inicio de sesión
-- Recuperación de contraseñas
-- Gestión de sesiones
-- Protección de rutas
+Sistema de autenticación completo con Supabase:
+- **Registro con email/contraseña**: Creación de cuentas seguras
+- **Inicio de sesión**: Autenticación con credenciales
+- **OAuth con Google**: Login social integrado
+- **Recuperación de contraseñas**: Reset por email
+- **Gestión de perfiles**: Datos de usuario en base de datos
+- **Row Level Security**: Seguridad a nivel de fila
+- **Sesiones automáticas**: Manejo de estado de autenticación
+
+### **Características Avanzadas**
+- Usuarios de Google pueden establecer contraseña posteriormente
+- Detección automática del método de login (email/google/mixto)
+- Perfiles de usuario con información extendida
+- Triggers automáticos para nuevos usuarios
 
 ## 🎨 Sistema de Temas
 
@@ -217,10 +239,10 @@ npm run build
 ```
 
 ### **Opciones de Hosting**
-- **Firebase Hosting** (recomendado)
-- **Netlify**
+- **Netlify** (recomendado)
 - **Vercel**
 - **GitHub Pages**
+- **Supabase Edge Functions** (para funciones serverless)
 
 Los archivos se generan en el directorio `dist/` listo para cualquier servidor web estático.
 
@@ -244,7 +266,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 - Comunidad Vue.js por el excelente framework
 - PrimeVue por los componentes UI
-- Firebase por los servicios backend
+- Supabase por los servicios backend
 - Todos los contribuidores del proyecto
 
 ---
