@@ -33,6 +33,13 @@ onMounted(async () => {
     if (result) {
       // Si hay resultado, el usuario se autenticó correctamente
 
+      // Verificar si necesita establecer contraseña
+      if (result.needsPasswordSetup) {
+        // Redirigir a la página de establecer contraseña
+        router.push('/auth/set-password')
+        return
+      }
+
       // Redirigir al dashboard después de un breve delay
       redirectTimeout = setTimeout(() => {
         router.push('/dashboard')

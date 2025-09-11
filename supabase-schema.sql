@@ -1,8 +1,8 @@
 -- Supabase Database Schema for LaCherada
 -- This file contains the SQL commands to set up the database schema
 
--- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
+-- Note: Removed ALTER DATABASE command as it's not needed in Supabase
+-- Supabase handles JWT secrets automatically
 
 -- Create user_profiles table
 CREATE TABLE IF NOT EXISTS public.user_profiles (

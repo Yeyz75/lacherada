@@ -43,6 +43,12 @@ const router = createRouter({
       beforeEnter: requireGuest,
     },
     {
+      path: '/auth/set-password',
+      name: 'setPassword',
+      component: () => import('../views/auth/SetPasswordView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/auth/callback',
       name: 'authCallback',
       component: () => import('../views/auth/AuthCallbackView.vue'),
