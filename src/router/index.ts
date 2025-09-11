@@ -43,9 +43,9 @@ const router = createRouter({
       beforeEnter: requireGuest,
     },
     {
-      path: '/auth/set-password',
-      name: 'setPassword',
-      component: () => import('../views/auth/SetPasswordView.vue'),
+      path: '/auth/callback',
+      name: 'authCallback',
+      component: () => import('../views/auth/AuthCallbackView.vue'),
       meta: { requiresAuth: true },
     },
     // Protected routes for authenticated users
