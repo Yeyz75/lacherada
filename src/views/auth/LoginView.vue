@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../../composables/useAuth'
 import { Icon } from '@iconify/vue'
@@ -95,7 +95,13 @@ import Button from 'primevue/button'
 import Message from 'primevue/message'
 
 const router = useRouter()
-const { signIn, signInWithGoogle, loading, error, clearError } = useAuth()
+const { signIn, signInWithGoogle, loading, error, clearError, initialize } =
+  useAuth()
+
+// Inicializar el sistema de autenticación cuando se monta el componente
+onMounted(async () => {
+  await initialize()
+})
 
 // Form data
 const email = ref('')

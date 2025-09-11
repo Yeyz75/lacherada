@@ -25,12 +25,31 @@ export function useAuth() {
   })
 
   // Inicializar el listener de Supabase si no está inicializado
-  const initialize = () => {
+  const initialize = async () => {
     if (!initialized.value) {
-      unsubscribe = SupabaseAuthService.onAuthStateChanged((userData) => {
-        user.value = userData
-        initialized.value = true
-      })
+      try {
+        // Verificar la conexión a Supabase antes de inicializar
+        await SupabaseAuthService.checkConnection()
+
+        unsubscribe = SupabaseAuthService.onAuthStateChanged((userData) => {
+          user.value = userData
+          initialized.value = true
+        })
+
+        // Establecer un timeout para la inicialización
+        setTimeout(() => {
+          if (!initialized.value) {
+            console.warn('Auth initialization is taking longer than expected')
+            error.value =
+              'La inicialización de autenticación está tardando más de lo esperado'
+          }
+        }, 3000)
+      } catch (err) {
+        console.error('Error initializing auth:', err)
+        error.value =
+          'Error al inicializar la autenticación. Verifica tu conexión a internet.'
+        initialized.value = true // Marcar como inicializado incluso con error para evitar bucles
+      }
     }
   }
 
@@ -128,8 +147,7 @@ export function useAuth() {
 
     try {
       const result = await SupabaseAuthService.handleOAuthCallback()
-      if (result)
-        user.value = result.user
+      if (result) user.value = result.user
       return result
     } catch (err) {
       const errorMessage =
@@ -162,8 +180,7 @@ export function useAuth() {
     } catch (err) {
       let errorMessage = 'Error al establecer contraseña'
 
-      if (err instanceof Error)
-        errorMessage = err.message
+      if (err instanceof Error) errorMessage = err.message
 
       error.value = errorMessage
       throw new Error(errorMessage)
@@ -236,7 +253,9 @@ export function useAuth() {
     try {
       // En Supabase, la reautenticación se maneja automáticamente
       // o se puede implementar solicitando login nuevamente
-      throw new Error('Reautenticación con Google - implementar según necesidades específicas')
+      throw new Error(
+        'Reautenticación con Google - implementar según necesidades específicas',
+      )
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Error al reautenticar'
@@ -254,8 +273,8 @@ export function useAuth() {
     error.value = null
   }
 
-  // Inicializar automáticamente
-  initialize()
+  // No inicializar automáticamente, se debe llamar explícitamente
+  // initialize()
 
   return {
     // Estado
@@ -280,5 +299,6 @@ export function useAuth() {
     checkPasswordSetupRequired,
     clearError,
     cleanup,
+    initialize,
   }
 }

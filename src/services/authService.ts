@@ -28,6 +28,27 @@ export interface AuthResult {
 
 export class SupabaseAuthService {
   /**
+   * Verificar la conexión a Supabase
+   */
+  static async checkConnection(): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .select('count', { count: 'exact', head: true })
+
+      if (error)
+        throw new Error(`Error de conexión a Supabase: ${error.message}`)
+
+      console.log('Conexión a Supabase verificada correctamente')
+    } catch (error) {
+      console.error('Error verificando conexión a Supabase:', error)
+      throw new Error(
+        'No se pudo establecer conexión con el servidor de autenticación',
+      )
+    }
+  }
+
+  /**
    * Convierte un usuario de Supabase a nuestro formato UserData
    */
   private static async createUserData(

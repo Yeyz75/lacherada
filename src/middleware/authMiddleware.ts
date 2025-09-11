@@ -7,6 +7,7 @@
 
 import { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
+import type { UserData } from '../services/authService'
 
 export interface AuthMiddlewareOptions {
   requiresAuth?: boolean
@@ -25,10 +26,13 @@ export async function authMiddleware(
   next: NavigationGuardNext,
   options: AuthMiddlewareOptions = {},
 ) {
-  const { isAuthenticated, needsPasswordSetup, initialized } = useAuth()
+  const { isAuthenticated, needsPasswordSetup, initialized, initialize } =
+    useAuth()
 
   // Esperar a que la autenticación se inicialice
   if (!initialized.value) {
+    // Inicializar explícitamente si no está inicializado
+    await initialize()
     // Usar un timeout para evitar bucles infinitos
     let attempts = 0
     const maxAttempts = 50 // 5 segundos máximo
@@ -38,7 +42,13 @@ export async function authMiddleware(
       attempts++
     }
 
-    if (!initialized.value) console.warn('Auth initialization timeout')
+    if (!initialized.value) {
+      console.warn('Auth initialization timeout')
+      // En lugar de bloquear la navegación, permitimos continuar pero mostramos una advertencia
+      console.warn(
+        'Continuando sin autenticación inicializada. Algunas funciones pueden no estar disponibles.',
+      )
+    }
   }
 
   const {
@@ -143,7 +153,7 @@ export async function checkAuthState() {
  * Determinar la ruta de redirección basada en el estado del usuario
  */
 export function getRedirectRoute(
-  user: any,
+  user: UserData | null,
   needsPasswordSetup: boolean,
 ): string {
   if (!user) return '/auth/login'
