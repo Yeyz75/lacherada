@@ -17,7 +17,8 @@
     "style:fix": "stylelint src/**/*.{css,scss,vue} --fix",
     "check-all": "npm run lint && npm run format:check && npm run style",
     "fix-all": "npm run lint:fix && npm run format && npm run style:fix",
-    "pre-commit": "npm run check-all"
+    "pre-commit": "npm run check-all",
+    "prepare": "husky"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
@@ -42,6 +43,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
     "prettier": "^3.6.2",

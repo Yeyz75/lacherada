@@ -150,7 +150,7 @@ export default [
       ],
       'prefer-const': 'error',
       'no-var': 'error',
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': ['error', { allow: ['warn', 'error'] }],
       'eqeqeq': ['error', 'allow-null'],
       'no-debugger': 'error',
       'semi': ['error', 'never'],
