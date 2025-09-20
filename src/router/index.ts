@@ -52,7 +52,7 @@ const router = createRouter({
       path: '/auth/callback',
       name: 'authCallback',
       component: () => import('../views/auth/AuthCallbackView.vue'),
-      meta: { requiresAuth: true },
+      // No requiere autenticación ya que es parte del proceso de OAuth
     },
     // Protected routes for authenticated users
     {

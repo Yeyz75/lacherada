@@ -15,7 +15,8 @@
             :placeholder="$t('auth.displayNamePlaceholder')"
             :error="displayNameError"
             class="form-input"
-            required />
+            required
+            @blur="validateDisplayName" />
         </div>
 
         <div class="form-group">
@@ -28,7 +29,8 @@
             :error="emailError"
             icon="mdi:email"
             class="form-input"
-            required />
+            required
+            @blur="validateEmail" />
         </div>
 
         <div class="form-group">
@@ -41,7 +43,9 @@
             :error="passwordError"
             :show-password-toggle="true"
             class="form-input"
-            required />
+            required
+            @input="validatePassword"
+            @blur="validatePassword" />
         </div>
 
         <div class="form-group">
@@ -54,7 +58,9 @@
             :error="confirmPasswordError"
             :show-password-toggle="true"
             class="form-input"
-            required />
+            required
+            @input="validateConfirmPassword"
+            @blur="validateConfirmPassword" />
         </div>
 
         <div class="form-group">
@@ -95,7 +101,11 @@
           @click="handleGoogleRegister">
           <template #default>
             <Icon icon="simple-icons:google" class="google-icon" />
-            {{ $t('auth.googleRegister') }}
+            {{
+              googleLoading
+                ? $t('auth.redirectingToGoogle')
+                : $t('auth.googleRegister')
+            }}
           </template>
         </Button>
 
@@ -170,9 +180,9 @@ const isFormValid = computed(() => {
 // Validation functions
 const validateDisplayName = () => {
   if (!displayName.value) {
-    displayNameError.value = 'Display name is required'
+    displayNameError.value = 'El nombre es requerido'
   } else if (displayName.value.length < 2) {
-    displayNameError.value = 'Display name must be at least 2 characters'
+    displayNameError.value = 'El nombre debe tener al menos 2 caracteres'
   } else {
     displayNameError.value = ''
   }
@@ -181,9 +191,9 @@ const validateDisplayName = () => {
 const validateEmail = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!email.value) {
-    emailError.value = 'Email is required'
+    emailError.value = 'El correo electrónico es requerido'
   } else if (!emailRegex.test(email.value)) {
-    emailError.value = 'Please enter a valid email'
+    emailError.value = 'Por favor ingresa un correo electrónico válido'
   } else {
     emailError.value = ''
   }
@@ -191,21 +201,23 @@ const validateEmail = () => {
 
 const validatePassword = () => {
   if (!password.value) {
-    passwordError.value = 'Password is required'
+    passwordError.value = 'La contraseña es requerida'
   } else if (password.value.length < 6) {
-    passwordError.value = 'Password must be at least 6 characters'
+    passwordError.value = 'La contraseña debe tener al menos 6 caracteres'
   } else {
     passwordError.value = ''
   }
   // Also validate confirm password when password changes
-  validateConfirmPassword()
+  if (confirmPassword.value) {
+    validateConfirmPassword()
+  }
 }
 
 const validateConfirmPassword = () => {
   if (!confirmPassword.value) {
-    confirmPasswordError.value = 'Please confirm your password'
+    confirmPasswordError.value = 'Por favor confirma tu contraseña'
   } else if (password.value !== confirmPassword.value) {
-    confirmPasswordError.value = 'Passwords do not match'
+    confirmPasswordError.value = 'Las contraseñas no coinciden'
   } else {
     confirmPasswordError.value = ''
   }
@@ -213,7 +225,7 @@ const validateConfirmPassword = () => {
 
 const validateTerms = () => {
   if (!acceptTerms.value) {
-    termsError.value = 'You must accept the terms and conditions'
+    termsError.value = 'Debes aceptar los términos y condiciones'
   } else {
     termsError.value = ''
   }
@@ -244,20 +256,21 @@ const handleGoogleRegister = async () => {
 
   try {
     clearError()
+
+    // Iniciar el flujo de OAuth con Google
     const result = await signInWithGoogle()
 
-    if (result.needsPasswordSetup) {
-      // Redirect to password setup if user needs to set password
-      router.push('/auth/set-password')
-    } else {
-      // Redirect to dashboard if password is already set
-      router.push('/dashboard')
+    if (result.redirecting) {
+      // El usuario será redirigido a Google
+      // No hacer nada más aquí, el AuthCallbackView manejará el resultado
+      console.log('Redirigiendo a Google para autenticación...')
     }
   } catch (err) {
-    console.error('Google registration failed:', err)
-  } finally {
+    console.error('Error iniciando flujo de Google:', err)
     googleLoading.value = false
   }
+  // Nota: No establecer googleLoading.value = false aquí para OAuth
+  // se establecerá cuando la página se recargue o redirija
 }
 </script>
 

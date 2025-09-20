@@ -174,7 +174,7 @@ export class SupabaseAuthService {
   /**
    * Inicio de sesión con Google
    */
-  static async signInWithGoogle(): Promise<AuthResult> {
+  static async signInWithGoogle(): Promise<{ redirecting: boolean }> {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -185,9 +185,8 @@ export class SupabaseAuthService {
 
       if (error) throw error
 
-      // Para OAuth, necesitamos manejar la redirección
-      // El resultado real se manejará en el callback
-      throw new Error('Redirigiendo a Google...')
+      // Retornar indicador de redirección exitosa
+      return { redirecting: true }
     } catch (error) {
       throw this.handleAuthError(error as AuthError)
     }

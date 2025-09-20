@@ -118,13 +118,13 @@ export function useAuth() {
   /**
    * Iniciar sesión con Google
    */
-  const signInWithGoogle = async (): Promise<AuthResult> => {
+  const signInWithGoogle = async (): Promise<{ redirecting: boolean }> => {
     loading.value = true
     error.value = null
 
     try {
       const result = await SupabaseAuthService.signInWithGoogle()
-      user.value = result.user
+      // No actualizar user.value aquí ya que la autenticación real ocurrirá en el callback
       return result
     } catch (err) {
       const errorMessage =

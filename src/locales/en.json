@@ -138,6 +138,7 @@
     "hasNumber": "At least one number",
     "googleLogin": "Continue with Google",
     "googleRegister": "Sign up with Google",
+    "redirectingToGoogle": "Redirecting to Google...",
     "orDivider": "OR",
     "setPasswordWelcome": "Welcome! Complete your registration",
     "setPasswordTitle": "Set Your Password",
