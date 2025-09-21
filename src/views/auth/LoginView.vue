@@ -164,12 +164,9 @@ const handleGoogleLogin = async () => {
     clearError()
     const result = await signInWithGoogle()
 
-    if (result.needsPasswordSetup) {
-      // Redirect to password setup if user needs to set password
-      router.push('/auth/set-password')
-    } else {
-      // Redirect to dashboard if password is already set
-      router.push('/dashboard')
+    if (result.redirecting) {
+      // El usuario será redirigido a Google
+      // El AuthCallbackView manejará el resultado después de la redirección
     }
   } catch (err) {
     console.error('Google login failed:', err)
