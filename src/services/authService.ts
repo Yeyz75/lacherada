@@ -60,8 +60,13 @@ export class SupabaseAuthService {
       .eq('id', supabaseUser.id)
       .single()
 
-    // Determinar el método de login basado en el proveedor
-    const provider = supabaseUser.app_metadata.provider || 'email'
+    // Determinar el proveedor de forma más robusta
+    const provider =
+      supabaseUser.app_metadata?.provider ||
+      (supabaseUser.identities && supabaseUser.identities.length > 0
+        ? supabaseUser.identities[0].provider
+        : 'email')
+
     const loginMethod = provider === 'google' ? 'google' : 'email'
 
     // Un usuario tiene contraseña si:
@@ -69,13 +74,33 @@ export class SupabaseAuthService {
     // 2. O si el perfil indica que tiene contraseña (usuarios de Google que establecieron contraseña)
     const hasPassword = profile?.has_password || provider === 'email'
 
+    // Obtener nombre de usuario de múltiples fuentes
+    const displayName =
+      profile?.display_name ||
+      supabaseUser.user_metadata?.full_name ||
+      supabaseUser.user_metadata?.name ||
+      (supabaseUser.identities && supabaseUser.identities.length > 0
+        ? supabaseUser.identities[0].identity_data?.full_name ||
+          supabaseUser.identities[0].identity_data?.name
+        : null) ||
+      null
+
+    // Obtener foto de perfil de múltiples fuentes
+    const photoURL =
+      profile?.photo_url ||
+      supabaseUser.user_metadata?.avatar_url ||
+      supabaseUser.user_metadata?.picture ||
+      (supabaseUser.identities && supabaseUser.identities.length > 0
+        ? supabaseUser.identities[0].identity_data?.avatar_url ||
+          supabaseUser.identities[0].identity_data?.picture
+        : null) ||
+      null
+
     return {
       uid: supabaseUser.id,
       email: supabaseUser.email || null,
-      displayName:
-        profile?.display_name || supabaseUser.user_metadata?.full_name || null,
-      photoURL:
-        profile?.photo_url || supabaseUser.user_metadata?.avatar_url || null,
+      displayName,
+      photoURL,
       emailVerified: supabaseUser.email_confirmed_at !== null,
       createdAt: new Date(supabaseUser.created_at),
       lastLoginAt: new Date(),
@@ -181,18 +206,27 @@ export class SupabaseAuthService {
    */
   static async signInWithGoogle(): Promise<{ redirecting: boolean }> {
     try {
+      const redirectUrl = `${window.location.origin}/auth/callback`
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       })
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Error en signInWithOAuth:', error)
+        throw error
+      }
 
-      // Retornar indicador de redirección exitosa
       return { redirecting: true }
     } catch (error) {
+      console.error('💥 Error en signInWithGoogle:', error)
       throw this.handleAuthError(error as AuthError)
     }
   }
@@ -202,26 +236,69 @@ export class SupabaseAuthService {
    */
   static async handleOAuthCallback(): Promise<AuthResult | null> {
     try {
-      const { data, error } = await supabase.auth.getSession()
+      // Primero intentar obtener la sesión actual
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession()
 
-      if (error) throw error
-      if (!data.session?.user) return null
+      if (sessionError) {
+        console.error('❌ Error obteniendo sesión:', sessionError)
+        throw sessionError
+      }
 
-      const supabaseUser = data.session.user
-      const isNewUser = supabaseUser.created_at === supabaseUser.last_sign_in_at
+      if (!sessionData.session?.user) return null
 
-      // Primero verificar si el perfil existe
-      const { data: existingProfile } = await supabase
+      const supabaseUser = sessionData.session.user
+
+      // Verificar si el perfil existe en la base de datos
+      const { data: existingProfile, error: profileError } = await supabase
         .from('user_profiles')
-        .select('has_password, login_method')
+        .select('has_password, login_method, created_at')
         .eq('id', supabaseUser.id)
         .single()
 
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('❌ Error consultando perfil:', profileError)
+        throw profileError
+      }
+
+      // Determinar si es un usuario nuevo basado en la existencia del perfil
+      const isNewUser = !existingProfile
+
       const userData = await this.createUserData(supabaseUser, isNewUser)
 
-      // Si es un usuario nuevo o no tiene perfil, crear/actualizar el perfil
-      if (isNewUser || !existingProfile)
-        await this.saveUserProfile(userData, isNewUser)
+      // Siempre actualizar el perfil para asegurar datos actualizados
+      await this.saveUserProfile(userData, isNewUser)
+
+      // Si es un usuario de Google, intentar actualizar con datos de identities
+      if (userData.loginMethod === 'google') {
+        try {
+          const { error: updateError } = await supabase.rpc(
+            'update_user_profile_from_identities',
+            { user_id: supabaseUser.id },
+          )
+          if (updateError) {
+            console.warn(
+              '⚠️ No se pudo actualizar desde identities:',
+              updateError,
+            )
+          } else {
+            // Recargar los datos del usuario
+            const updatedUserData = await this.createUserData(
+              supabaseUser,
+              isNewUser,
+            )
+            return {
+              user: updatedUserData,
+              isNewUser,
+              needsPasswordSetup:
+                updatedUserData.loginMethod === 'google' &&
+                !updatedUserData.hasPassword,
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ Error actualizando desde identities:', error)
+        }
+      }
 
       // Un usuario de Google necesita establecer contraseña si:
       // 1. Su método de login es 'google'
@@ -235,6 +312,7 @@ export class SupabaseAuthService {
         needsPasswordSetup,
       }
     } catch (error) {
+      console.error('💥 Error en handleOAuthCallback:', error)
       throw this.handleAuthError(error as AuthError)
     }
   }

@@ -263,7 +263,6 @@ const handleGoogleRegister = async () => {
     if (result.redirecting) {
       // El usuario será redirigido a Google
       // No hacer nada más aquí, el AuthCallbackView manejará el resultado
-      console.log('Redirigiendo a Google para autenticación...')
     }
   } catch (err) {
     console.error('Error iniciando flujo de Google:', err)

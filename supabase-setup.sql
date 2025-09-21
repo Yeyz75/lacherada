@@ -40,12 +40,12 @@ BEGIN
     -- Intentar obtener el proveedor desde diferentes fuentes
     SELECT 
         COALESCE(
+            -- Desde identities (más confiable para OAuth)
+            (SELECT provider FROM auth.identities WHERE user_id = get_user_provider.user_id ORDER BY created_at DESC LIMIT 1),
             -- Desde app_metadata
             (SELECT app_metadata->>'provider' FROM auth.users WHERE id = user_id),
             -- Desde user_metadata
             (SELECT user_metadata->>'provider' FROM auth.users WHERE id = user_id),
-            -- Desde identities (más confiable)
-            (SELECT provider FROM auth.identities WHERE user_id = get_user_provider.user_id LIMIT 1),
             -- Fallback: detectar por presencia de contraseña
             CASE 
                 WHEN (SELECT encrypted_password FROM auth.users WHERE id = user_id) IS NOT NULL THEN 'email'
@@ -66,6 +66,57 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Función para actualizar perfiles con datos de identities (llamada desde el frontend)
+CREATE OR REPLACE FUNCTION public.update_user_profile_from_identities(user_id UUID)
+RETURNS VOID AS $$
+DECLARE
+    user_provider TEXT;
+    user_name TEXT;
+    user_avatar TEXT;
+BEGIN
+    -- Obtener proveedor desde identities
+    SELECT provider INTO user_provider
+    FROM auth.identities 
+    WHERE user_id = update_user_profile_from_identities.user_id 
+    ORDER BY created_at DESC 
+    LIMIT 1;
+    
+    -- Obtener datos desde identities
+    SELECT 
+        COALESCE(
+            identity_data->>'full_name',
+            identity_data->>'name'
+        ),
+        COALESCE(
+            identity_data->>'avatar_url',
+            identity_data->>'picture'
+        )
+    INTO user_name, user_avatar
+    FROM auth.identities 
+    WHERE user_id = update_user_profile_from_identities.user_id 
+    ORDER BY created_at DESC 
+    LIMIT 1;
+    
+    -- Actualizar perfil si se encontraron datos
+    IF user_provider IS NOT NULL THEN
+        UPDATE public.user_profiles 
+        SET 
+            provider = user_provider,
+            login_method = CASE 
+                WHEN user_provider = 'google' AND NOT has_password THEN 'google'
+                WHEN user_provider = 'google' AND has_password THEN 'mixed'
+                ELSE 'email'
+            END,
+            display_name = COALESCE(user_name, display_name),
+            photo_url = COALESCE(user_avatar, photo_url),
+            updated_at = timezone('utc'::text, now())
+        WHERE id = update_user_profile_from_identities.user_id;
+        
+        RAISE LOG 'Updated user profile from identities for user: %', user_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- =====================================================
 -- 3. FUNCIÓN PRINCIPAL PARA NUEVOS USUARIOS
 -- =====================================================
@@ -78,66 +129,89 @@ DECLARE
     user_avatar TEXT;
     has_pwd BOOLEAN;
 BEGIN
-    -- Obtener proveedor de forma robusta
-    user_provider := public.get_user_provider(NEW.id);
+    -- Log para debugging
+    RAISE LOG 'handle_new_user triggered for user: %', NEW.id;
     
-    -- Obtener nombre de usuario desde múltiples fuentes
-    user_name := COALESCE(
-        NEW.user_metadata->>'full_name',
-        NEW.user_metadata->>'name',
-        NEW.app_metadata->>'full_name',
-        NEW.app_metadata->>'name',
-        -- Desde identities si está disponible
-        (SELECT identity_data->>'full_name' FROM auth.identities WHERE user_id = NEW.id LIMIT 1),
-        (SELECT identity_data->>'name' FROM auth.identities WHERE user_id = NEW.id LIMIT 1),
-        -- Fallback: extraer del email
-        SPLIT_PART(NEW.email, '@', 1)
-    );
-    
-    -- Obtener avatar desde múltiples fuentes
-    user_avatar := COALESCE(
-        NEW.user_metadata->>'avatar_url',
-        NEW.user_metadata->>'picture',
-        NEW.app_metadata->>'avatar_url',
-        NEW.app_metadata->>'picture',
-        (SELECT identity_data->>'avatar_url' FROM auth.identities WHERE user_id = NEW.id LIMIT 1),
-        (SELECT identity_data->>'picture' FROM auth.identities WHERE user_id = NEW.id LIMIT 1)
-    );
-    
-    -- Determinar si tiene contraseña
-    has_pwd := CASE 
-        WHEN user_provider = 'google' THEN false
-        WHEN NEW.encrypted_password IS NOT NULL THEN true 
-        ELSE false 
+    BEGIN
+        -- Obtener proveedor de forma robusta con manejo de errores
+        user_provider := COALESCE(
+            -- Desde app_metadata (más inmediato)
+            NEW.app_metadata->>'provider',
+            -- Fallback básico
+            CASE 
+                WHEN NEW.encrypted_password IS NOT NULL THEN 'email'
+                ELSE 'google'
+            END
+        );
+        
+        RAISE LOG 'Provider detected: %', user_provider;
+        
+        -- Obtener nombre de usuario desde múltiples fuentes (sin acceso a identities por timing)
+        user_name := COALESCE(
+            NEW.user_metadata->>'full_name',
+            NEW.user_metadata->>'name',
+            NEW.app_metadata->>'full_name',
+            NEW.app_metadata->>'name',
+            -- Fallback: extraer del email
+            SPLIT_PART(NEW.email, '@', 1)
+        );
+        
+        -- Obtener avatar desde múltiples fuentes (sin acceso a identities por timing)
+        user_avatar := COALESCE(
+            NEW.user_metadata->>'avatar_url',
+            NEW.user_metadata->>'picture',
+            NEW.app_metadata->>'avatar_url',
+            NEW.app_metadata->>'picture'
+        );
+        
+        -- Determinar si tiene contraseña
+        has_pwd := CASE 
+            WHEN user_provider = 'google' THEN false
+            WHEN NEW.encrypted_password IS NOT NULL THEN true 
+            ELSE false 
+        END;
+        
+        RAISE LOG 'User data: name=%, avatar=%, has_password=%', user_name, user_avatar, has_pwd;
+        
+        -- Insertar perfil de usuario con manejo de errores
+        INSERT INTO public.user_profiles (
+            id, 
+            email, 
+            display_name, 
+            photo_url, 
+            has_password, 
+            login_method,
+            provider,
+            last_login_at
+        )
+        VALUES (
+            NEW.id,
+            NEW.email,
+            user_name,
+            user_avatar,
+            has_pwd,
+            user_provider,
+            user_provider,
+            timezone('utc'::text, now())
+        )
+        ON CONFLICT (id) DO UPDATE SET
+            email = EXCLUDED.email,
+            display_name = COALESCE(EXCLUDED.display_name, user_profiles.display_name),
+            photo_url = COALESCE(EXCLUDED.photo_url, user_profiles.photo_url),
+            provider = COALESCE(EXCLUDED.provider, user_profiles.provider),
+            last_login_at = timezone('utc'::text, now()),
+            updated_at = timezone('utc'::text, now());
+        
+        RAISE LOG 'User profile created/updated successfully for user: %', NEW.id;
+        
+    EXCEPTION WHEN OTHERS THEN
+        -- Log del error pero no fallar el trigger
+        RAISE LOG 'Error in handle_new_user for user %: % %', NEW.id, SQLERRM, SQLSTATE;
+        -- Intentar insertar un perfil básico
+        INSERT INTO public.user_profiles (id, email, display_name, has_password, login_method, provider)
+        VALUES (NEW.id, NEW.email, SPLIT_PART(NEW.email, '@', 1), false, 'email', 'email')
+        ON CONFLICT (id) DO NOTHING;
     END;
-    
-    -- Insertar perfil de usuario
-    INSERT INTO public.user_profiles (
-        id, 
-        email, 
-        display_name, 
-        photo_url, 
-        has_password, 
-        login_method,
-        provider,
-        last_login_at
-    )
-    VALUES (
-        NEW.id,
-        NEW.email,
-        user_name,
-        user_avatar,
-        has_pwd,
-        user_provider,
-        user_provider,
-        timezone('utc'::text, now())
-    )
-    ON CONFLICT (id) DO UPDATE SET
-        email = EXCLUDED.email,
-        display_name = COALESCE(EXCLUDED.display_name, user_profiles.display_name),
-        photo_url = COALESCE(EXCLUDED.photo_url, user_profiles.photo_url),
-        last_login_at = timezone('utc'::text, now()),
-        updated_at = timezone('utc'::text, now());
     
     RETURN NEW;
 END;
@@ -188,6 +262,7 @@ GRANT SELECT ON public.user_profiles TO anon;
 GRANT EXECUTE ON FUNCTION public.get_user_provider(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.handle_updated_at() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.update_user_profile_from_identities(UUID) TO authenticated;
 
 -- =====================================================
 -- 7. ÍNDICES PARA OPTIMIZACIÓN

@@ -53,6 +53,17 @@ let redirectTimeout: NodeJS.Timeout | null = null
 
 const processCallback = async () => {
   try {
+    // Verificar si hay parámetros de error en la URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const errorParam = urlParams.get('error')
+    const errorDescription = urlParams.get('error_description')
+    
+    if (errorParam) {
+      console.error('❌ Error en URL:', errorParam, errorDescription)
+      error.value = errorDescription || 'Error en la autenticación con Google'
+      return
+    }
+
     // Intentar manejar el callback de OAuth
     const result = await handleOAuthCallback()
 
@@ -61,7 +72,6 @@ const processCallback = async () => {
 
       // Verificar si necesita establecer contraseña
       if (result.needsPasswordSetup) {
-        // Redirigir a la página de establecer contraseña
         router.push('/auth/set-password')
         return
       }
@@ -76,7 +86,7 @@ const processCallback = async () => {
         'No se pudo completar la autenticación con Google. Es posible que hayas cancelado el proceso.'
     }
   } catch (err) {
-    console.error('Error in OAuth callback:', err)
+    console.error('💥 Error in OAuth callback:', err)
 
     // Mostrar error específico
     if (err instanceof Error) {
