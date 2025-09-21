@@ -17,7 +17,7 @@
     "style:fix": "stylelint src/**/*.{css,scss,vue} --fix",
     "check-all": "npm run lint && npm run format:check && npm run style",
     "fix-all": "npm run lint:fix && npm run format && npm run style:fix",
-    "pre-commit": "npm run fix-all && npm run check-all",
+    "pre-commit": "lint-staged",
     "prepare": "husky"
   },
   "dependencies": {
@@ -44,6 +44,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
     "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
     "prettier": "^3.6.2",
@@ -57,5 +58,10 @@
     "vite": "^5.4.20",
     "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^2.1.4"
+  },
+  "lint-staged": {
+    "*.{vue,ts,js}": ["eslint --fix", "prettier --write"],
+    "*.{css,scss,vue}": ["stylelint --fix"],
+    "*.{json,md}": ["prettier --write"]
   }
 }
