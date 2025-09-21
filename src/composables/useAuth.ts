@@ -16,13 +16,7 @@ let unsubscribe: (() => void) | null = null
 
 export function useAuth() {
   const isAuthenticated = computed(() => Boolean(user.value))
-  const needsPasswordSetup = computed(() => {
-    return (
-      user.value &&
-      !user.value.hasPassword &&
-      user.value.loginMethod === 'google'
-    )
-  })
+  // Ya no necesitamos needsPasswordSetup - todos los usuarios están listos después del registro
 
   // Inicializar el listener de Supabase si no está inicializado
   const initialize = async () => {
@@ -160,36 +154,6 @@ export function useAuth() {
   }
 
   /**
-   * Establecer contraseña (para usuarios de Google)
-   */
-  const setPassword = async (password: string): Promise<void> => {
-    loading.value = true
-    error.value = null
-
-    try {
-      await SupabaseAuthService.setPassword(password)
-
-      // Actualizar el estado local del usuario
-      if (user.value) {
-        user.value = {
-          ...user.value,
-          hasPassword: true,
-          loginMethod: 'mixed',
-        }
-      }
-    } catch (err) {
-      let errorMessage = 'Error al establecer contraseña'
-
-      if (err instanceof Error) errorMessage = err.message
-
-      error.value = errorMessage
-      throw new Error(errorMessage)
-    } finally {
-      loading.value = false
-    }
-  }
-
-  /**
    * Cerrar sesión
    */
   const signOut = async (): Promise<void> => {
@@ -231,18 +195,6 @@ export function useAuth() {
   }
 
   /**
-   * Verificar si el usuario actual necesita establecer contraseña
-   */
-  const checkPasswordSetupRequired = async (): Promise<boolean> => {
-    try {
-      return await SupabaseAuthService.currentUserNeedsPasswordSetup()
-    } catch (err) {
-      console.error('Error checking password setup requirement:', err)
-      return false
-    }
-  }
-
-  /**
    * Reautenticar usuario con Google (para operaciones sensibles)
    * Nota: En Supabase esto se maneja diferente que en Firebase
    */
@@ -280,7 +232,6 @@ export function useAuth() {
     // Estado
     user: computed(() => user.value),
     isAuthenticated,
-    needsPasswordSetup,
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     initialized: computed(() => initialized.value),
@@ -290,13 +241,11 @@ export function useAuth() {
     signUp,
     signInWithGoogle,
     handleOAuthCallback,
-    setPassword,
     reauthenticateWithGoogle,
     signOut,
     resetPassword,
 
     // Utilidades
-    checkPasswordSetupRequired,
     clearError,
     cleanup,
     initialize,

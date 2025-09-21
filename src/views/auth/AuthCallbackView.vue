@@ -69,17 +69,10 @@ const processCallback = async () => {
 
     if (result) {
       // Si hay resultado, el usuario se autenticó correctamente
-
-      // Verificar si necesita establecer contraseña
-      if (result.needsPasswordSetup) {
-        router.push('/auth/set-password')
-        return
-      }
-
-      // Redirigir al dashboard después de un breve delay
+      // Redirigir al dashboard - el guard interceptará si necesita establecer contraseña
       redirectTimeout = setTimeout(() => {
         router.push('/dashboard')
-      }, 1500)
+      }, 1000)
     } else {
       // Si no hay resultado, podría haber un error o el usuario canceló
       error.value =

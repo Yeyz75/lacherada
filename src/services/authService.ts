@@ -53,28 +53,33 @@ export class SupabaseAuthService {
     supabaseUser: User,
     _isNewUser: boolean = false,
   ): Promise<UserData> {
-    // Obtener datos adicionales del perfil si existen
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', supabaseUser.id)
-      .single()
+    // Obtener datos adicionales del perfil si existen (sin fallar si no existen)
+    let profile = null
+    try {
+      const { data } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .single()
+      profile = data
+    } catch {
+      // Si no existe perfil, continuamos sin él
+      console.warn('Perfil no encontrado, usando datos básicos')
+    }
 
-    // Determinar el proveedor de forma más robusta
+    // Determinar el proveedor
     const provider =
       supabaseUser.app_metadata?.provider ||
       (supabaseUser.identities && supabaseUser.identities.length > 0
         ? supabaseUser.identities[0].provider
         : 'email')
 
-    const loginMethod = provider === 'google' ? 'google' : 'email'
+    // Todos los usuarios registrados tienen contraseña lógica
+    const hasPassword = true
+    const loginMethod =
+      profile?.login_method || (provider === 'google' ? 'google' : 'email')
 
-    // Un usuario tiene contraseña si:
-    // 1. Se registró con email/contraseña (provider === 'email')
-    // 2. O si el perfil indica que tiene contraseña (usuarios de Google que establecieron contraseña)
-    const hasPassword = profile?.has_password || provider === 'email'
-
-    // Obtener nombre de usuario de múltiples fuentes
+    // Obtener nombre de usuario
     const displayName =
       profile?.display_name ||
       supabaseUser.user_metadata?.full_name ||
@@ -85,7 +90,7 @@ export class SupabaseAuthService {
         : null) ||
       null
 
-    // Obtener foto de perfil de múltiples fuentes
+    // Obtener foto de perfil
     const photoURL =
       profile?.photo_url ||
       supabaseUser.user_metadata?.avatar_url ||
@@ -105,33 +110,8 @@ export class SupabaseAuthService {
       createdAt: new Date(supabaseUser.created_at),
       lastLoginAt: new Date(),
       hasPassword,
-      loginMethod: profile?.login_method || loginMethod,
+      loginMethod,
     }
-  }
-
-  /**
-   * Guarda/actualiza los datos del usuario en la tabla de perfiles
-   */
-  private static async saveUserProfile(
-    user: UserData,
-    isNewUser: boolean = false,
-  ): Promise<void> {
-    const profileData = {
-      id: user.uid,
-      email: user.email,
-      display_name: user.displayName,
-      photo_url: user.photoURL,
-      has_password: user.hasPassword,
-      login_method: user.loginMethod,
-      last_login_at: new Date().toISOString(),
-      ...(isNewUser && { created_at: new Date().toISOString() }),
-    }
-
-    const { error } = await supabase
-      .from('user_profiles')
-      .upsert(profileData, { onConflict: 'id' })
-
-    if (error) console.error('Error saving user profile:', error)
   }
 
   /**
@@ -152,7 +132,7 @@ export class SupabaseAuthService {
         throw new Error('No se pudo obtener los datos del usuario')
 
       const userData = await this.createUserData(data.user)
-      await this.saveUserProfile(userData)
+      // El trigger ya creó el perfil, no necesitamos hacer saveUserProfile
 
       return {
         user: userData,
@@ -188,8 +168,7 @@ export class SupabaseAuthService {
 
       const userData = await this.createUserData(data.user, true)
       if (displayName) userData.displayName = displayName
-
-      await this.saveUserProfile(userData, true)
+      // El trigger ya creó el perfil, no necesitamos hacer saveUserProfile
 
       return {
         user: userData,
@@ -266,82 +245,17 @@ export class SupabaseAuthService {
 
       const userData = await this.createUserData(supabaseUser, isNewUser)
 
-      // Siempre actualizar el perfil para asegurar datos actualizados
-      await this.saveUserProfile(userData, isNewUser)
-
-      // Si es un usuario de Google, intentar actualizar con datos de identities
-      if (userData.loginMethod === 'google') {
-        try {
-          const { error: updateError } = await supabase.rpc(
-            'update_user_profile_from_identities',
-            { user_id: supabaseUser.id },
-          )
-          if (updateError) {
-            console.warn(
-              '⚠️ No se pudo actualizar desde identities:',
-              updateError,
-            )
-          } else {
-            // Recargar los datos del usuario
-            const updatedUserData = await this.createUserData(
-              supabaseUser,
-              isNewUser,
-            )
-            return {
-              user: updatedUserData,
-              isNewUser,
-              needsPasswordSetup:
-                updatedUserData.loginMethod === 'google' &&
-                !updatedUserData.hasPassword,
-            }
-          }
-        } catch (error) {
-          console.warn('⚠️ Error actualizando desde identities:', error)
-        }
-      }
-
-      // Un usuario de Google necesita establecer contraseña si:
-      // 1. Su método de login es 'google'
-      // 2. No tiene contraseña establecida
-      const needsPasswordSetup =
-        userData.loginMethod === 'google' && !userData.hasPassword
+      // Para usuarios nuevos, el trigger ya creó el perfil
+      // Para usuarios existentes, no necesitamos hacer nada más
+      // El listener onAuthStateChanged se encargará de actualizar los datos del usuario
 
       return {
         user: userData,
         isNewUser,
-        needsPasswordSetup,
+        needsPasswordSetup: false,
       }
     } catch (error) {
       console.error('💥 Error en handleOAuthCallback:', error)
-      throw this.handleAuthError(error as AuthError)
-    }
-  }
-
-  /**
-   * Establecer contraseña para usuarios que se registraron con Google
-   */
-  static async setPassword(password: string): Promise<void> {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password,
-      })
-
-      if (error) throw error
-
-      // Actualizar el perfil del usuario
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (user) {
-        await supabase
-          .from('user_profiles')
-          .update({
-            has_password: true,
-            login_method: 'mixed',
-          })
-          .eq('id', user.id)
-      }
-    } catch (error) {
       throw this.handleAuthError(error as AuthError)
     }
   }
@@ -382,33 +296,24 @@ export class SupabaseAuthService {
       } = await supabase.auth.getUser()
       if (!user) return null
 
-      return await this.createUserData(user)
+      // Usar datos básicos sin hacer queries complejas
+      return {
+        uid: user.id,
+        email: user.email || null,
+        displayName:
+          user.user_metadata?.full_name || user.user_metadata?.name || null,
+        photoURL:
+          user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        emailVerified: user.email_confirmed_at !== null,
+        createdAt: new Date(user.created_at),
+        lastLoginAt: new Date(),
+        hasPassword: true,
+        loginMethod:
+          user.app_metadata?.provider === 'google' ? 'google' : 'email',
+      }
     } catch (error) {
       console.error('Error getting current user:', error)
       return null
-    }
-  }
-
-  /**
-   * Verificar si el usuario actual necesita establecer contraseña
-   */
-  static async currentUserNeedsPasswordSetup(): Promise<boolean> {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (!user) return false
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('has_password, login_method')
-        .eq('id', user.id)
-        .single()
-
-      return !profile?.has_password && profile?.login_method === 'google'
-    } catch (error) {
-      console.error('Error checking password setup requirement:', error)
-      return false
     }
   }
 
@@ -422,8 +327,34 @@ export class SupabaseAuthService {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        const userData = await this.createUserData(session.user)
-        callback(userData)
+        try {
+          // No intentar crear datos del usuario si hay problemas
+          // Solo devolver datos básicos
+          const userData: UserData = {
+            uid: session.user.id,
+            email: session.user.email || null,
+            displayName:
+              session.user.user_metadata?.full_name ||
+              session.user.user_metadata?.name ||
+              null,
+            photoURL:
+              session.user.user_metadata?.avatar_url ||
+              session.user.user_metadata?.picture ||
+              null,
+            emailVerified: session.user.email_confirmed_at !== null,
+            createdAt: new Date(session.user.created_at),
+            lastLoginAt: new Date(),
+            hasPassword: true, // Todos los usuarios registrados tienen contraseña lógica
+            loginMethod:
+              session.user.app_metadata?.provider === 'google'
+                ? 'google'
+                : 'email',
+          }
+          callback(userData)
+        } catch (error) {
+          console.error('Error in auth listener:', error)
+          callback(null)
+        }
       } else {
         callback(null)
       }
