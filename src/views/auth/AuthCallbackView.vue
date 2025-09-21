@@ -57,7 +57,7 @@ const processCallback = async () => {
     const urlParams = new URLSearchParams(window.location.search)
     const errorParam = urlParams.get('error')
     const errorDescription = urlParams.get('error_description')
-    
+
     if (errorParam) {
       console.error('❌ Error en URL:', errorParam, errorDescription)
       error.value = errorDescription || 'Error en la autenticación con Google'
