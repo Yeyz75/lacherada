@@ -50,13 +50,16 @@ CREATE TRIGGER handle_user_profiles_updated_at
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
+    -- Solo insertar si el perfil no existe
     INSERT INTO public.user_profiles (id, email, display_name, photo_url, has_password, login_method)
     VALUES (
         NEW.id,
         NEW.email,
         COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
         NEW.raw_user_meta_data->>'avatar_url',
+        -- Los usuarios de Google no tienen contraseña inicialmente
         CASE 
+            WHEN NEW.raw_app_meta_data->>'provider' = 'google' THEN false
             WHEN NEW.encrypted_password IS NOT NULL THEN true 
             ELSE false 
         END,
@@ -64,7 +67,8 @@ BEGIN
             WHEN NEW.raw_app_meta_data->>'provider' = 'google' THEN 'google'
             ELSE 'email'
         END
-    );
+    )
+    ON CONFLICT (id) DO NOTHING; -- No hacer nada si el perfil ya existe
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

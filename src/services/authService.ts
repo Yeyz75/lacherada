@@ -60,9 +60,14 @@ export class SupabaseAuthService {
       .eq('id', supabaseUser.id)
       .single()
 
-    const loginMethod =
-      supabaseUser.app_metadata.provider === 'google' ? 'google' : 'email'
-    const hasPassword = Boolean(supabaseUser.email) && loginMethod === 'email'
+    // Determinar el método de login basado en el proveedor
+    const provider = supabaseUser.app_metadata.provider || 'email'
+    const loginMethod = provider === 'google' ? 'google' : 'email'
+
+    // Un usuario tiene contraseña si:
+    // 1. Se registró con email/contraseña (provider === 'email')
+    // 2. O si el perfil indica que tiene contraseña (usuarios de Google que establecieron contraseña)
+    const hasPassword = profile?.has_password || provider === 'email'
 
     return {
       uid: supabaseUser.id,
@@ -202,17 +207,32 @@ export class SupabaseAuthService {
       if (error) throw error
       if (!data.session?.user) return null
 
-      const isNewUser =
-        data.session.user.created_at === data.session.user.last_sign_in_at
-      const userData = await this.createUserData(data.session.user, isNewUser)
+      const supabaseUser = data.session.user
+      const isNewUser = supabaseUser.created_at === supabaseUser.last_sign_in_at
 
-      await this.saveUserProfile(userData, isNewUser)
+      // Primero verificar si el perfil existe
+      const { data: existingProfile } = await supabase
+        .from('user_profiles')
+        .select('has_password, login_method')
+        .eq('id', supabaseUser.id)
+        .single()
+
+      const userData = await this.createUserData(supabaseUser, isNewUser)
+
+      // Si es un usuario nuevo o no tiene perfil, crear/actualizar el perfil
+      if (isNewUser || !existingProfile)
+        await this.saveUserProfile(userData, isNewUser)
+
+      // Un usuario de Google necesita establecer contraseña si:
+      // 1. Su método de login es 'google'
+      // 2. No tiene contraseña establecida
+      const needsPasswordSetup =
+        userData.loginMethod === 'google' && !userData.hasPassword
 
       return {
         user: userData,
         isNewUser,
-        needsPasswordSetup:
-          !userData.hasPassword && userData.loginMethod === 'google',
+        needsPasswordSetup,
       }
     } catch (error) {
       throw this.handleAuthError(error as AuthError)

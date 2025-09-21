@@ -119,17 +119,22 @@ const isGoogleUser = computed(() => {
 
 // Check if user is authenticated and needs password setup
 onMounted(async () => {
-  if (!user.value) {
-    // If no user is authenticated, redirect to login
-    router.push('/auth/login')
-    return
-  }
+  // Esperar un momento para que el estado de autenticación se actualice
+  setTimeout(() => {
+    if (!user.value) {
+      // If no user is authenticated, redirect to login
+      router.push('/auth/login')
+      return
+    }
 
-  if (user.value.hasPassword) {
-    // If user already has password, redirect to dashboard
-    router.push('/dashboard')
-    return
-  }
+    // Solo verificar si el usuario ya tiene contraseña Y no es un usuario de Google
+    // Los usuarios de Google pueden tener contraseña pero aún así necesitar establecerla
+    if (user.value.hasPassword && user.value.loginMethod !== 'google') {
+      // If user already has password and is not a Google user, redirect to dashboard
+      router.push('/dashboard')
+      return
+    }
+  }, 100)
 })
 
 /**

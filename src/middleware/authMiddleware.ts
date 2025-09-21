@@ -79,7 +79,12 @@ export async function authMiddleware(
   // 3. Si está autenticado, verificar el estado de contraseña
   if (isAuthenticated.value) {
     // Si necesita establecer contraseña y no está en la página de establecer contraseña
-    if (needsPasswordSetup.value && to.path !== '/auth/set-password') {
+    // y la ruta requiere contraseña
+    if (
+      needsPasswordSetup.value &&
+      requiresPassword &&
+      to.path !== '/auth/set-password'
+    ) {
       next('/auth/set-password')
       return
     }
@@ -92,7 +97,13 @@ export async function authMiddleware(
   }
 
   // 4. Verificar si la ruta específicamente requiere contraseña establecida
-  if (requiresPassword && isAuthenticated.value && needsPasswordSetup.value) {
+  // Esta verificación ya está cubierta arriba, así que la simplificamos
+  if (
+    requiresPassword &&
+    isAuthenticated.value &&
+    needsPasswordSetup.value &&
+    to.path !== '/auth/set-password'
+  ) {
     next('/auth/set-password')
     return
   }
@@ -123,6 +134,15 @@ export const requireAuth = createAuthGuard({
 })
 export const requireGuest = createAuthGuard({ requiresGuest: true })
 export const requirePassword = createAuthGuard({ requiresPassword: true })
+
+/**
+ * Middleware especial para la página de establecer contraseña
+ * Solo requiere autenticación, pero NO requiere contraseña
+ */
+export const requireAuthNoPassword = createAuthGuard({
+  requiresAuth: true,
+  requiresPassword: false,
+})
 
 /**
  * Verificar el estado de autenticación sin redireccionar
