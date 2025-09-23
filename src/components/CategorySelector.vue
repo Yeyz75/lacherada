@@ -170,6 +170,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference;
 .category-selector {
   @apply space-y-4;
 }
