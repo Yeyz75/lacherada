@@ -174,7 +174,8 @@
     "supportTitle": "Soporte Técnico",
     "supportDescription": "Si tienes problemas para establecer tu contraseña o necesitas ayuda con tu cuenta, no dudes en contactarnos.",
     "googleReauthInfo": "Confirmación de Identidad Requerida",
-    "googleReauthDescription": "Por seguridad, es posible que necesites confirmar tu identidad con Google antes de establecer una contraseña. Se abrirá una ventana emergente para completar la verificación."
+    "googleReauthDescription": "Por seguridad, es posible que necesites confirmar tu identidad con Google antes de establecer una contraseña. Se abrirá una ventana emergente para completar la verificación.",
+    "notAuthenticated": "Debes iniciar sesión para acceder a esta función"
   },
   "explore": {
     "title": "Explorar",
@@ -473,5 +474,124 @@
         "analytics": "Estadísticas de popularidad"
       }
     }
+  },
+  "publish": {
+    "title": "Publicar Nuevo Elemento",
+    "subtitle": "Comparte lo que tienes para ofrecer con tu comunidad",
+    "sections": {
+      "basicInfo": "Información Básica",
+      "details": "Detalles Adicionales",
+      "location": "Ubicación",
+      "images": "Imágenes",
+      "tags": "Etiquetas"
+    },
+    "fields": {
+      "title": {
+        "label": "Título",
+        "placeholder": "Ingresa un título descriptivo para tu elemento"
+      },
+      "description": {
+        "label": "Descripción",
+        "placeholder": "Describe tu elemento en detalle, incluyendo condición, características y cualquier instrucción especial"
+      },
+      "category": {
+        "label": "Categoría"
+      },
+      "listingType": {
+        "label": "Tipo de Publicación",
+        "placeholder": "Selecciona qué quieres hacer"
+      },
+      "pricingMode": {
+        "label": "Modo de Precio",
+        "placeholder": "¿Cómo quieres precio este elemento?"
+      },
+      "price": {
+        "label": "Precio",
+        "placeholder": "Ingresa el precio"
+      },
+      "quantity": {
+        "label": "Cantidad",
+        "placeholder": "¿Cuántos elementos tienes?"
+      },
+      "condition": {
+        "label": "Condición",
+        "placeholder": "Selecciona la condición de tu elemento"
+      },
+      "fulfillmentOptions": {
+        "label": "Opciones de Entrega",
+        "placeholder": "¿Cómo pueden recibir este elemento los compradores?"
+      },
+      "allowNegotiation": "Permitir negociación de precio",
+      "locationCity": {
+        "label": "Ciudad",
+        "placeholder": "Ingresa tu ciudad"
+      },
+      "locationState": {
+        "label": "Estado/Provincia",
+        "placeholder": "Ingresa tu estado o provincia"
+      },
+      "locationCountry": {
+        "label": "País",
+        "placeholder": "Ingresa tu país"
+      },
+      "images": {
+        "label": "Imágenes del Elemento"
+      },
+      "tags": {
+        "label": "Etiquetas",
+        "placeholder": "Agrega etiquetas para ayudar a otros a encontrar tu elemento (presiona Enter para agregar)"
+      }
+    },
+    "options": {
+      "listingType": {
+        "sell": "Vender",
+        "lend": "Prestar",
+        "borrow": "Pedir Prestado",
+        "donate": "Donar",
+        "exchange": "Intercambiar",
+        "service": "Servicio"
+      },
+      "pricingMode": {
+        "free": "Gratis",
+        "fixed": "Precio Fijo",
+        "negotiable": "Negociable",
+        "donation": "Donación",
+        "request": "Solicitud"
+      },
+      "condition": {
+        "new": "Nuevo",
+        "likeNew": "Como Nuevo",
+        "good": "Bueno",
+        "fair": "Regular",
+        "poor": "Malo"
+      },
+      "fulfillment": {
+        "inPerson": "En Persona",
+        "pickup": "Recogida",
+        "delivery": "Entrega",
+        "shipping": "Envío",
+        "digital": "Digital"
+      }
+    },
+    "actions": {
+      "publish": "Publicar Elemento"
+    },
+    "success": {
+      "title": "¡Elemento Publicado Exitosamente!",
+      "message": "Tu elemento ha sido publicado y ahora es visible para otros usuarios."
+    },
+    "errors": {
+      "createFailed": "Error al publicar el elemento. Por favor intenta de nuevo."
+    },
+    "confirmCancel": "¿Estás seguro de que quieres cancelar? Tu progreso se perderá."
+  },
+  "validation": {
+    "required": "{field} es requerido",
+    "minLength": "{field} debe tener al menos {min} caracteres",
+    "maxLength": "{field} no debe exceder {max} caracteres",
+    "minValue": "{field} debe ser al menos {min}",
+    "maxItems": "{field} puede tener como máximo {max} elementos",
+    "errors": "Errores de Validación",
+    "checkFields": "Por favor revisa los campos marcados e intenta de nuevo"
   }
 }

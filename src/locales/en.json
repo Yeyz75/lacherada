@@ -152,7 +152,8 @@
     "supportTitle": "Technical Support",
     "supportDescription": "If you're having trouble setting up your password or need help with your account, don't hesitate to contact us.",
     "googleReauthInfo": "Identity Confirmation Required",
-    "googleReauthDescription": "For security, you may need to confirm your identity with Google before setting a password. A popup window will open to complete the verification."
+    "googleReauthDescription": "For security, you may need to confirm your identity with Google before setting a password. A popup window will open to complete the verification.",
+    "notAuthenticated": "You must be logged in to access this feature"
   },
   "explore": {
     "title": "Explore",
@@ -400,5 +401,124 @@
         "analytics": "Popularity statistics"
       }
     }
+  },
+  "publish": {
+    "title": "Publish New Item",
+    "subtitle": "Share what you have to offer with your community",
+    "sections": {
+      "basicInfo": "Basic Information",
+      "details": "Additional Details",
+      "location": "Location",
+      "images": "Images",
+      "tags": "Tags"
+    },
+    "fields": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Enter a descriptive title for your item"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe your item in detail, including condition, features, and any special instructions"
+      },
+      "category": {
+        "label": "Category"
+      },
+      "listingType": {
+        "label": "Listing Type",
+        "placeholder": "Select what you want to do"
+      },
+      "pricingMode": {
+        "label": "Pricing Mode",
+        "placeholder": "How do you want to price this item?"
+      },
+      "price": {
+        "label": "Price",
+        "placeholder": "Enter the price"
+      },
+      "quantity": {
+        "label": "Quantity",
+        "placeholder": "How many items do you have?"
+      },
+      "condition": {
+        "label": "Condition",
+        "placeholder": "Select the condition of your item"
+      },
+      "fulfillmentOptions": {
+        "label": "Fulfillment Options",
+        "placeholder": "How can buyers receive this item?"
+      },
+      "allowNegotiation": "Allow price negotiation",
+      "locationCity": {
+        "label": "City",
+        "placeholder": "Enter your city"
+      },
+      "locationState": {
+        "label": "State/Province",
+        "placeholder": "Enter your state or province"
+      },
+      "locationCountry": {
+        "label": "Country",
+        "placeholder": "Enter your country"
+      },
+      "images": {
+        "label": "Item Images"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Add tags to help others find your item (press Enter to add)"
+      }
+    },
+    "options": {
+      "listingType": {
+        "sell": "Sell",
+        "lend": "Lend",
+        "borrow": "Borrow",
+        "donate": "Donate",
+        "exchange": "Exchange",
+        "service": "Service"
+      },
+      "pricingMode": {
+        "free": "Free",
+        "fixed": "Fixed Price",
+        "negotiable": "Negotiable",
+        "donation": "Donation",
+        "request": "Request"
+      },
+      "condition": {
+        "new": "New",
+        "likeNew": "Like New",
+        "good": "Good",
+        "fair": "Fair",
+        "poor": "Poor"
+      },
+      "fulfillment": {
+        "inPerson": "In Person",
+        "pickup": "Pickup",
+        "delivery": "Delivery",
+        "shipping": "Shipping",
+        "digital": "Digital"
+      }
+    },
+    "actions": {
+      "publish": "Publish Item"
+    },
+    "success": {
+      "title": "Item Published Successfully!",
+      "message": "Your item has been published and is now visible to other users."
+    },
+    "errors": {
+      "createFailed": "Failed to publish item. Please try again."
+    },
+    "confirmCancel": "Are you sure you want to cancel? Your progress will be lost."
+  },
+  "validation": {
+    "required": "{field} is required",
+    "minLength": "{field} must be at least {min} characters",
+    "maxLength": "{field} must not exceed {max} characters",
+    "minValue": "{field} must be at least {min}",
+    "maxItems": "{field} can have at most {max} items",
+    "errors": "Validation Errors",
+    "checkFields": "Please check the highlighted fields and try again"
   }
 }
