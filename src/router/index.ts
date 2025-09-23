@@ -3,6 +3,24 @@ import { requireAuth, requireGuest } from '../middleware/authMiddleware'
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, _from, savedPosition) {
+    // Si hay una posición guardada (navegación con botón atrás/adelante), la respetamos
+    if (savedPosition) return savedPosition
+
+    // Si la ruta tiene un hash (#section), navegar a esa sección con scroll suave
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      }
+    }
+
+    // Por defecto, siempre ir al top con efecto suave
+    return {
+      top: 0,
+      behavior: 'smooth',
+    }
+  },
   routes: [
     {
       path: '/',
