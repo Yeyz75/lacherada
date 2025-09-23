@@ -153,8 +153,12 @@ const handleLogin = async () => {
 
     // Verificar si el usuario necesita verificar su email
     if (result.user.loginMethod === 'email' && !result.user.emailVerified) {
+      // Store email for verification page in case session is lost
+      localStorage.setItem('pendingVerificationEmail', email.value)
       router.push('/auth/verify-email')
     } else {
+      // Clear any pending verification email if login is successful
+      localStorage.removeItem('pendingVerificationEmail')
       router.push('/dashboard')
     }
   } catch (err) {

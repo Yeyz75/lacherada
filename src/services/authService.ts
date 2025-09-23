@@ -296,18 +296,24 @@ export class SupabaseAuthService {
   /**
    * Reenviar email de verificación
    */
-  static async resendEmailVerification(): Promise<void> {
+  static async resendEmailVerification(email?: string): Promise<void> {
     try {
-      // Obtener el usuario actual
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (!user?.email)
+      let emailToUse = email
+
+      // Si no se proporciona email, intentar obtenerlo del usuario actual
+      if (!emailToUse) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+        emailToUse = user?.email
+      }
+
+      if (!emailToUse)
         throw new Error('No hay usuario autenticado o email disponible')
 
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: user.email,
+        email: emailToUse,
       })
       if (error) throw error
     } catch (error) {

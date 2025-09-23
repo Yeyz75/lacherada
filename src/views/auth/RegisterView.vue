@@ -247,6 +247,9 @@ const handleRegister = async () => {
 
     // Para usuarios de email, SIEMPRE verificar que no estén verificados
     if (result.user.loginMethod === 'email') {
+      // Almacenar el email temporalmente para poder reenviar verificación
+      localStorage.setItem('pendingVerificationEmail', email.value)
+
       // FORZAR verificación para usuarios de email recién registrados
       // Los usuarios de email NUNCA deberían estar verificados inmediatamente después del registro
 

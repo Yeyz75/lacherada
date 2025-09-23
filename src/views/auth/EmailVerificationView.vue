@@ -110,7 +110,14 @@ const showSuccessModal = ref(false)
 const resendCount = ref(0)
 const resendCooldown = ref(0)
 const cooldownInterval = ref<NodeJS.Timeout | null>(null)
-const userEmail = computed(() => user.value?.email || '')
+
+// Get email from user state or localStorage (for pending verification cases)
+const userEmail = computed(() => {
+  return (
+    user.value?.email || localStorage.getItem('pendingVerificationEmail') || ''
+  )
+})
+
 const resendDisabled = computed(
   () => resendCooldown.value > 0 || resendCount.value >= 3,
 )
@@ -130,9 +137,18 @@ const resendText = computed(() => {
 const resendEmail = async () => {
   if (resendDisabled.value) return
 
+  // Check if we have an email to work with
+  if (!userEmail.value) {
+    console.error('No email available for verification')
+    // Redirect to login if no email is available
+    router.push('/auth/login')
+    return
+  }
+
   resending.value = true
   try {
-    await SupabaseAuthService.resendEmailVerification()
+    // Pass the email explicitly to handle cases where user is not authenticated
+    await SupabaseAuthService.resendEmailVerification(userEmail.value)
     resendCount.value++
     startCooldown()
   } catch (error) {
@@ -155,6 +171,8 @@ const startCooldown = () => {
 
 const signOut = async () => {
   try {
+    // Clear the pending verification email when signing out
+    localStorage.removeItem('pendingVerificationEmail')
     await authSignOut()
     router.push('/auth/login')
   } catch (error) {
@@ -163,6 +181,8 @@ const signOut = async () => {
 }
 
 const goToDashboard = () => {
+  // Clear the pending verification email when successfully verified
+  localStorage.removeItem('pendingVerificationEmail')
   showSuccessModal.value = false
   router.push('/dashboard')
 }
