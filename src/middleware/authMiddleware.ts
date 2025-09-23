@@ -13,6 +13,7 @@ export interface AuthMiddlewareOptions {
   requiresAuth?: boolean
   requiresGuest?: boolean
   requiresPassword?: boolean
+  requiresEmailVerification?: boolean
   redirectTo?: string
 }
 
@@ -26,7 +27,8 @@ export async function authMiddleware(
   next: NavigationGuardNext,
   options: AuthMiddlewareOptions = {},
 ) {
-  const { isAuthenticated, initialized, initialize } = useAuth()
+  const { isAuthenticated, needsEmailVerification, initialized, initialize } =
+    useAuth()
 
   // Esperar a que la autenticación se inicialice
   if (!initialized.value) {
@@ -50,12 +52,20 @@ export async function authMiddleware(
     }
   }
 
-  const { requiresAuth = false, requiresGuest = false, redirectTo } = options
+  const {
+    requiresAuth = false,
+    requiresGuest = false,
+    requiresEmailVerification = false,
+    redirectTo,
+  } = options
 
   // 1. Verificar si la ruta requiere que NO esté autenticado (páginas de guest)
   if (requiresGuest && isAuthenticated.value) {
-    // Si ya está autenticado, ir al dashboard
-    next(redirectTo || '/dashboard')
+    // Si ya está autenticado y verificado, ir al dashboard
+    // Si no está verificado, ir a verificación
+    if (needsEmailVerification.value) next('/auth/verify-email')
+    else next(redirectTo || '/dashboard')
+
     return
   }
 
@@ -65,7 +75,11 @@ export async function authMiddleware(
     return
   }
 
-  // Ya no verificamos "needsPasswordSetup" porque todos los usuarios están listos después del registro
+  // 3. Verificar si la ruta requiere verificación de email
+  if (requiresEmailVerification && needsEmailVerification.value) {
+    next('/auth/verify-email')
+    return
+  }
 
   // Si todas las verificaciones pasan, continuar
   next()
@@ -89,10 +103,10 @@ export const createAuthGuard = (options: AuthMiddlewareOptions) => {
  */
 export const requireAuth = createAuthGuard({
   requiresAuth: true,
-  requiresPassword: true,
+  requiresEmailVerification: true,
 })
 export const requireGuest = createAuthGuard({ requiresGuest: true })
-export const requirePassword = createAuthGuard({ requiresPassword: true })
+export const requireAuthOnly = createAuthGuard({ requiresAuth: true })
 
 /**
  * Middleware especial para la página de establecer contraseña

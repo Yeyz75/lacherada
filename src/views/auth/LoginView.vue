@@ -149,8 +149,14 @@ const handleLogin = async () => {
 
   try {
     clearError()
-    await signIn(email.value, password.value)
-    router.push('/dashboard')
+    const result = await signIn(email.value, password.value)
+
+    // Verificar si el usuario necesita verificar su email
+    if (result.user.loginMethod === 'email' && !result.user.emailVerified) {
+      router.push('/auth/verify-email')
+    } else {
+      router.push('/dashboard')
+    }
   } catch (err) {
     console.error('Login failed:', err)
   }

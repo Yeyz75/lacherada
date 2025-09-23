@@ -70,7 +70,10 @@
     "myItems": "Mis Elementos",
     "login": "Iniciar Sesión",
     "register": "Registrarse",
-    "signOut": "Cerrar Sesión"
+    "signOut": "Cerrar Sesión",
+    "verifyEmail": "Verifica tu email",
+    "verifyNow": "Verificar ahora",
+    "verifyEmailNow": "Verificar Email Ahora"
   },
   "footer": {
     "about": "Acerca de",
@@ -143,6 +146,25 @@
     "setPasswordWelcome": "¡Bienvenido! Completa tu registro",
     "setPasswordTitle": "Establece tu contraseña",
     "setPasswordDescription": "Para completar tu registro con Google, establece una contraseña que podrás usar para iniciar sesión más adelante.",
+    "verification": {
+      "title": "Verifica tu Correo Electrónico",
+      "subtitle": "Te hemos enviado un enlace de verificación",
+      "instructions": "Para completar tu registro y acceder a todas las funciones, necesitas verificar tu correo electrónico:",
+      "step1": "Revisa tu bandeja de entrada (y spam)",
+      "step2": "Haz clic en el enlace de verificación",
+      "step3": "Regresa aquí y haz clic en 'Verificar Estado'",
+      "checkStatus": "Verificar Estado",
+      "resendEmail": "Reenviar Email",
+      "resendCooldown": "Reenviar en {seconds}s",
+      "resendLimit": "Límite alcanzado",
+      "helpText": "¿No recibiste el email? Revisa tu carpeta de spam o reenvía el mensaje.",
+      "signOut": "Cerrar Sesión",
+      "success": {
+        "title": "¡Email Verificado!",
+        "message": "Tu correo electrónico ha sido verificado exitosamente. Ahora puedes acceder a todas las funciones.",
+        "continue": "Continuar al Dashboard"
+      }
+    },
     "securityTitle": "Seguridad y Protección",
     "securityFeature1": "Tu contraseña se encripta de forma segura",
     "securityFeature2": "Acceso dual: Google y contraseña",
@@ -359,7 +381,8 @@
       "address": "Dirección",
       "verified": "Verificado",
       "notVerified": "No verificado",
-      "verify": "Verificar"
+      "verify": "Verificar",
+      "resendEmail": "Reenviar Email"
     },
     "reputation": {
       "title": "Reputación",

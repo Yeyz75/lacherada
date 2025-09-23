@@ -243,8 +243,21 @@ const handleRegister = async () => {
 
   try {
     clearError()
-    await signUp(email.value, password.value, displayName.value)
-    router.push('/auth/login')
+    const result = await signUp(email.value, password.value, displayName.value)
+
+    // Para usuarios de email, SIEMPRE verificar que no estén verificados
+    if (result.user.loginMethod === 'email') {
+      // FORZAR verificación para usuarios de email recién registrados
+      // Los usuarios de email NUNCA deberían estar verificados inmediatamente después del registro
+
+      // Pequeño delay para asegurar que el estado se actualice
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      // SIEMPRE redirigir a verificación para usuarios de email
+      await router.replace('/auth/verify-email')
+    } else {
+      // Usuarios de Google van directo al dashboard
+      await router.replace('/dashboard')
+    }
   } catch (err) {
     console.error('Registration failed:', err)
   }

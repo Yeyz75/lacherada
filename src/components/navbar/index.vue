@@ -56,13 +56,31 @@
 
             <!-- Authenticated -->
             <template v-else>
+              <!-- Email Verification Warning - Mejorada -->
+              <div v-if="needsEmailVerification" class="verification-warning">
+                <Icon icon="mdi:alert-circle" class="warning-icon" />
+                <span class="warning-text">
+                  {{ t('navbar.verifyEmail', 'Verifica tu email') }}
+                </span>
+                <router-link to="/auth/verify-email" class="verify-link">
+                  {{ t('navbar.verifyNow', 'Verificar ahora') }}
+                </router-link>
+              </div>
+
               <div
                 class="user-menu"
                 ref="userDropdownRef"
                 @click="toggleUserDropdown">
                 <div class="user-info">
-                  <div class="user-avatar">
-                    <Icon icon="mdi:account-circle" />
+                  <div
+                    class="user-avatar"
+                    :class="{ unverified: needsEmailVerification }">
+                    <Icon
+                      :icon="
+                        needsEmailVerification
+                          ? 'mdi:alert-circle'
+                          : 'mdi:account-circle'
+                      " />
                   </div>
                   <span class="user-name">
                     {{ user?.displayName || user?.email }}
@@ -75,21 +93,38 @@
 
                 <!-- User Dropdown -->
                 <div v-if="isUserDropdownOpen" class="user-dropdown">
+                  <!-- Si no está verificado, mostrar opción de verificar primero -->
                   <router-link
-                    to="/profile"
-                    class="dropdown-item"
+                    v-if="needsEmailVerification"
+                    to="/auth/verify-email"
+                    class="dropdown-item verify-item"
                     @click="closeUserDropdown">
-                    <Icon icon="mdi:account" />
-                    {{ t('navbar.profile') }}
+                    <Icon icon="mdi:alert-circle" />
+                    {{ t('navbar.verifyEmailNow', 'Verificar Email') }}
                   </router-link>
-                  <router-link
-                    to="/my-items"
-                    class="dropdown-item"
-                    @click="closeUserDropdown">
-                    <Icon icon="mdi:package-variant" />
-                    {{ t('navbar.myItems') }}
-                  </router-link>
-                  <div class="dropdown-divider"></div>
+                  <div
+                    v-if="needsEmailVerification"
+                    class="dropdown-divider"></div>
+
+                  <!-- Solo mostrar estas opciones si está verificado -->
+                  <template v-if="!needsEmailVerification">
+                    <router-link
+                      to="/profile"
+                      class="dropdown-item"
+                      @click="closeUserDropdown">
+                      <Icon icon="mdi:account" />
+                      {{ t('navbar.profile') }}
+                    </router-link>
+                    <router-link
+                      to="/my-items"
+                      class="dropdown-item"
+                      @click="closeUserDropdown">
+                      <Icon icon="mdi:package-variant" />
+                      {{ t('navbar.myItems') }}
+                    </router-link>
+                    <div class="dropdown-divider"></div>
+                  </template>
+
                   <button
                     @click="handleSignOut"
                     class="dropdown-item sign-out-item"
@@ -185,7 +220,8 @@ import { useAuth } from '../../composables/useAuth'
 
 const { t, locale } = useI18n()
 const { isDark, toggleTheme } = useTheme()
-const { user, isAuthenticated, signOut, loading } = useAuth()
+const { user, isAuthenticated, needsEmailVerification, signOut, loading } =
+  useAuth()
 const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
@@ -193,6 +229,17 @@ const isUserDropdownOpen = ref(false)
 const userDropdownRef = ref<HTMLElement | null>(null)
 
 const navItems = computed(() => {
+  // Si está autenticado pero no verificado, mostrar solo enlaces públicos
+  if (isAuthenticated.value && needsEmailVerification.value) {
+    return [
+      { key: 'home', path: '/' },
+      { key: 'explore', path: '/explore' },
+      { key: 'howItWorks', path: '/how-it-works' },
+      { key: 'contact', path: '/contact' },
+    ]
+  }
+
+  // Si está autenticado y verificado
   if (isAuthenticated.value) {
     return [
       { key: 'dashboard', path: '/dashboard' },
@@ -201,14 +248,15 @@ const navItems = computed(() => {
       { key: 'messages', path: '/messages' },
       { key: 'favorites', path: '/favorites' },
     ]
-  } else {
-    return [
-      { key: 'home', path: '/' },
-      { key: 'explore', path: '/explore' },
-      { key: 'howItWorks', path: '/how-it-works' },
-      { key: 'contact', path: '/contact' },
-    ]
   }
+
+  // Si no está autenticado
+  return [
+    { key: 'home', path: '/' },
+    { key: 'explore', path: '/explore' },
+    { key: 'howItWorks', path: '/how-it-works' },
+    { key: 'contact', path: '/contact' },
+  ]
 })
 
 const toggleLanguage = () => {
@@ -585,14 +633,86 @@ onUnmounted(() => {
     gap: var(--space-xs);
   }
 
+  /* Verification Warning Styles */
+  .verification-warning {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-warning-50);
+    border: 1px solid var(--color-warning-200);
+    border-radius: var(--radius-md);
+    margin-right: var(--space-sm);
+    white-space: nowrap;
+    max-width: 280px;
+  }
+
+  .warning-icon {
+    color: var(--color-warning);
+    font-size: 1.2rem;
+  }
+
+  .warning-text {
+    color: var(--color-warning-700);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .verify-link {
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+  }
+
+  .verify-link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .user-avatar.unverified {
+    color: var(--color-warning);
+  }
+
+  .dropdown-item.verify-item {
+    background: var(--color-warning-50);
+    border-bottom: 1px solid var(--color-warning-200);
+  }
+
+  .dropdown-item.verify-item:hover {
+    background: var(--color-warning-100);
+  }
+
+  .dropdown-item.verify-item svg {
+    color: var(--color-warning);
+  }
+
   .language-btn span {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .verification-warning {
+    display: none; /* Ocultar en móvil para evitar aglomeración */
+  }
+
+  .navbar-actions {
+    gap: var(--space-xs);
+  }
+
+  .auth-buttons {
+    gap: var(--space-xs);
   }
 }
 
 @media (max-width: 480px) {
   .logo-text {
     display: none;
+  }
+
+  .navbar-actions {
+    gap: 4px;
   }
 }
 </style>

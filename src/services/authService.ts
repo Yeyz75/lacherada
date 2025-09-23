@@ -49,24 +49,7 @@ export class SupabaseAuthService {
   /**
    * Convierte un usuario de Supabase a nuestro formato UserData
    */
-  private static async createUserData(
-    supabaseUser: User,
-    _isNewUser: boolean = false,
-  ): Promise<UserData> {
-    // Obtener datos adicionales del perfil si existen (sin fallar si no existen)
-    let profile = null
-    try {
-      const { data } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .single()
-      profile = data
-    } catch {
-      // Si no existe perfil, continuamos sin él
-      console.warn('Perfil no encontrado, usando datos básicos')
-    }
-
+  private static createUserDataFromSupabase(supabaseUser: User): UserData {
     // Determinar el proveedor
     const provider =
       supabaseUser.app_metadata?.provider ||
@@ -74,14 +57,10 @@ export class SupabaseAuthService {
         ? supabaseUser.identities[0].provider
         : 'email')
 
-    // Todos los usuarios registrados tienen contraseña lógica
-    const hasPassword = true
-    const loginMethod =
-      profile?.login_method || (provider === 'google' ? 'google' : 'email')
+    const loginMethod = provider === 'google' ? 'google' : 'email'
 
     // Obtener nombre de usuario
     const displayName =
-      profile?.display_name ||
       supabaseUser.user_metadata?.full_name ||
       supabaseUser.user_metadata?.name ||
       (supabaseUser.identities && supabaseUser.identities.length > 0
@@ -92,7 +71,6 @@ export class SupabaseAuthService {
 
     // Obtener foto de perfil
     const photoURL =
-      profile?.photo_url ||
       supabaseUser.user_metadata?.avatar_url ||
       supabaseUser.user_metadata?.picture ||
       (supabaseUser.identities && supabaseUser.identities.length > 0
@@ -101,15 +79,32 @@ export class SupabaseAuthService {
         : null) ||
       null
 
+    // Verificar el estado real de email verificado
+    let emailVerified = false
+    if (loginMethod === 'google') {
+      // Los usuarios de Google siempre están verificados
+      emailVerified = true
+    } else {
+      // Para usuarios de email, verificar el estado real
+      const userMetadataVerified =
+        supabaseUser.user_metadata?.email_verified === true
+      const identityVerified =
+        supabaseUser.identities &&
+        supabaseUser.identities.length > 0 &&
+        supabaseUser.identities[0].identity_data?.email_verified === true
+
+      emailVerified = userMetadataVerified || identityVerified || false
+    }
+
     return {
       uid: supabaseUser.id,
       email: supabaseUser.email || null,
       displayName,
       photoURL,
-      emailVerified: supabaseUser.email_confirmed_at !== null,
+      emailVerified,
       createdAt: new Date(supabaseUser.created_at),
       lastLoginAt: new Date(),
-      hasPassword,
+      hasPassword: true,
       loginMethod,
     }
   }
@@ -131,8 +126,7 @@ export class SupabaseAuthService {
       if (!data.user)
         throw new Error('No se pudo obtener los datos del usuario')
 
-      const userData = await this.createUserData(data.user)
-      // El trigger ya creó el perfil, no necesitamos hacer saveUserProfile
+      const userData = this.createUserDataFromSupabase(data.user)
 
       return {
         user: userData,
@@ -166,9 +160,22 @@ export class SupabaseAuthService {
       if (error) throw error
       if (!data.user) throw new Error('No se pudo crear el usuario')
 
-      const userData = await this.createUserData(data.user, true)
-      if (displayName) userData.displayName = displayName
-      // El trigger ya creó el perfil, no necesitamos hacer saveUserProfile
+      // Para usuarios nuevos, crear datos básicos sin consultar la base de datos
+      // El trigger se encargará de crear el perfil en paralelo
+
+      // CRÍTICO: Para usuarios de email recién registrados, SIEMPRE emailVerified = false
+      // No importa lo que diga email_confirmed_at
+      const userData: UserData = {
+        uid: data.user.id,
+        email: data.user.email || null,
+        displayName: displayName || data.user.user_metadata?.full_name || null,
+        photoURL: data.user.user_metadata?.avatar_url || null,
+        emailVerified: false, // SIEMPRE false para usuarios de email recién registrados
+        createdAt: new Date(data.user.created_at),
+        lastLoginAt: new Date(),
+        hasPassword: true,
+        loginMethod: 'email',
+      }
 
       return {
         user: userData,
@@ -243,7 +250,7 @@ export class SupabaseAuthService {
       // Determinar si es un usuario nuevo basado en la existencia del perfil
       const isNewUser = !existingProfile
 
-      const userData = await this.createUserData(supabaseUser, isNewUser)
+      const userData = this.createUserDataFromSupabase(supabaseUser)
 
       // Para usuarios nuevos, el trigger ya creó el perfil
       // Para usuarios existentes, no necesitamos hacer nada más
@@ -287,6 +294,28 @@ export class SupabaseAuthService {
   }
 
   /**
+   * Reenviar email de verificación
+   */
+  static async resendEmailVerification(): Promise<void> {
+    try {
+      // Obtener el usuario actual
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user?.email)
+        throw new Error('No hay usuario autenticado o email disponible')
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+      })
+      if (error) throw error
+    } catch (error) {
+      throw this.handleAuthError(error as AuthError)
+    }
+  }
+
+  /**
    * Obtener el usuario actual
    */
   static async getCurrentUser(): Promise<UserData | null> {
@@ -296,7 +325,26 @@ export class SupabaseAuthService {
       } = await supabase.auth.getUser()
       if (!user) return null
 
-      // Usar datos básicos sin hacer queries complejas
+      // Determinar método de login y verificación
+      const loginMethod =
+        user.app_metadata?.provider === 'google' ? 'google' : 'email'
+
+      // Verificar el estado real de email verificado
+      let emailVerified = false
+      if (loginMethod === 'google') {
+        // Los usuarios de Google siempre están verificados
+        emailVerified = true
+      } else {
+        // Para usuarios de email, verificar el estado real
+        const userMetadataVerified = user.user_metadata?.email_verified === true
+        const identityVerified =
+          user.identities &&
+          user.identities.length > 0 &&
+          user.identities[0].identity_data?.email_verified === true
+
+        emailVerified = userMetadataVerified || identityVerified || false
+      }
+
       return {
         uid: user.id,
         email: user.email || null,
@@ -304,12 +352,11 @@ export class SupabaseAuthService {
           user.user_metadata?.full_name || user.user_metadata?.name || null,
         photoURL:
           user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
-        emailVerified: user.email_confirmed_at !== null,
+        emailVerified,
         createdAt: new Date(user.created_at),
         lastLoginAt: new Date(),
         hasPassword: true,
-        loginMethod:
-          user.app_metadata?.provider === 'google' ? 'google' : 'email',
+        loginMethod,
       }
     } catch (error) {
       console.error('Error getting current user:', error)
@@ -328,8 +375,28 @@ export class SupabaseAuthService {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         try {
-          // No intentar crear datos del usuario si hay problemas
-          // Solo devolver datos básicos
+          // Determinar método de login y verificación
+          const loginMethod =
+            session.user.app_metadata?.provider === 'google'
+              ? 'google'
+              : 'email'
+
+          // Verificar el estado real de email verificado
+          let emailVerified = false
+          if (loginMethod === 'google') {
+            // Los usuarios de Google siempre están verificados
+            emailVerified = true
+          } else {
+            // Para usuarios de email, verificar el estado real
+            emailVerified =
+              session.user.user_metadata?.email_verified === true ||
+              (session.user.identities &&
+                session.user.identities.length > 0 &&
+                session.user.identities[0].identity_data?.email_verified ===
+                  true) ||
+              false
+          }
+
           const userData: UserData = {
             uid: session.user.id,
             email: session.user.email || null,
@@ -341,14 +408,11 @@ export class SupabaseAuthService {
               session.user.user_metadata?.avatar_url ||
               session.user.user_metadata?.picture ||
               null,
-            emailVerified: session.user.email_confirmed_at !== null,
+            emailVerified,
             createdAt: new Date(session.user.created_at),
             lastLoginAt: new Date(),
             hasPassword: true, // Todos los usuarios registrados tienen contraseña lógica
-            loginMethod:
-              session.user.app_metadata?.provider === 'google'
-                ? 'google'
-                : 'email',
+            loginMethod,
           }
           callback(userData)
         } catch (error) {

@@ -1,5 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { requireAuth, requireGuest } from '../middleware/authMiddleware'
+import {
+  requireAuth,
+  requireGuest,
+  requireAuthOnly,
+} from '../middleware/authMiddleware'
+import { useAuth } from '../composables/useAuth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -66,6 +71,12 @@ const router = createRouter({
       component: () => import('../views/auth/AuthCallbackView.vue'),
       // No requiere autenticación ya que es parte del proceso de OAuth
     },
+    {
+      path: '/auth/verify-email',
+      name: 'verifyEmail',
+      component: () => import('../views/auth/EmailVerificationView.vue'),
+      beforeEnter: requireAuthOnly, // Solo requiere autenticación, no verificación
+    },
     // Protected routes for authenticated users
     {
       path: '/dashboard',
@@ -111,6 +122,88 @@ const router = createRouter({
   ],
 })
 
-// Ya no necesitamos guard global - todos los usuarios están listos después del registro
+// Guard global para verificar email en todas las navegaciones
+router.beforeEach(async (to, _from, next) => {
+  const { isAuthenticated, needsEmailVerification, initialized, initialize } =
+    useAuth()
+
+  // Esperar inicialización
+  if (!initialized.value) {
+    await initialize()
+    let attempts = 0
+    while (!initialized.value && attempts < 30) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+    }
+  }
+
+  // VERIFICACIÓN CRÍTICA: Si el usuario está autenticado pero no verificado
+  // y está intentando ir a cualquier ruta que NO sea verificación,
+  // redirigir inmediatamente
+  if (
+    isAuthenticated.value &&
+    needsEmailVerification.value &&
+    to.name !== 'verifyEmail'
+  ) {
+    next('/auth/verify-email')
+    return
+  }
+
+  // Rutas que NO requieren autenticación
+  const publicRoutes = [
+    '/',
+    'home',
+    'explore',
+    'howItWorks',
+    'contact',
+    'designSystem',
+  ]
+  const authRoutes = ['login', 'register', 'forgotPassword', 'authCallback']
+  const verifyRoute = 'verifyEmail'
+
+  // Si es una ruta pública, permitir siempre
+  if (publicRoutes.includes(to.name as string)) {
+    next()
+    return
+  }
+
+  // Si es una ruta de auth y el usuario está autenticado
+  if (authRoutes.includes(to.name as string) && isAuthenticated.value) {
+    // Si necesita verificación, ir a verificar
+    if (needsEmailVerification.value) next('/auth/verify-email')
+    else next('/dashboard')
+
+    return
+  }
+
+  // Si es la ruta de verificación y el usuario está autenticado, permitir
+  if (to.name === verifyRoute && isAuthenticated.value) {
+    // Si ya está verificado, ir al dashboard
+    if (!needsEmailVerification.value) next('/dashboard')
+    else next()
+
+    return
+  }
+
+  // Si es una ruta protegida (dashboard, profile, etc)
+  if (
+    !authRoutes.includes(to.name as string) &&
+    !publicRoutes.includes(to.name as string)
+  ) {
+    // Si no está autenticado
+    if (!isAuthenticated.value) {
+      next('/auth/login')
+      return
+    }
+
+    // Si está autenticado pero necesita verificar email
+    if (needsEmailVerification.value && to.name !== verifyRoute) {
+      next('/auth/verify-email')
+      return
+    }
+  }
+
+  next()
+})
 
 export default router

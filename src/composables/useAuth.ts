@@ -16,7 +16,16 @@ let unsubscribe: (() => void) | null = null
 
 export function useAuth() {
   const isAuthenticated = computed(() => Boolean(user.value))
-  // Ya no necesitamos needsPasswordSetup - todos los usuarios están listos después del registro
+  const isEmailVerified = computed(() => {
+    if (!user.value) return false
+    // Los usuarios de Google siempre están verificados
+    if (user.value.loginMethod === 'google') return true
+    // Los usuarios de email dependen del estado real
+    return user.value.emailVerified
+  })
+  const needsEmailVerification = computed(() => {
+    return isAuthenticated.value && !isEmailVerified.value
+  })
 
   // Inicializar el listener de Supabase si no está inicializado
   const initialize = async () => {
@@ -97,7 +106,12 @@ export function useAuth() {
         password,
         displayName,
       )
+
+      // Actualizar el estado del usuario
       user.value = result.user
+
+      // Para usuarios de email, el estado de verificación se maneja automáticamente
+
       return result
     } catch (err) {
       const errorMessage =
@@ -195,6 +209,27 @@ export function useAuth() {
   }
 
   /**
+   * Reenviar email de verificación
+   */
+  const resendEmailVerification = async (): Promise<void> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      await SupabaseAuthService.resendEmailVerification()
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Error al reenviar email de verificación'
+      error.value = errorMessage
+      throw new Error(errorMessage)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
    * Reautenticar usuario con Google (para operaciones sensibles)
    * Nota: En Supabase esto se maneja diferente que en Firebase
    */
@@ -232,6 +267,8 @@ export function useAuth() {
     // Estado
     user: computed(() => user.value),
     isAuthenticated,
+    isEmailVerified,
+    needsEmailVerification,
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     initialized: computed(() => initialized.value),
@@ -244,6 +281,7 @@ export function useAuth() {
     reauthenticateWithGoogle,
     signOut,
     resetPassword,
+    resendEmailVerification,
 
     // Utilidades
     clearError,

@@ -106,12 +106,25 @@
                   <h4 class="verification-title">
                     {{ t('profile.verification.email') }}
                   </h4>
-                  <p class="verification-status verified">
-                    {{ t('profile.verification.verified') }}
+                  <p
+                    class="verification-status"
+                    :class="{ verified: isEmailVerified }">
+                    {{
+                      isEmailVerified
+                        ? t('profile.verification.verified')
+                        : t('profile.verification.notVerified')
+                    }}
                   </p>
                 </div>
               </div>
-              <BaseBadge value="Verified" severity="success" />
+              <BaseButton
+                v-if="!isEmailVerified"
+                @click="handleResendVerification"
+                :loading="resendingEmail"
+                :label="t('profile.verification.resendEmail')"
+                variant="secondary"
+                size="small" />
+              <BaseBadge v-else value="Verified" severity="success" />
             </div>
 
             <div class="verification-item">
@@ -302,13 +315,14 @@ import BaseModal from '../../components/base/BaseModal.vue'
 import BaseFileUpload from '../../components/base/BaseFileUpload.vue'
 
 const { t } = useI18n()
-const { user } = useAuth()
+const { user, isEmailVerified, resendEmailVerification } = useAuth()
 
 // Profile state
 const savingProfile = ref(false)
 const showAvatarUpload = ref(false)
 const avatarFile = ref<File | null>(null)
 const uploadingAvatar = ref(false)
+const resendingEmail = ref(false)
 const profileForm = ref({
   firstName: '',
   lastName: '',
@@ -405,6 +419,18 @@ const uploadAvatar = () => {
   setTimeout(() => {
     handleAvatarUpload()
   }, 1500)
+}
+
+const handleResendVerification = async () => {
+  resendingEmail.value = true
+  try {
+    await resendEmailVerification()
+  } catch (error) {
+    console.error('Error reenviando email:', error)
+    // Show error message
+  } finally {
+    resendingEmail.value = false
+  }
 }
 
 // Initialize form with user data
