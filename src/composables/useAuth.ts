@@ -4,34 +4,29 @@ import {
   UserData,
   AuthResult,
 } from '../services/authService'
+import { logger } from '../utils/logger'
 
-// Estado global de autenticación
 const user = ref<UserData | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const initialized = ref(false)
 
-// Inicializar el listener de autenticación una sola vez
 let unsubscribe: (() => void) | null = null
 
 export function useAuth() {
   const isAuthenticated = computed(() => Boolean(user.value))
   const isEmailVerified = computed(() => {
     if (!user.value) return false
-    // Los usuarios de Google siempre están verificados
     if (user.value.loginMethod === 'google') return true
-    // Los usuarios de email dependen del estado real
     return user.value.emailVerified
   })
   const needsEmailVerification = computed(() => {
     return isAuthenticated.value && !isEmailVerified.value
   })
 
-  // Inicializar el listener de Supabase si no está inicializado
   const initialize = async () => {
     if (!initialized.value) {
       try {
-        // Verificar la conexión a Supabase antes de inicializar
         await SupabaseAuthService.checkConnection()
 
         unsubscribe = SupabaseAuthService.onAuthStateChanged((userData) => {
@@ -39,24 +34,29 @@ export function useAuth() {
           initialized.value = true
         })
 
-        // Establecer un timeout para la inicialización
         setTimeout(() => {
           if (!initialized.value) {
-            console.warn('Auth initialization is taking longer than expected')
+            logger.warn('Auth initialization timeout', {
+              component: 'authMiddleware',
+              method: 'authMiddleware',
+            })
             error.value =
               'La inicialización de autenticación está tardando más de lo esperado'
           }
         }, 3000)
       } catch (err) {
-        console.error('Error initializing auth:', err)
+        logger.error(
+          'Error initializing auth',
+          { component: 'useAuth', method: 'initialize' },
+          err as Error,
+        )
         error.value =
           'Error al inicializar la autenticación. Verifica tu conexión a internet.'
-        initialized.value = true // Marcar como inicializado incluso con error para evitar bucles
+        initialized.value = true
       }
     }
   }
 
-  // Limpiar el listener
   const cleanup = () => {
     if (unsubscribe) {
       unsubscribe()
@@ -65,9 +65,6 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Iniciar sesión con email y contraseña
-   */
   const signIn = async (
     email: string,
     password: string,
@@ -89,9 +86,6 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Registrarse con email y contraseña
-   */
   const signUp = async (
     email: string,
     password: string,
@@ -107,10 +101,7 @@ export function useAuth() {
         displayName,
       )
 
-      // Actualizar el estado del usuario
       user.value = result.user
-
-      // Para usuarios de email, el estado de verificación se maneja automáticamente
 
       return result
     } catch (err) {
@@ -123,16 +114,12 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Iniciar sesión con Google
-   */
   const signInWithGoogle = async (): Promise<{ redirecting: boolean }> => {
     loading.value = true
     error.value = null
 
     try {
       const result = await SupabaseAuthService.signInWithGoogle()
-      // No actualizar user.value aquí ya que la autenticación real ocurrirá en el callback
       return result
     } catch (err) {
       const errorMessage =
@@ -146,9 +133,6 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Manejar callback de OAuth (Google)
-   */
   const handleOAuthCallback = async (): Promise<AuthResult | null> => {
     loading.value = true
     error.value = null
@@ -167,9 +151,6 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Cerrar sesión
-   */
   const signOut = async (): Promise<void> => {
     loading.value = true
     error.value = null
@@ -187,9 +168,6 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Enviar email de recuperación de contraseña
-   */
   const resetPassword = async (email: string): Promise<void> => {
     loading.value = true
     error.value = null
@@ -208,9 +186,6 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Reenviar email de verificación
-   */
   const resendEmailVerification = async (): Promise<void> => {
     loading.value = true
     error.value = null
@@ -229,17 +204,11 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Reautenticar usuario con Google (para operaciones sensibles)
-   * Nota: En Supabase esto se maneja diferente que en Firebase
-   */
   const reauthenticateWithGoogle = async (): Promise<void> => {
     loading.value = true
     error.value = null
 
     try {
-      // En Supabase, la reautenticación se maneja automáticamente
-      // o se puede implementar solicitando login nuevamente
       throw new Error(
         'Reautenticación con Google - implementar según necesidades específicas',
       )
@@ -253,18 +222,11 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Limpiar errores
-   */
   const clearError = () => {
     error.value = null
   }
 
-  // No inicializar automáticamente, se debe llamar explícitamente
-  // initialize()
-
   return {
-    // Estado
     user: computed(() => user.value),
     isAuthenticated,
     isEmailVerified,
@@ -273,7 +235,6 @@ export function useAuth() {
     error: computed(() => error.value),
     initialized: computed(() => initialized.value),
 
-    // Métodos de autenticación
     signIn,
     signUp,
     signInWithGoogle,
@@ -283,7 +244,6 @@ export function useAuth() {
     resetPassword,
     resendEmailVerification,
 
-    // Utilidades
     clearError,
     cleanup,
     initialize,

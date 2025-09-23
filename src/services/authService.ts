@@ -1,12 +1,11 @@
 /**
  * Supabase Authentication Service
- *
- * Servicio modular para manejar todas las operaciones de autenticación con Supabase
- * Incluye login con Google, email/contraseña, registro y manejo de estado de usuarios
+ * Maneja autenticación con Google OAuth y email/contraseña
  */
 
 import { supabase } from '../supabase-config'
 import type { User, AuthError } from '@supabase/supabase-js'
+import { logger } from '../utils/logger'
 
 export interface UserData {
   uid: string
@@ -27,9 +26,6 @@ export interface AuthResult {
 }
 
 export class SupabaseAuthService {
-  /**
-   * Verificar la conexión a Supabase
-   */
   static async checkConnection(): Promise<void> {
     try {
       const { error } = await supabase
@@ -39,18 +35,18 @@ export class SupabaseAuthService {
       if (error)
         throw new Error(`Error de conexión a Supabase: ${error.message}`)
     } catch (error) {
-      console.error('Error verificando conexión a Supabase:', error)
+      logger.error(
+        'Error verificando conexión a Supabase',
+        { component: 'auth', method: 'checkConnection' },
+        error as Error,
+      )
       throw new Error(
         'No se pudo establecer conexión con el servidor de autenticación',
       )
     }
   }
 
-  /**
-   * Convierte un usuario de Supabase a nuestro formato UserData
-   */
   private static createUserDataFromSupabase(supabaseUser: User): UserData {
-    // Determinar el proveedor
     const provider =
       supabaseUser.app_metadata?.provider ||
       (supabaseUser.identities && supabaseUser.identities.length > 0
@@ -59,7 +55,6 @@ export class SupabaseAuthService {
 
     const loginMethod = provider === 'google' ? 'google' : 'email'
 
-    // Obtener nombre de usuario
     const displayName =
       supabaseUser.user_metadata?.full_name ||
       supabaseUser.user_metadata?.name ||
@@ -69,7 +64,6 @@ export class SupabaseAuthService {
         : null) ||
       null
 
-    // Obtener foto de perfil
     const photoURL =
       supabaseUser.user_metadata?.avatar_url ||
       supabaseUser.user_metadata?.picture ||
@@ -79,13 +73,10 @@ export class SupabaseAuthService {
         : null) ||
       null
 
-    // Verificar el estado real de email verificado
     let emailVerified = false
     if (loginMethod === 'google') {
-      // Los usuarios de Google siempre están verificados
       emailVerified = true
     } else {
-      // Para usuarios de email, verificar el estado real
       const userMetadataVerified =
         supabaseUser.user_metadata?.email_verified === true
       const identityVerified =
@@ -109,9 +100,6 @@ export class SupabaseAuthService {
     }
   }
 
-  /**
-   * Inicio de sesión con email y contraseña
-   */
   static async signInWithEmail(
     email: string,
     password: string,
@@ -138,9 +126,6 @@ export class SupabaseAuthService {
     }
   }
 
-  /**
-   * Registro con email y contraseña
-   */
   static async signUpWithEmail(
     email: string,
     password: string,
@@ -160,17 +145,13 @@ export class SupabaseAuthService {
       if (error) throw error
       if (!data.user) throw new Error('No se pudo crear el usuario')
 
-      // Para usuarios nuevos, crear datos básicos sin consultar la base de datos
-      // El trigger se encargará de crear el perfil en paralelo
-
-      // CRÍTICO: Para usuarios de email recién registrados, SIEMPRE emailVerified = false
-      // No importa lo que diga email_confirmed_at
+      // CRÍTICO: Para usuarios de email recién registrados, emailVerified = false
       const userData: UserData = {
         uid: data.user.id,
         email: data.user.email || null,
         displayName: displayName || data.user.user_metadata?.full_name || null,
         photoURL: data.user.user_metadata?.avatar_url || null,
-        emailVerified: false, // SIEMPRE false para usuarios de email recién registrados
+        emailVerified: false,
         createdAt: new Date(data.user.created_at),
         lastLoginAt: new Date(),
         hasPassword: true,
@@ -187,9 +168,6 @@ export class SupabaseAuthService {
     }
   }
 
-  /**
-   * Inicio de sesión con Google
-   */
   static async signInWithGoogle(): Promise<{ redirecting: boolean }> {
     try {
       const redirectUrl = `${window.location.origin}/auth/callback`
@@ -206,20 +184,27 @@ export class SupabaseAuthService {
       })
 
       if (error) {
-        console.error('❌ Error en signInWithOAuth:', error)
+        logger.authError(
+          'Error en signInWithOAuth',
+          error,
+          undefined,
+          'signInWithGoogle',
+        )
         throw error
       }
 
       return { redirecting: true }
     } catch (error) {
-      console.error('💥 Error en signInWithGoogle:', error)
+      logger.authError(
+        'Error en signInWithGoogle',
+        error as Error,
+        undefined,
+        'signInWithGoogle',
+      )
       throw this.handleAuthError(error as AuthError)
     }
   }
 
-  /**
-   * Manejar el callback de OAuth (Google)
-   */
   static async handleOAuthCallback(): Promise<AuthResult | null> {
     try {
       // Primero intentar obtener la sesión actual
@@ -227,7 +212,12 @@ export class SupabaseAuthService {
         await supabase.auth.getSession()
 
       if (sessionError) {
-        console.error('❌ Error obteniendo sesión:', sessionError)
+        logger.authError(
+          'Error obteniendo sesión',
+          sessionError,
+          undefined,
+          'handleOAuthCallback',
+        )
         throw sessionError
       }
 
@@ -235,7 +225,6 @@ export class SupabaseAuthService {
 
       const supabaseUser = sessionData.session.user
 
-      // Verificar si el perfil existe en la base de datos
       const { data: existingProfile, error: profileError } = await supabase
         .from('user_profiles')
         .select('has_password, login_method, created_at')
@@ -243,18 +232,18 @@ export class SupabaseAuthService {
         .single()
 
       if (profileError && profileError.code !== 'PGRST116') {
-        console.error('❌ Error consultando perfil:', profileError)
+        logger.authError(
+          'Error consultando perfil',
+          profileError,
+          supabaseUser.id,
+          'handleOAuthCallback',
+        )
         throw profileError
       }
 
-      // Determinar si es un usuario nuevo basado en la existencia del perfil
       const isNewUser = !existingProfile
 
       const userData = this.createUserDataFromSupabase(supabaseUser)
-
-      // Para usuarios nuevos, el trigger ya creó el perfil
-      // Para usuarios existentes, no necesitamos hacer nada más
-      // El listener onAuthStateChanged se encargará de actualizar los datos del usuario
 
       return {
         user: userData,
@@ -262,14 +251,16 @@ export class SupabaseAuthService {
         needsPasswordSetup: false,
       }
     } catch (error) {
-      console.error('💥 Error en handleOAuthCallback:', error)
+      logger.authError(
+        'Error en handleOAuthCallback',
+        error as Error,
+        undefined,
+        'handleOAuthCallback',
+      )
       throw this.handleAuthError(error as AuthError)
     }
   }
 
-  /**
-   * Cerrar sesión
-   */
   static async signOut(): Promise<void> {
     try {
       const { error } = await supabase.auth.signOut()
@@ -279,9 +270,6 @@ export class SupabaseAuthService {
     }
   }
 
-  /**
-   * Enviar email de recuperación de contraseña
-   */
   static async sendPasswordReset(email: string): Promise<void> {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -293,14 +281,10 @@ export class SupabaseAuthService {
     }
   }
 
-  /**
-   * Reenviar email de verificación
-   */
   static async resendEmailVerification(email?: string): Promise<void> {
     try {
       let emailToUse = email
 
-      // Si no se proporciona email, intentar obtenerlo del usuario actual
       if (!emailToUse) {
         const {
           data: { user },
@@ -321,9 +305,6 @@ export class SupabaseAuthService {
     }
   }
 
-  /**
-   * Obtener el usuario actual
-   */
   static async getCurrentUser(): Promise<UserData | null> {
     try {
       const {
@@ -331,17 +312,13 @@ export class SupabaseAuthService {
       } = await supabase.auth.getUser()
       if (!user) return null
 
-      // Determinar método de login y verificación
       const loginMethod =
         user.app_metadata?.provider === 'google' ? 'google' : 'email'
 
-      // Verificar el estado real de email verificado
       let emailVerified = false
       if (loginMethod === 'google') {
-        // Los usuarios de Google siempre están verificados
         emailVerified = true
       } else {
-        // Para usuarios de email, verificar el estado real
         const userMetadataVerified = user.user_metadata?.email_verified === true
         const identityVerified =
           user.identities &&
@@ -365,14 +342,15 @@ export class SupabaseAuthService {
         loginMethod,
       }
     } catch (error) {
-      console.error('Error getting current user:', error)
+      logger.warn(
+        'Error getting current user',
+        { component: 'auth', method: 'getCurrentUser' },
+        error as Error,
+      )
       return null
     }
   }
 
-  /**
-   * Escuchar cambios en el estado de autenticación
-   */
   static onAuthStateChanged(
     callback: (user: UserData | null) => void,
   ): () => void {
@@ -381,19 +359,15 @@ export class SupabaseAuthService {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         try {
-          // Determinar método de login y verificación
           const loginMethod =
             session.user.app_metadata?.provider === 'google'
               ? 'google'
               : 'email'
 
-          // Verificar el estado real de email verificado
           let emailVerified = false
           if (loginMethod === 'google') {
-            // Los usuarios de Google siempre están verificados
             emailVerified = true
           } else {
-            // Para usuarios de email, verificar el estado real
             emailVerified =
               session.user.user_metadata?.email_verified === true ||
               (session.user.identities &&
@@ -417,12 +391,16 @@ export class SupabaseAuthService {
             emailVerified,
             createdAt: new Date(session.user.created_at),
             lastLoginAt: new Date(),
-            hasPassword: true, // Todos los usuarios registrados tienen contraseña lógica
+            hasPassword: true,
             loginMethod,
           }
           callback(userData)
         } catch (error) {
-          console.error('Error in auth listener:', error)
+          logger.error(
+            'Error in auth listener',
+            { component: 'auth', method: 'onAuthStateChanged' },
+            error as Error,
+          )
           callback(null)
         }
       } else {
@@ -433,10 +411,8 @@ export class SupabaseAuthService {
     return () => subscription.unsubscribe()
   }
 
-  /**
-   * Manejar errores de autenticación de Supabase
-   */
   private static handleAuthError(error: AuthError | Error): Error {
+    logger.authError('Handling auth error', error)
     let message = 'Error de autenticación'
 
     if ('message' in error) {
