@@ -3,20 +3,24 @@
     :id="id"
     :data-testid="testId"
     v-bind="$attrs"
-    class="base-card"
+    :unstyled="true"
     :class="cardClasses">
     <!-- Header con título y subtítulo -->
     <template #header v-if="$slots.header || title">
-      <div class="base-card-header" :class="headerPaddingClasses">
+      <div
+        class="base-card-header flex flex-col gap-1 border-b border-border/60 text-text-primary"
+        :class="headerPaddingClasses">
         <!-- Slot de header personalizado -->
         <slot name="header" v-if="$slots.header" />
 
         <!-- Header por defecto con título -->
-        <div v-else-if="title" class="base-card-title-section">
-          <h3 class="base-card-title">
+        <div
+          v-else-if="title"
+          class="base-card-title-section flex flex-col gap-1">
+          <h3 class="base-card-title text-lg font-semibold text-text-primary">
             {{ title }}
           </h3>
-          <p v-if="subtitle" class="base-card-subtitle">
+          <p v-if="subtitle" class="base-card-subtitle text-sm text-text-muted">
             {{ subtitle }}
           </p>
         </div>
@@ -26,28 +30,39 @@
     <!-- Contenido principal -->
     <template #content>
       <!-- Loading overlay -->
-      <div v-if="loading" class="base-card-loading-overlay">
-        <div class="base-card-loading-content">
+      <div
+        v-if="loading"
+        class="base-card-loading-overlay absolute inset-0 z-10 flex items-center justify-center gap-sm rounded-[inherit] bg-surface-primary/85 backdrop-blur">
+        <div
+          class="base-card-loading-content flex items-center gap-sm text-primary-500">
           <Icon icon="mdi:loading" class="animate-spin text-2xl" />
         </div>
       </div>
 
       <!-- Contenido principal con padding configurable -->
-      <div class="base-card-content" :class="contentPaddingClasses">
+      <div
+        class="base-card-content flex flex-col gap-sm text-text-secondary"
+        :class="contentPaddingClasses">
         <slot />
       </div>
     </template>
 
     <!-- Footer con acciones -->
     <template #footer v-if="$slots.actions || $slots.footer">
-      <div class="base-card-footer" :class="footerPaddingClasses">
+      <div
+        class="base-card-footer flex flex-col gap-sm border-t border-border/60"
+        :class="footerPaddingClasses">
         <!-- Slot de acciones -->
-        <div v-if="$slots.actions" class="base-card-actions">
+        <div
+          v-if="$slots.actions"
+          class="base-card-actions flex flex-wrap items-center justify-end gap-sm">
           <slot name="actions" />
         </div>
 
         <!-- Slot de footer -->
-        <div v-if="$slots.footer" class="base-card-footer-content">
+        <div
+          v-if="$slots.footer"
+          class="base-card-footer-content text-text-muted">
           <slot name="footer" />
         </div>
       </div>
@@ -58,7 +73,7 @@
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import Card from 'primevue/card'
-import type { CardProps } from '../../types'
+import type { CardProps, CardVariant } from '../../types'
 
 interface Props extends CardProps {
   title?: string
@@ -73,44 +88,47 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
+const baseCardClass =
+  'base-card-wrapper relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface-primary shadow-sm transition duration-200'
+
+const variantClassMap: Record<CardVariant, string> = {
+  default: '',
+  glass:
+    'bg-surface-primary/70 border-white/20 shadow-none backdrop-blur-lg dark:bg-surface-muted/60',
+  elevated: 'shadow-lg',
+  outlined: 'border-2 border-border-strong shadow-none',
+}
+
 const cardClasses = computed(() => [
-  'base-card-wrapper',
+  baseCardClass,
+  variantClassMap[props.variant ?? 'default'],
   {
-    // Clickable behavior usando las clases de PrimeVue
-    'cursor-pointer hover:shadow-lg transition-shadow':
-      props.clickable && !props.loading,
-    // Glass effect (se puede aplicar via CSS custom)
-    'base-card-glass': props.variant === 'glass',
-    'base-card-elevated': props.variant === 'elevated',
-    'base-card-outlined': props.variant === 'outlined',
+    'cursor-pointer hover:shadow-lg': props.clickable && !props.loading,
+    'opacity-80 pointer-events-none': props.loading,
   },
   props.class,
 ])
 
 // Clases de padding configurables
-const headerPaddingClasses = computed(() => ({
-  'p-3': props.padding === 'sm',
-  'p-4': props.padding === 'md',
-  'p-6': props.padding === 'lg',
-  'p-8': props.padding === 'xl',
-  'p-0': props.padding === 'none',
-}))
+const paddingClassMap: Record<NonNullable<Props['padding']>, string> = {
+  none: 'p-0',
+  sm: 'px-sm py-sm',
+  md: 'px-md py-md',
+  lg: 'px-lg py-lg',
+  xl: 'px-xl py-xl',
+}
 
-const contentPaddingClasses = computed(() => ({
-  'p-3': props.padding === 'sm',
-  'p-4': props.padding === 'md',
-  'p-6': props.padding === 'lg',
-  'p-8': props.padding === 'xl',
-  'p-0': props.padding === 'none',
-}))
+const headerPaddingClasses = computed(
+  () => paddingClassMap[props.padding] ?? paddingClassMap.md,
+)
 
-const footerPaddingClasses = computed(() => ({
-  'p-3': props.padding === 'sm',
-  'p-4': props.padding === 'md',
-  'p-6': props.padding === 'lg',
-  'p-8': props.padding === 'xl',
-  'p-0': props.padding === 'none',
-}))
+const contentPaddingClasses = computed(
+  () => paddingClassMap[props.padding] ?? paddingClassMap.md,
+)
+
+const footerPaddingClasses = computed(
+  () => paddingClassMap[props.padding] ?? paddingClassMap.md,
+)
 </script>
 
 <script lang="ts">
@@ -119,127 +137,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Usar el diseño nativo de PrimeVue con extensiones opcionales */
-.base-card {
-  /* Extensiones al diseño nativo de PrimeVue */
-}
-
-.base-card-wrapper {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Loading overlay */
-.base-card-loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  border-radius: inherit;
-}
-
-.base-card-loading-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  color: var(--p-primary-color);
-}
-
-/* Header styling */
-.base-card-header {
-  /* Ya está styled por PrimeVue */
-}
-
-.base-card-title-section {
-  /* Styling para título y subtítulo */
-}
-
-.base-card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--p-text-color);
-  margin: 0 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-.base-card-subtitle {
-  font-size: 0.875rem;
-  color: var(--p-text-muted-color);
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* Content area */
-.base-card-content {
-  flex: 1;
-}
-
-/* Footer area */
-.base-card-footer {
-  border-top: 1px solid var(--p-surface-border);
-  margin-top: 1rem;
-  padding-top: 1rem;
-}
-
-.base-card-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-.base-card-footer-content {
-  /* Footer content styling */
-}
-
-/* Variantes extendidas */
-.base-card-glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.base-card-elevated {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.base-card-outlined {
-  border: 2px solid var(--p-surface-border);
-}
-
-.base-card-outlined:hover {
-  border-color: var(--p-primary-color);
-}
-
-/* Hover effects */
-.base-card-wrapper:hover {
-  transform: translateY(-2px);
-  transition: transform 0.2s ease;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-card-title {
-    font-size: 1.125rem;
-  }
-
-  .base-card-subtitle {
-    font-size: 0.8125rem;
-  }
-
-  .base-card-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-</style>

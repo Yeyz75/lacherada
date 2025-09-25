@@ -13,8 +13,8 @@
     :raised="isRaisedVariant"
     @click="handleClick"
     v-bind="$attrs"
-    class="base-button"
-    :class="buttonClasses">
+    :class="buttonClasses"
+    :unstyled="true">
     <!-- Icon Template -->
     <template v-if="icon && iconPosition === 'left'" #icon>
       <Icon :icon="icon" :class="iconClasses" />
@@ -35,7 +35,7 @@
 import { computed, useSlots } from 'vue'
 import { Icon } from '@iconify/vue'
 import Button from 'primevue/button'
-import type { ButtonProps } from '../../types'
+import type { ButtonProps, ButtonVariant, ButtonSize } from '../../types'
 
 interface Props extends ButtonProps {
   // Props extendidas específicas del componente
@@ -84,23 +84,80 @@ const isTextVariant = computed(
 const isOutlinedVariant = computed(() => props.variant === 'outlined')
 const isRaisedVariant = computed(() => props.variant === 'raised')
 
+const baseButtonClass =
+  'base-button inline-flex items-center justify-center gap-2 rounded-lg font-medium transition duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60'
+
+const variantClassMap: Record<ButtonVariant, string> = {
+  primary:
+    'bg-primary-500 text-white shadow-sm hover:bg-primary-600 active:bg-primary-700 focus-visible:ring-primary/80',
+  secondary:
+    'border border-border bg-surface-secondary text-text-primary hover:bg-surface-tertiary',
+  ghost:
+    'bg-transparent text-text-muted hover:bg-surface-tertiary focus-visible:ring-primary/40',
+  danger: 'bg-error text-white shadow-sm hover:bg-error/90',
+  success: 'bg-success text-white shadow-sm hover:bg-success/90',
+  warning:
+    'bg-warning text-surface-elevated shadow-sm hover:brightness-95 focus-visible:ring-warning/60',
+  text: 'bg-transparent text-primary-500 hover:bg-primary-50 focus-visible:ring-primary/40',
+  outlined:
+    'border border-border bg-transparent text-text-primary hover:bg-surface-tertiary',
+  raised:
+    'bg-primary-500 text-white shadow-md hover:shadow-lg hover:bg-primary-500/95',
+}
+
+const resolveSizeClasses = (size: ButtonSize | undefined): string => {
+  switch (size) {
+    case 'xs':
+      return 'min-h-[2rem] px-3 text-xs'
+    case 'small':
+    case 'sm':
+      return 'min-h-[2.25rem] px-3 text-sm'
+    case 'medium':
+    case 'md':
+      return 'min-h-[var(--control-height-md)] px-4 text-sm'
+    case 'large':
+    case 'lg':
+      return 'min-h-[var(--control-height-lg)] px-5 text-base'
+    case 'xl':
+      return 'min-h-[3.25rem] px-6 text-lg'
+    default:
+      return 'min-h-[var(--control-height-md)] px-4 text-sm'
+  }
+}
+
 const buttonClasses = computed(() => [
-  'base-button',
+  baseButtonClass,
+  variantClassMap[props.variant ?? 'primary'],
+  resolveSizeClasses(props.size),
   {
     'w-full': props.fullWidth,
-    'aspect-square p-0': props.icon && !slots.default,
-    'auto-width': !props.fullWidth, // Clase para ancho automático
+    'aspect-square px-0 gap-0': props.icon && !slots.default,
   },
   props.class,
 ])
 
-const iconClasses = computed(() => ({
-  'text-xs': props.size === 'small' || props.size === 'xs',
-  'text-sm':
-    props.size === 'medium' || props.size === 'md' || props.size === 'sm',
-  'text-base': props.size === 'large' || props.size === 'lg',
-  'text-lg': props.size === 'xl',
-}))
+const resolveIconClasses = (size: ButtonSize | undefined): string => {
+  switch (size) {
+    case 'xs':
+    case 'small':
+      return 'text-xs'
+    case 'sm':
+    case 'medium':
+    case 'md':
+      return 'text-sm'
+    case 'large':
+    case 'lg':
+      return 'text-base'
+    case 'xl':
+      return 'text-lg'
+    default:
+      return 'text-sm'
+  }
+}
+
+const iconClasses = computed(
+  () => `shrink-0 ${resolveIconClasses(props.size ?? 'md')}`,
+)
 
 const handleClick = (event: MouseEvent) => {
   if (!props.disabled && !props.loading) {
@@ -115,44 +172,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Usar el diseño nativo de PrimeVue, solo agregar utilidades extendidas */
-.base-button {
-  /* Extensiones opcionales al diseño de PrimeVue */
-  transition: transform 0.15s ease;
-  /* Permitir que el botón se adapte al contenido por defecto */
-  width: auto;
-  min-width: fit-content;
-  white-space: nowrap;
-}
-
-/* Clase para botones con ancho automático */
-.auto-width {
-  width: auto !important;
-  min-width: fit-content !important;
-  max-width: 100%;
-  flex-shrink: 0;
-}
-
-.base-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.base-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .base-button {
-    min-height: 44px; /* Touch-friendly on mobile */
-  }
-
-  /* En móviles, permitir que algunos botones ocupen todo el ancho */
-  .auto-width {
-    width: 100% !important;
-    max-width: none;
-  }
-}
-</style>
