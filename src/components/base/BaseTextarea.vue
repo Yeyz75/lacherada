@@ -1,13 +1,13 @@
 <template>
-  <div class="base-textarea-wrapper" :class="wrapperClasses">
+  <div :class="wrapperClasses">
     <!-- Label -->
     <label
       v-if="label"
       :for="textareaId"
-      class="base-textarea-label"
+      class="transition-colors duration-150"
       :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-1">*</span>
+      <span v-if="required" class="ml-1 text-error">*</span>
     </label>
 
     <!-- Textarea Component -->
@@ -28,13 +28,15 @@
       :variant="variant"
       :data-testid="testId"
       :auto-resize="autoResize"
+      :unstyled="true"
+      :aria-invalid="hasError || undefined"
       @blur="handleBlur"
       @focus="handleFocus"
       @input="handleInput"
-      v-bind="textareaProps" />
+      v-bind="textareaBindings" />
 
     <!-- Helper Text / Error Message -->
-    <div v-if="helperText || errorMessage" class="base-textarea-help">
+    <div v-if="helperText || errorMessage" class="mt-1">
       <Message
         v-if="errorMessage"
         severity="error"
@@ -45,17 +47,14 @@
       </Message>
       <small
         v-else-if="helperText"
-        class="base-textarea-helper"
+        :class="helperClasses"
         :id="`${textareaId}-helper`">
         {{ helperText }}
       </small>
     </div>
 
     <!-- Character Count -->
-    <div
-      v-if="maxlength && showCharacterCount"
-      class="base-textarea-count"
-      :class="{ 'text-red-500': isOverLimit }">
+    <div v-if="maxlength && showCharacterCount" :class="countClasses">
       {{ characterCount }}/{{ maxlength }}
     </div>
   </div>
@@ -124,27 +123,66 @@ const errorMessage = computed(() => {
   return props.error ? 'Este campo contiene errores' : ''
 })
 
-// Props adicionales para el textarea
-const textareaProps = computed(() => {
-  const baseProps = { ...useAttrs() }
-  return baseProps
-})
+const attrs = useAttrs()
 
-// CSS Classes
+const helperTextComputed = computed(() => props.helperText)
+
+const mergeClassValue = (existing: unknown, addition: unknown) => {
+  const normalize = (value: unknown): unknown[] => {
+    if (!value && value !== 0) return []
+    if (Array.isArray(value)) return value
+    return [value]
+  }
+  return [...normalize(addition), ...normalize(existing)]
+}
+
+const baseWrapperClass = 'flex w-full flex-col gap-2'
+
 const wrapperClasses = computed(() => [
-  'base-textarea-wrapper',
+  baseWrapperClass,
   {
-    'opacity-75': props.disabled,
-    'base-textarea-error': hasError.value,
-    'base-textarea-success': hasSuccess.value,
+    'opacity-60 pointer-events-none': props.disabled,
   },
-  props.class,
+  attrs.class,
 ])
 
-const labelClasses = computed(() => ({
-  'text-red-600': hasError.value,
-  'text-green-600': hasSuccess.value,
-}))
+const labelClasses = computed(() => [
+  'flex items-center gap-1 text-sm font-medium text-text-primary',
+  {
+    'text-error': hasError.value,
+    'text-success': hasSuccess.value,
+  },
+])
+
+const helperClasses = computed(() => 'text-xs text-text-muted')
+
+const countClasses = computed(() => [
+  'mt-1 text-right text-xs text-text-muted transition-colors',
+  {
+    'text-error': isOverLimit.value,
+  },
+])
+
+const textareaBaseClasses = computed(() => [
+  'w-full rounded-2xl border border-border bg-surface-primary text-text-primary placeholder:text-text-muted transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary/30',
+  {
+    'border-error text-error focus:ring-error/30': hasError.value,
+    'border-success focus:ring-success/25': hasSuccess.value,
+    'disabled:cursor-not-allowed disabled:bg-surface-tertiary disabled:text-text-muted': true,
+  },
+])
+
+const textareaBindings = computed(() => {
+  const baseProps: Record<string, unknown> = { ...attrs }
+
+  baseProps.class = mergeClassValue(baseProps.class, textareaBaseClasses.value)
+
+  baseProps['aria-describedby'] =
+    baseProps['aria-describedby'] ||
+    (helperTextComputed.value ? `${textareaId.value}-helper` : undefined)
+
+  return baseProps
+})
 
 // Event handlers
 const handleBlur = (event: FocusEvent) => {
@@ -187,60 +225,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Usar el diseño nativo de PrimeVue, solo agregar espaciado y utilidades */
-.base-textarea-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.base-textarea-label {
-  font-size: var(--font-size-sm); /* 14px - Textarea Label */
-  font-weight: var(--font-weight-medium);
-  color: var(--p-text-color);
-  margin-bottom: 0.25rem;
-  transition: color 0.2s;
-}
-
-.base-textarea-help {
-  margin-top: 0.25rem;
-}
-
-.base-textarea-helper {
-  font-size: var(--font-size-xs); /* 12px - Helper Text */
-  color: var(--p-text-muted-color);
-  display: block;
-}
-
-.base-textarea-count {
-  font-size: var(--font-size-xs); /* 12px - Character Count */
-  color: var(--p-text-muted-color);
-  text-align: right;
-  margin-top: 0.25rem;
-  transition: color 0.2s;
-}
-
-/* Estados de error y éxito */
-.base-textarea-error .base-textarea-label {
-  color: var(--p-red-500);
-}
-
-.base-textarea-success .base-textarea-label {
-  color: var(--p-green-500);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-textarea-label {
-    font-size: var(--font-size-xs); /* 12px - Mobile Label */
-  }
-
-  .base-textarea-helper,
-  .base-textarea-count {
-    font-size: 0.6875rem; /* 11px - Mobile Helper */
-  }
-}
-</style>

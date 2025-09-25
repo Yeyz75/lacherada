@@ -1,13 +1,13 @@
 <template>
-  <div class="base-select-wrapper" :class="wrapperClasses">
+  <div :class="wrapperClasses">
     <!-- Label -->
     <label
       v-if="label"
       :for="selectId"
-      class="base-select-label"
+      class="transition-colors duration-150"
       :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-1">*</span>
+      <span v-if="required" class="ml-1 text-error">*</span>
     </label>
 
     <!-- Select Component -->
@@ -30,10 +30,12 @@
       :clearable="clearable"
       :filter="filter"
       :show-clear="showClear"
+      :unstyled="true"
+      :aria-invalid="hasError || undefined"
       @blur="handleBlur"
       @focus="handleFocus"
       @change="handleChange"
-      v-bind="selectProps">
+      v-bind="selectBindings">
       <!-- Custom option template -->
       <template v-if="$slots.option" #option="slotProps">
         <slot name="option" v-bind="slotProps" />
@@ -46,7 +48,7 @@
     </Select>
 
     <!-- Helper Text / Error Message -->
-    <div v-if="helperText || errorMessage" class="base-select-help">
+    <div v-if="helperText || errorMessage" class="mt-1">
       <Message
         v-if="errorMessage"
         severity="error"
@@ -57,7 +59,7 @@
       </Message>
       <small
         v-else-if="helperText"
-        class="base-select-helper"
+        :class="helperClasses"
         :id="`${selectId}-helper`">
         {{ helperText }}
       </small>
@@ -133,27 +135,90 @@ const errorMessage = computed(() => {
   return props.error ? 'Este campo contiene errores' : ''
 })
 
-// Props adicionales para el select
-const selectProps = computed(() => {
-  const baseProps = { ...useAttrs() }
-  return baseProps
-})
+const attrs = useAttrs()
 
-// CSS Classes
+const helperText = computed(() => props.helperText)
+
+const mergeClassValue = (existing: unknown, addition: unknown) => {
+  const normalize = (value: unknown): unknown[] => {
+    if (!value && value !== 0) return []
+    if (Array.isArray(value)) return value
+    return [value]
+  }
+  return [...normalize(addition), ...normalize(existing)]
+}
+
+const baseWrapperClass = 'flex w-full flex-col gap-2'
+
 const wrapperClasses = computed(() => [
-  'base-select-wrapper',
+  baseWrapperClass,
   {
-    'opacity-75': props.disabled,
-    'base-select-error': hasError.value,
-    'base-select-success': hasSuccess.value,
+    'opacity-60 pointer-events-none': props.disabled,
   },
-  props.class,
+  attrs.class,
 ])
 
-const labelClasses = computed(() => ({
-  'text-red-600': hasError.value,
-  'text-green-600': hasSuccess.value,
-}))
+const labelClasses = computed(() => [
+  'flex items-center gap-1 text-sm font-medium text-text-primary',
+  {
+    'text-error': hasError.value,
+    'text-success': hasSuccess.value,
+  },
+])
+
+const helperClasses = computed(() => 'text-xs text-text-muted')
+
+const controlSizeMap: Record<NonNullable<Props['size']>, string> = {
+  small: 'min-h-[2.25rem] px-3 py-2 text-sm',
+  medium: 'min-h-[var(--control-height-md)] px-4 py-2.5 text-sm',
+  large: 'min-h-[var(--control-height-lg)] px-5 py-3 text-base',
+}
+
+const triggerClasses = computed(() => [
+  'flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-surface-primary text-left text-text-primary shadow-sm transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary/25',
+  controlSizeMap[props.size ?? 'medium'],
+  {
+    'border-error focus:ring-error/25 text-error': hasError.value,
+    'border-success focus:ring-success/25': hasSuccess.value,
+    'disabled:cursor-not-allowed disabled:bg-surface-tertiary disabled:text-text-muted': true,
+  },
+])
+
+const panelClasses = computed(() => [
+  'rounded-2xl border border-border bg-surface-primary shadow-lg',
+])
+
+const optionClasses = computed(() => [
+  'flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-muted transition hover:bg-surface-tertiary hover:text-text-primary',
+])
+
+const optionSelectedClasses = computed(() => [
+  'bg-primary-50 text-text-primary hover:bg-primary-100',
+])
+
+const selectBindings = computed(() => {
+  const baseProps: Record<string, unknown> = { ...attrs }
+
+  baseProps.class = mergeClassValue(baseProps.class, triggerClasses.value)
+  baseProps.panelClass = mergeClassValue(
+    baseProps.panelClass,
+    panelClasses.value,
+  )
+  baseProps.optionClass = mergeClassValue(
+    baseProps.optionClass,
+    optionClasses.value,
+  )
+  baseProps.optionSelectedClass = mergeClassValue(
+    baseProps.optionSelectedClass,
+    optionSelectedClasses.value,
+  )
+
+  baseProps['aria-describedby'] =
+    baseProps['aria-describedby'] ||
+    (helperText.value ? `${selectId.value}-helper` : undefined)
+
+  return baseProps
+})
 
 // Event handlers
 const handleBlur = (event: Event) => {

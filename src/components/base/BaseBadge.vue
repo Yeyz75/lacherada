@@ -3,10 +3,10 @@
     :value="label || value"
     :severity="badgeSeverity"
     :size="size"
-    class="base-badge"
+    :unstyled="true"
     :class="badgeClasses"
     @click="handleClick"
-    v-bind="$attrs">
+    v-bind="badgeBindings">
     <!-- Icon prefix -->
     <Icon
       v-if="icon && iconPosition === 'left'"
@@ -26,7 +26,7 @@
     <button
       v-if="removable"
       type="button"
-      class="base-badge-remove"
+      class="flex h-4 w-4 items-center justify-center rounded-full bg-transparent text-current transition hover:bg-current/10"
       @click="handleRemove"
       :aria-label="'Remover ' + (label || value)">
       <Icon icon="mdi:close" class="text-xs" />
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import { Icon } from '@iconify/vue'
 import Badge from 'primevue/badge'
 import type { BaseComponentProps } from '../../types'
@@ -71,11 +71,26 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
+const attrs = useAttrs()
+
+const severityTokens: Record<NonNullable<Props['severity']>, string> = {
+  secondary: 'bg-surface-tertiary text-text-muted',
+  info: 'bg-info/15 text-info',
+  success: 'bg-success/15 text-success',
+  warn: 'bg-warning/15 text-warning',
+  danger: 'bg-error/15 text-error',
+  contrast: 'bg-text-primary text-surface-elevated',
+}
+
+const variantMap: Record<NonNullable<Props['variant']>, string> = {
+  filled: 'border border-transparent',
+  outlined: 'border border-current bg-transparent',
+  dot: 'border border-transparent',
+}
+
 // Mapear severity para PrimeVue
 const badgeSeverity = computed(() => {
   switch (props.severity) {
-    case 'secondary':
-      return 'secondary'
     case 'info':
       return 'info'
     case 'success':
@@ -91,35 +106,44 @@ const badgeSeverity = computed(() => {
   }
 })
 
+const baseBadgeClass =
+  'base-badge inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold leading-none transition-colors duration-150'
+
+const sizeClassMap: Record<NonNullable<Props['size']>, string> = {
+  small: 'px-2 py-0.5 text-[10px]',
+  normal: 'px-2.5 py-1 text-xs',
+  large: 'px-3 py-1.5 text-sm',
+}
+
 const badgeClasses = computed(() => [
-  'base-badge-wrapper',
+  baseBadgeClass,
+  severityTokens[props.severity ?? 'secondary'],
+  variantMap[props.variant ?? 'filled'],
+  sizeClassMap[props.size ?? 'normal'],
   {
-    // Variants
-    'base-badge-outlined': props.variant === 'outlined',
-    'base-badge-dot': props.variant === 'dot',
-
-    // States
-    'cursor-pointer hover:opacity-80 transition-opacity': props.clickable,
-    'base-badge-removable': props.removable,
-    'base-badge-pulse': props.pulse,
-
-    // Sizes
-    'base-badge-small': props.size === 'small',
-    'base-badge-large': props.size === 'large',
+    'cursor-pointer hover:opacity-85': props.clickable,
+    'ring-4 ring-current/20': props.pulse,
+    'relative pr-7': props.removable,
+    'h-2 w-2 rounded-full p-0': props.variant === 'dot',
   },
   props.class,
 ])
 
 const iconClasses = computed(() => [
-  'base-badge-icon',
+  'flex-shrink-0 text-inherit opacity-80',
   {
     'mr-1': props.iconPosition === 'left' && (props.label || props.value),
     'ml-1': props.iconPosition === 'right' && (props.label || props.value),
-    'text-xs': props.size === 'small',
-    'text-sm': props.size === 'normal',
-    'text-base': props.size === 'large',
+    'text-[10px]': props.size === 'small',
+    'text-xs': props.size === 'normal',
+    'text-sm': props.size === 'large',
   },
 ])
+
+const badgeBindings = computed(() => ({
+  ...attrs,
+  class: undefined,
+}))
 
 const handleRemove = (event: MouseEvent) => {
   event.stopPropagation()
