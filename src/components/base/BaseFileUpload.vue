@@ -1,18 +1,15 @@
 <template>
-  <div class="base-file-upload-wrapper" :class="wrapperClasses">
+  <div v-bind="rootAttrs" :class="wrapperClasses">
     <!-- Label -->
-    <label
-      v-if="label"
-      :for="inputId"
-      class="base-file-upload-label"
-      :class="labelClasses">
+    <label v-if="label" :for="inputId" :class="labelClasses">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-1">*</span>
+      <span v-if="required" class="text-error ml-1">*</span>
     </label>
 
     <!-- File Upload Component -->
     <FileUpload
       :id="inputId"
+      :data-testid="testId"
       ref="fileUploadRef"
       :name="name"
       :url="uploadUrl"
@@ -37,6 +34,7 @@
       :show-upload-button="showUploadButton"
       :show-cancel-button="showCancelButton"
       :custom-upload="customUpload"
+      :aria-describedby="ariaDescribedBy"
       @select="handleFileSelect"
       @upload="handleUpload"
       @before-upload="handleBeforeUpload"
@@ -45,15 +43,16 @@
       @clear="handleClear"
       @remove="handleRemove"
       @progress="handleProgress"
-      v-bind="fileUploadProps"
-      :class="fileUploadClasses">
+      :class="fileUploadClasses"
+      :unstyled="true">
       <!-- Empty template slot -->
       <template #empty>
-        <div class="file-upload-empty">
+        <div
+          class="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border bg-surface-secondary/40 p-8 text-center">
           <slot name="empty">
             <i
-              class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
-            <p class="mt-4 mb-0">
+              class="pi pi-cloud-upload inline-flex h-16 w-16 items-center justify-center rounded-full border-2 border-border bg-surface-primary text-4xl text-text-muted" />
+            <p class="mt-4 mb-0 text-sm text-text-muted">
               {{ emptyMessage || t('fileUpload.dragAndDrop') }}
             </p>
           </slot>
@@ -70,8 +69,9 @@
           :upload-callback="uploadCallback"
           :clear-callback="clearCallback"
           :files="files">
-          <div class="file-upload-header">
-            <div class="file-upload-actions">
+          <div
+            class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-surface-secondary px-4 py-3 shadow-sm">
+            <div class="flex flex-wrap items-center gap-2">
               <BaseButton
                 @click="chooseCallback()"
                 :label="chooseLabel || t('fileUpload.choose')"
@@ -100,11 +100,11 @@
 
             <div
               v-if="showProgress && uploadProgress > 0"
-              class="file-upload-progress">
+              class="flex w-full items-center gap-3">
               <ProgressBar
                 :value="uploadProgress"
                 :show-value="true"
-                class="w-full mt-2" />
+                class="h-2 w-full overflow-hidden rounded-full bg-surface-tertiary text-xs shadow-inner" />
             </div>
           </div>
         </slot>
@@ -125,27 +125,32 @@
           :uploaded-files="uploadedFiles"
           :remove-file-callback="removeFileCallback"
           :remove-uploaded-file-callback="removeUploadedFileCallback">
-          <div class="file-upload-content">
+          <div class="flex flex-col gap-6">
             <!-- Pending files -->
-            <div v-if="files && files.length > 0" class="pending-files">
-              <h5>{{ t('fileUpload.pending') }}</h5>
-              <div class="file-list">
+            <div v-if="files && files.length > 0" class="flex flex-col gap-3">
+              <h5 class="text-sm font-semibold text-text-primary">
+                {{ t('fileUpload.pending') }}
+              </h5>
+              <div class="flex flex-col gap-3">
                 <div
                   v-for="(file, index) of files"
                   :key="file.name + file.type + file.size"
-                  class="file-item pending">
-                  <div class="file-preview">
+                  class="flex items-center gap-4 rounded-xl border border-border bg-surface-primary/70 p-4 shadow-sm">
+                  <div
+                    class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-surface-secondary">
                     <img
                       v-if="isImageFile(file)"
                       role="presentation"
                       :alt="file.name"
                       :src="(file as any).objectURL"
-                      class="file-image" />
-                    <i v-else class="file-icon pi pi-file" />
+                      class="h-full w-full object-cover" />
+                    <i v-else class="pi pi-file text-2xl text-text-muted" />
                   </div>
-                  <div class="file-info">
-                    <span class="file-name">{{ file.name }}</span>
-                    <span class="file-size">
+                  <div class="flex flex-1 flex-col gap-1 text-sm">
+                    <span class="font-medium text-text-primary">
+                      {{ file.name }}
+                    </span>
+                    <span class="text-text-muted">
                       {{ formatFileSize(file.size) }}
                     </span>
                   </div>
@@ -153,8 +158,10 @@
                     v-if="!disabled"
                     icon="pi pi-times"
                     @click="removeFileCallback(index)"
-                    variant="text"
+                    variant="ghost"
                     severity="danger"
+                    size="sm"
+                    class="h-9 w-9 rounded-full text-text-muted hover:text-error"
                     :aria-label="t('fileUpload.removeFile')" />
                 </div>
               </div>
@@ -163,35 +170,45 @@
             <!-- Uploaded files -->
             <div
               v-if="uploadedFiles && uploadedFiles.length > 0"
-              class="uploaded-files">
-              <h5>{{ t('fileUpload.uploaded') }}</h5>
-              <div class="file-list">
+              class="flex flex-col gap-3">
+              <h5 class="text-sm font-semibold text-text-primary">
+                {{ t('fileUpload.uploaded') }}
+              </h5>
+              <div class="flex flex-col gap-3">
                 <div
                   v-for="(file, index) of uploadedFiles"
                   :key="file.name + file.type + file.size"
-                  class="file-item uploaded">
-                  <div class="file-preview">
+                  class="flex items-center gap-4 rounded-xl border border-success/40 bg-success/5 p-4 shadow-sm">
+                  <div
+                    class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-surface-secondary">
                     <img
                       v-if="isImageFile(file)"
                       role="presentation"
                       :alt="file.name"
                       :src="(file as any).objectURL"
-                      class="file-image" />
-                    <i v-else class="file-icon pi pi-file" />
+                      class="h-full w-full object-cover" />
+                    <i v-else class="pi pi-file text-2xl text-success" />
                   </div>
-                  <div class="file-info">
-                    <span class="file-name">{{ file.name }}</span>
-                    <span class="file-size">
+                  <div class="flex flex-1 flex-col gap-1 text-sm">
+                    <span class="font-medium text-text-primary">
+                      {{ file.name }}
+                    </span>
+                    <span class="text-text-muted">
                       {{ formatFileSize(file.size) }}
                     </span>
-                    <Badge value="Completed" severity="success" />
+                    <Badge
+                      :value="t('fileUpload.uploadedBadge') ?? 'Completed'"
+                      severity="success"
+                      class="w-fit" />
                   </div>
                   <BaseButton
                     v-if="!disabled"
                     icon="pi pi-times"
                     @click="removeUploadedFileCallback(index)"
-                    variant="text"
+                    variant="ghost"
                     severity="danger"
+                    size="sm"
+                    class="h-9 w-9 rounded-full text-text-muted hover:text-error"
                     :aria-label="t('fileUpload.removeFile')" />
                 </div>
               </div>
@@ -202,19 +219,16 @@
     </FileUpload>
 
     <!-- Helper Text / Error Message -->
-    <div v-if="helperText || errorMessage" class="base-file-upload-help">
+    <div v-if="helperText || errorMessage" class="mt-1">
       <Message
         v-if="errorMessage"
         severity="error"
         variant="simple"
         size="small"
-        :id="`${inputId}-error`">
+        :id="errorId">
         {{ errorMessage }}
       </Message>
-      <small
-        v-else-if="helperText"
-        class="base-file-upload-helper"
-        :id="`${inputId}-helper`">
+      <small v-else-if="helperText" :class="helperClasses" :id="helperId">
         {{ helperText }}
       </small>
     </div>
@@ -233,38 +247,13 @@ import type {
   FileUploadErrorEvent,
   FileUploadRemoveEvent,
 } from 'primevue/fileupload'
+import type { FileUploadProps as BaseFileUploadProps } from '../../types'
 
-interface FileUploadProps {
-  modelValue?: File | File[] | null
-  label?: string
-  helperText?: string
-  name?: string
-  uploadUrl?: string
-  mode?: 'basic' | 'advanced'
-  accept?: string
-  maxFileSize?: number
-  multiple?: boolean
-  disabled?: boolean
-  required?: boolean
-  auto?: boolean
-  chooseLabel?: string
-  uploadLabel?: string
-  cancelLabel?: string
-  invalidFileSizeMessage?: string
-  invalidFileTypeMessage?: string
-  fileLimit?: number
-  fileLimitMessage?: string
-  previewWidth?: number
-  showUploadButton?: boolean
-  showCancelButton?: boolean
+interface Props extends BaseFileUploadProps {
   showProgress?: boolean
-  customUpload?: boolean
-  emptyMessage?: string
-  error?: string | boolean
-  class?: string
 }
 
-const props = withDefaults(defineProps<FileUploadProps>(), {
+const props = withDefaults(defineProps<Props>(), {
   mode: 'advanced',
   accept: 'image/*',
   maxFileSize: 1000000, // 1MB
@@ -293,11 +282,11 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const attrs = useAttrs()
 const fileUploadRef = ref<any>()
 const uploadProgress = ref(0)
-const inputId = ref(
-  `base-file-upload-${Math.random().toString(36).substr(2, 9)}`,
-)
+const generatedId = `base-file-upload-${Math.random().toString(36).slice(2, 11)}`
+const inputId = computed(() => props.id ?? generatedId)
 
 // Computed properties
 const hasError = computed(
@@ -308,30 +297,53 @@ const errorMessage = computed(() => {
   return props.error ? t('fileUpload.error') : ''
 })
 
+const helperId = computed(() =>
+  props.helperText ? `${inputId.value}-helper` : undefined,
+)
+const errorId = computed(() =>
+  errorMessage.value ? `${inputId.value}-error` : undefined,
+)
+const ariaDescribedBy = computed(() => errorId.value ?? helperId.value)
+
+const helperText = computed(() => props.helperText)
+
 // CSS Classes
 const wrapperClasses = computed(() => [
-  'base-file-upload-wrapper',
+  'flex w-full flex-col gap-2',
   {
-    'opacity-75': props.disabled,
-    'base-file-upload-error': hasError.value,
+    'opacity-60 pointer-events-none': props.disabled,
   },
   props.class,
+  attrs.class,
 ])
 
-const labelClasses = computed(() => ({
-  'text-red-600': hasError.value,
-}))
-
-const fileUploadClasses = computed(() => ({
-  'base-file-upload': true,
-  'base-file-upload-disabled': props.disabled,
-}))
-
-// FileUpload additional props
-const fileUploadProps = computed(() => {
-  const baseProps = { ...useAttrs() }
-  return baseProps
+const rootAttrs = computed(() => {
+  const { class: _class, ...rest } = Object.assign({}, attrs)
+  return rest
 })
+
+const labelClasses = computed(() => [
+  'flex items-center gap-1 text-sm font-medium text-text-primary transition-colors duration-150',
+  {
+    'text-error': hasError.value,
+  },
+])
+
+const helperClasses = computed(() => [
+  'text-xs text-text-muted transition-colors',
+  {
+    'text-error': hasError.value,
+  },
+])
+
+const fileUploadClasses = computed(() => [
+  'group relative flex w-full flex-col gap-4 rounded-2xl border border-dashed border-border bg-surface-secondary/50 p-6 transition duration-200 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary/20',
+  {
+    'border-error focus-within:border-error focus-within:ring-error/25':
+      hasError.value,
+    'opacity-75 pointer-events-none': props.disabled,
+  },
+])
 
 // Methods
 const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
@@ -411,143 +423,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-.base-file-upload-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.base-file-upload-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--p-text-color);
-  margin-bottom: 0.25rem;
-  transition: color 0.2s;
-}
-
-.base-file-upload-help {
-  margin-top: 0.25rem;
-}
-
-.base-file-upload-helper {
-  font-size: var(--font-size-xs);
-  color: var(--p-text-muted-color);
-  display: block;
-}
-
-/* File Upload Custom Styles */
-.file-upload-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  text-align: center;
-}
-
-.file-upload-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--p-surface-100);
-  border-radius: var(--p-border-radius-md);
-}
-
-.file-upload-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.file-upload-content {
-  padding: 1rem 0;
-}
-
-.file-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.file-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  border-radius: var(--p-border-radius-md);
-  border: 1px solid var(--p-surface-200);
-}
-
-.file-item.pending {
-  background: var(--p-surface-50);
-}
-
-.file-item.uploaded {
-  background: var(--p-surface-100);
-}
-
-.file-preview {
-  flex-shrink: 0;
-}
-
-.file-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: var(--p-border-radius-md);
-}
-
-.file-icon {
-  font-size: 2rem;
-  color: var(--p-surface-500);
-}
-
-.file-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.file-name {
-  font-weight: var(--font-weight-medium);
-  color: var(--p-text-color);
-}
-
-.file-size {
-  font-size: var(--font-size-sm);
-  color: var(--p-text-muted-color);
-}
-
-/* Error state */
-.base-file-upload-error .base-file-upload-label {
-  color: var(--p-red-500);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-file-upload-label {
-    font-size: var(--font-size-xs);
-  }
-
-  .base-file-upload-helper {
-    font-size: 0.6875rem;
-  }
-
-  .file-upload-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .file-upload-actions {
-    justify-content: center;
-  }
-}
-</style>
