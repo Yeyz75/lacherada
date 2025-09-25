@@ -127,6 +127,6 @@ export default {
   },
   plugins: [],
   corePlugins: {
-    preflight: false, // Desactivar preflight para evitar conflictos con estilos existentes
+    preflight: true, // Activar preflight para que Tailwind funcione correctamente
   },
 }

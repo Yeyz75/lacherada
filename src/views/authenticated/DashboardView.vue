@@ -377,8 +377,8 @@ const getActivitySeverity = (type: string) => {
   padding: var(--space-xl);
   background: linear-gradient(
     135deg,
-    var(--color-primary),
-    var(--color-secondary)
+    var(--color-primary-500),
+    var(--color-secondary-500)
   );
   border-radius: var(--radius-lg);
   color: white;
@@ -432,7 +432,7 @@ const getActivitySeverity = (type: string) => {
 
 .stat-icon {
   font-size: 2.5rem;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
 }
 
 .stat-value {
@@ -474,7 +474,7 @@ const getActivitySeverity = (type: string) => {
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-lg);
-  background: var(--color-background-secondary);
+  background: var(--color-surface-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   text-decoration: none;
@@ -489,7 +489,7 @@ const getActivitySeverity = (type: string) => {
 
 .action-icon {
   font-size: 2rem;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
 }
 
 .action-label {
@@ -509,7 +509,7 @@ const getActivitySeverity = (type: string) => {
   align-items: center;
   gap: var(--space-md);
   padding: var(--space-md);
-  background: var(--color-background-secondary);
+  background: var(--color-surface-secondary);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
 }
@@ -546,7 +546,7 @@ const getActivitySeverity = (type: string) => {
 
 .empty-icon {
   font-size: 3rem;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-muted);
 }
 
 .empty-text {
@@ -613,7 +613,7 @@ const getActivitySeverity = (type: string) => {
 
 .progress-bar {
   height: 8px;
-  background: var(--color-background-tertiary);
+  background: var(--color-surface-tertiary);
   border-radius: var(--radius-full);
   overflow: hidden;
 }
@@ -622,8 +622,8 @@ const getActivitySeverity = (type: string) => {
   height: 100%;
   background: linear-gradient(
     90deg,
-    var(--color-primary),
-    var(--color-secondary)
+    var(--color-primary-500),
+    var(--color-secondary-500)
   );
   transition: width var(--transition-normal);
 }
@@ -650,7 +650,7 @@ const getActivitySeverity = (type: string) => {
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm);
-  background: var(--color-background-secondary);
+  background: var(--color-surface-secondary);
   border-radius: var(--radius-sm);
   opacity: 0.5;
   transition: all var(--transition-normal);
@@ -658,12 +658,12 @@ const getActivitySeverity = (type: string) => {
 
 .badge-item.earned {
   opacity: 1;
-  background: var(--color-background-tertiary);
+  background: var(--color-surface-tertiary);
 }
 
 .badge-icon {
   font-size: 1.25rem;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
 }
 
 .badge-name {
@@ -682,14 +682,14 @@ const getActivitySeverity = (type: string) => {
   align-items: center;
   gap: var(--space-md);
   padding: var(--space-md);
-  background: var(--color-background-secondary);
+  background: var(--color-surface-secondary);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
 }
 
 .recommendation-image {
   font-size: 2rem;
-  color: var(--color-primary);
+  color: var(--color-primary-500);
   flex-shrink: 0;
 }
 
@@ -719,12 +719,13 @@ const getActivitySeverity = (type: string) => {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-muted);
   font-size: var(--font-size-xs);
 }
 
 .recommendation-category {
   color: var(--color-primary);
+  color: var(--color-primary-500);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
 }
@@ -739,14 +740,14 @@ const getActivitySeverity = (type: string) => {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  color: var(--color-primary);
+  color: var(--color-primary-500);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   transition: color var(--transition-fast);
 }
 
 .view-more-link:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-primary-600);
 }
 
 /* Mobile Responsive */
