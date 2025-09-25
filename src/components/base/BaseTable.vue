@@ -3,29 +3,30 @@
     <!-- Table Header (if title or actions provided) -->
     <div
       v-if="$slots.header || title"
-      class="flex items-center justify-between mb-4">
+      class="mb-4 flex items-center justify-between">
       <div class="flex-1">
-        <h3 v-if="title" class="text-lg font-semibold text-gray-900">
+        <h3 v-if="title" class="text-lg font-semibold text-text-primary">
           {{ title }}
         </h3>
         <slot name="header" />
       </div>
-      <div v-if="$slots.actions" class="flex items-center gap-2">
+      <div v-if="$slots.actions" class="flex items-center gap-3">
         <slot name="actions" />
       </div>
     </div>
 
     <!-- Table Wrapper for responsiveness -->
-    <div class="overflow-x-auto border border-gray-200 rounded-lg">
-      <table class="w-full" :id="id" :data-testid="testId">
+    <div
+      class="overflow-x-auto rounded-2xl border border-border bg-surface-primary shadow-sm">
+      <table class="w-full min-w-full" :id="id" :data-testid="testId">
         <!-- Table Header -->
-        <thead class="bg-gray-50">
-          <tr class="border-b border-gray-200">
+        <thead class="bg-surface-secondary/60 text-text-muted">
+          <tr class="border-b border-border">
             <!-- Selection column -->
-            <th v-if="selectable" class="px-4 py-3 text-left">
+            <th v-if="selectable" class="px-5 py-4 text-left">
               <input
                 type="checkbox"
-                class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                class="h-4 w-4 rounded border-border bg-surface-primary text-primary-500 focus:ring-2 focus:ring-primary/30"
                 :checked="isAllSelected"
                 :indeterminate="isSomeSelected"
                 @change="handleSelectAll" />
@@ -35,25 +36,26 @@
             <th
               v-for="column in columns"
               :key="column.key"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              class="px-5 py-4 text-left text-xs font-medium uppercase tracking-wider"
               :class="[
                 {
                   'text-left': column.align === 'left' || !column.align,
                   'text-center': column.align === 'center',
                   'text-right': column.align === 'right',
-                  'cursor-pointer hover:bg-gray-100': column.sortable,
+                  'cursor-pointer transition hover:bg-surface-tertiary':
+                    column.sortable,
                 },
               ]"
               :style="{ width: column.width }"
               @click="column.sortable ? handleSort(column.key) : null">
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-1 text-text-muted">
                 <span>{{ column.label }}</span>
                 <Icon
                   v-if="column.sortable"
                   :icon="getSortIcon(column.key)"
-                  class="w-4 h-4 text-gray-400"
+                  class="h-4 w-4 text-text-muted"
                   :class="{
-                    'text-orange-600': sortBy === column.key,
+                    'text-primary-500': sortBy === column.key,
                   }" />
               </div>
             </th>
@@ -61,12 +63,14 @@
         </thead>
 
         <!-- Table Body -->
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody
+          class="divide-y divide-border bg-surface-primary text-text-primary">
           <!-- Loading state -->
           <tr v-if="loading">
-            <td :colspan="totalColumns" class="px-4 py-8 text-center">
-              <div class="flex items-center justify-center gap-2 text-gray-500">
-                <Icon icon="mdi:loading" class="w-5 h-5 animate-spin" />
+            <td :colspan="totalColumns" class="px-5 py-10 text-center">
+              <div
+                class="flex items-center justify-center gap-2 text-text-muted">
+                <Icon icon="mdi:loading" class="h-5 w-5 animate-spin" />
                 <span>Cargando...</span>
               </div>
             </td>
@@ -74,9 +78,10 @@
 
           <!-- Empty state -->
           <tr v-else-if="data.length === 0">
-            <td :colspan="totalColumns" class="px-4 py-8 text-center">
-              <div class="flex items-center justify-center gap-2 text-gray-500">
-                <Icon icon="mdi:database-off" class="w-5 h-5" />
+            <td :colspan="totalColumns" class="px-5 py-10 text-center">
+              <div
+                class="flex items-center justify-center gap-2 text-text-muted">
+                <Icon icon="mdi:database-off" class="h-5 w-5" />
                 <span>{{ emptyMessage || 'No hay datos disponibles' }}</span>
               </div>
             </td>
@@ -87,16 +92,16 @@
             v-else
             v-for="(row, index) in data"
             :key="getRowKey(row, index)"
-            class="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+            class="cursor-pointer transition-colors duration-150 hover:bg-surface-tertiary"
             :class="{
-              'bg-orange-50': selectedRows.has(getRowKey(row, index)),
+              'bg-primary-50/60': selectedRows.has(getRowKey(row, index)),
             }"
             @click="handleRowClick(row, index)">
             <!-- Selection column -->
-            <td v-if="selectable" class="px-4 py-3">
+            <td v-if="selectable" class="px-5 py-4">
               <input
                 type="checkbox"
-                class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                class="h-4 w-4 rounded border-border bg-surface-primary text-primary-500 focus:ring-2 focus:ring-primary/30"
                 :checked="selectedRows.has(getRowKey(row, index))"
                 @change="handleRowSelect(row, index, $event)"
                 @click.stop />
@@ -106,7 +111,7 @@
             <td
               v-for="column in columns"
               :key="column.key"
-              class="px-4 py-3 text-sm text-gray-900"
+              class="px-5 py-4 text-sm"
               :class="{
                 'text-left': column.align === 'left' || !column.align,
                 'text-center': column.align === 'center',
@@ -123,13 +128,15 @@
                     ) === 'object'
                   "
                   :is="column.render(getValue(row, column.key), row, index)" />
-                <span v-else>
+                <span v-else class="text-text-primary">
                   {{ column.render(getValue(row, column.key), row, index) }}
                 </span>
               </template>
 
               <!-- Default value display -->
-              <span v-else>{{ getValue(row, column.key) }}</span>
+              <span v-else class="text-text-primary">
+                {{ getValue(row, column.key) }}
+              </span>
             </td>
           </tr>
         </tbody>
@@ -139,8 +146,8 @@
     <!-- Table Footer with pagination -->
     <div
       v-if="pagination && !loading"
-      class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
-      <div class="text-sm text-gray-700">
+      class="flex items-center justify-between border-t border-border bg-surface-primary px-5 py-4 text-sm text-text-muted sm:px-6">
+      <div>
         <span>
           Mostrando {{ (pagination.page - 1) * pagination.size + 1 }} -
           {{ Math.min(pagination.page * pagination.size, pagination.total) }}
@@ -148,7 +155,7 @@
         </span>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 text-text-muted">
         <BaseButton
           variant="ghost"
           size="sm"
@@ -158,7 +165,7 @@
           Anterior
         </BaseButton>
 
-        <span class="text-sm text-gray-700">
+        <span class="text-sm text-text-muted">
           Página {{ pagination.page }} de
           {{ Math.ceil(pagination.total / pagination.size) }}
         </span>

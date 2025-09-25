@@ -7,13 +7,13 @@
       @submit.prevent="handleSubmit"
       novalidate>
       <!-- Form Title -->
-      <header v-if="title || subtitle" class="mb-6">
+      <header v-if="title || subtitle" class="mb-6 space-y-2">
         <h2
           v-if="title"
-          class="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+          class="text-2xl font-bold text-text-primary leading-tight">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="text-base text-gray-600 leading-normal">
+        <p v-if="subtitle" class="text-base text-text-muted leading-normal">
           {{ subtitle }}
         </p>
       </header>
@@ -37,89 +37,48 @@
             @blur="validateField(field.name)" />
 
           <!-- Textarea Field -->
-          <div v-else-if="field.type === 'textarea'" class="space-y-2">
-            <label
-              v-if="field.label"
-              :for="`${field.name}-textarea`"
-              class="block text-sm font-medium text-gray-900">
-              {{ field.label }}
-              <span v-if="field.required" class="text-red-500 ml-1">*</span>
-            </label>
-            <textarea
-              :id="`${field.name}-textarea`"
-              v-model="formData[field.name]"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-vertical min-h-24 text-gray-900 placeholder-gray-400"
-              :class="{
-                'border-red-500': getFieldError(field.name),
-              }"
-              :placeholder="field.placeholder"
-              :required="field.required"
-              :disabled="field.disabled || loading"
-              :maxlength="field.validation?.maxLength"
-              :minlength="field.validation?.minLength"
-              rows="4"
-              @blur="validateField(field.name)"></textarea>
-            <span
-              v-if="getFieldError(field.name)"
-              class="text-sm text-red-600 flex items-center gap-1">
-              <Icon icon="mdi:alert-circle" />
-              {{ getFieldError(field.name) }}
-            </span>
-          </div>
+          <BaseTextarea
+            v-else-if="field.type === 'textarea'"
+            v-model="formData[field.name]"
+            :label="field.label"
+            :placeholder="field.placeholder"
+            :required="field.required"
+            :disabled="field.disabled || loading"
+            :maxlength="field.validation?.maxLength"
+            :minlength="field.validation?.minLength"
+            :error="getFieldError(field.name)"
+            @blur="validateField(field.name)" />
 
           <!-- Select Field -->
-          <div v-else-if="field.type === 'select'" class="space-y-2">
-            <label
-              v-if="field.label"
-              :for="`${field.name}-select`"
-              class="block text-sm font-medium text-gray-900">
-              {{ field.label }}
-              <span v-if="field.required" class="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              :id="`${field.name}-select`"
-              v-model="formData[field.name]"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900"
-              :class="{ 'border-red-500': getFieldError(field.name) }"
-              :required="field.required"
-              :disabled="field.disabled || loading"
-              @change="validateField(field.name)">
-              <option value="">
-                {{ field.placeholder || 'Seleccionar...' }}
-              </option>
-              <option
-                v-for="option in field.options"
-                :key="option.value"
-                :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-            <span
-              v-if="getFieldError(field.name)"
-              class="text-sm text-red-600 flex items-center gap-1">
-              <Icon icon="mdi:alert-circle" />
-              {{ getFieldError(field.name) }}
-            </span>
-          </div>
+          <BaseSelect
+            v-else-if="field.type === 'select'"
+            v-model="formData[field.name]"
+            :label="field.label"
+            :placeholder="field.placeholder || 'Seleccionar...'"
+            :options="field.options"
+            :required="field.required"
+            :disabled="field.disabled || loading"
+            :error="getFieldError(field.name)"
+            @change="validateField(field.name)" />
 
           <!-- Checkbox Field -->
           <div v-else-if="field.type === 'checkbox'" class="space-y-2">
-            <label class="flex items-center space-x-2 cursor-pointer">
+            <label class="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 v-model="formData[field.name]"
-                class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                class="h-4 w-4 rounded border-border bg-surface-primary text-primary-500 focus:ring-2 focus:ring-primary/30"
                 :required="field.required"
                 :disabled="field.disabled || loading"
                 @change="validateField(field.name)" />
-              <span class="text-sm text-gray-900">
+              <span class="text-sm text-text-primary">
                 {{ field.label }}
-                <span v-if="field.required" class="text-red-500 ml-1">*</span>
+                <span v-if="field.required" class="ml-1 text-error">*</span>
               </span>
             </label>
             <span
               v-if="getFieldError(field.name)"
-              class="text-sm text-red-600 flex items-center gap-1">
+              class="flex items-center gap-1 text-sm text-error">
               <Icon icon="mdi:alert-circle" />
               {{ getFieldError(field.name) }}
             </span>
@@ -134,7 +93,7 @@
 
       <!-- Form Actions -->
       <footer
-        class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200"
+        class="flex items-center justify-end gap-3 border-t border-border pt-6"
         v-if="showSubmit || showCancel || $slots.actions">
         <slot name="actions">
           <BaseButton
@@ -165,6 +124,8 @@ import { computed, reactive, ref, watch } from 'vue'
 import BaseCard from './BaseCard.vue'
 import BaseButton from './BaseButton.vue'
 import BaseInput from './BaseInput.vue'
+import BaseTextarea from './BaseTextarea.vue'
+import BaseSelect from './BaseSelect.vue'
 import type { FormProps, FormField, InputType } from '../../types'
 
 interface Props extends FormProps {
