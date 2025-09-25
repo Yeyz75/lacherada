@@ -1,11 +1,11 @@
 <template>
-  <AccordionContent v-bind="$attrs" :class="contentClasses">
+  <AccordionContent v-bind="contentBindings" :unstyled="true">
     <slot />
   </AccordionContent>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import AccordionContent from 'primevue/accordioncontent'
 
 interface Props {
@@ -17,7 +17,14 @@ const props = withDefaults(defineProps<Props>(), {
   class: '',
 })
 
-const contentClasses = computed(() => ['base-accordion-content', props.class])
+const attrs = useAttrs()
+
+const baseClass = 'base-accordion-content text-text-secondary'
+
+const contentBindings = computed(() => ({
+  ...attrs,
+  class: [baseClass, props.class],
+}))
 </script>
 
 <script lang="ts">
@@ -26,9 +33,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-.base-accordion-content {
-  /* Los estilos se aplican desde el componente padre BaseAccordion */
-}
-</style>

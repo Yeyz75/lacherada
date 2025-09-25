@@ -1,15 +1,15 @@
 <template>
   <AccordionPanel
-    v-bind="$attrs"
+    v-bind="panelBindings"
     :value="value"
     :disabled="disabled"
-    :class="panelClasses">
+    :unstyled="true">
     <slot />
   </AccordionPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import AccordionPanel from 'primevue/accordionpanel'
 
 interface Props {
@@ -26,13 +26,18 @@ const props = withDefaults(defineProps<Props>(), {
   class: '',
 })
 
-const panelClasses = computed(() => [
-  'base-accordion-panel',
-  {
-    'base-accordion-panel-disabled': props.disabled,
-  },
-  props.class,
-])
+const attrs = useAttrs()
+
+const baseClass = 'base-accordion-panel'
+
+const panelBindings = computed(() => ({
+  ...attrs,
+  class: [
+    baseClass,
+    props.disabled ? 'opacity-60 pointer-events-none' : '',
+    props.class,
+  ],
+}))
 </script>
 
 <script lang="ts">
@@ -41,14 +46,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-.base-accordion-panel {
-  /* Los estilos se aplican desde el componente padre BaseAccordion */
-}
-
-.base-accordion-panel-disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-</style>
