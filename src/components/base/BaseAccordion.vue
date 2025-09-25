@@ -2,17 +2,20 @@
   <Accordion
     :id="id"
     :data-testid="testId"
-    v-bind="$attrs"
+    :value="internalValue"
+    :multiple="multiple"
+    :disabled="disabled"
+    :unstyled="true"
+    v-bind="accordionBindings"
     class="base-accordion"
     :class="accordionClasses"
-    :value="internalValue"
     @update:value="handleValueChange">
     <slot />
   </Accordion>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useAttrs, watch } from 'vue'
 import Accordion from 'primevue/accordion'
 import type { BaseComponentProps } from '../../types'
 
@@ -61,16 +64,62 @@ const handleValueChange = (value: string | string[] | null | undefined) => {
 }
 
 // Clases computadas para el accordion
+const attrs = useAttrs()
+
+const variantTokens: Record<NonNullable<Props['variant']>, string> = {
+  default: 'border border-border bg-surface-primary',
+  outlined: 'border border-border bg-surface-primary',
+  filled: 'border border-border bg-surface-secondary',
+  borderless: 'border border-transparent bg-transparent',
+}
+
+const sizeTokens: Record<NonNullable<Props['size']>, string> = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+}
+
 const accordionClasses = computed(() => [
-  'base-accordion-wrapper',
-  `base-accordion-${props.variant}`,
-  `base-accordion-${props.size}`,
+  'base-accordion overflow-hidden rounded-2xl transition-colors duration-200',
+  variantTokens[props.variant ?? 'default'],
+  sizeTokens[props.size ?? 'md'],
   {
-    'base-accordion-disabled': props.disabled,
-    'base-accordion-multiple': props.multiple,
+    'opacity-60 pointer-events-none': props.disabled,
   },
   props.class,
 ])
+
+const headerPaddingMap: Record<NonNullable<Props['size']>, string> = {
+  sm: 'px-4 py-3',
+  md: 'px-5 py-4',
+  lg: 'px-6 py-5',
+}
+
+const contentPaddingMap: Record<NonNullable<Props['size']>, string> = {
+  sm: 'px-4 pb-4',
+  md: 'px-5 pb-5',
+  lg: 'px-6 pb-6',
+}
+
+const accordionBindings = computed(() => ({
+  ...attrs,
+  class: undefined,
+  pt: {
+    root: 'divide-y divide-border overflow-hidden rounded-2xl shadow-sm',
+    panel: 'bg-transparent',
+    header: [
+      'flex items-center justify-between text-text-primary transition duration-200',
+      'hover:bg-surface-tertiary',
+      headerPaddingMap[props.size ?? 'md'],
+    ],
+    headerAction: 'flex w-full items-center justify-between gap-3',
+    toggleIcon: 'text-text-muted transition-transform duration-200',
+    content: [
+      'bg-surface-primary text-text-secondary',
+      contentPaddingMap[props.size ?? 'md'],
+    ],
+  },
+}))
 </script>
 
 <script lang="ts">
@@ -79,144 +128,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Estilos base para el accordion */
-.base-accordion {
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.base-accordion-wrapper {
-  --accordion-border-color: var(--color-border);
-  --accordion-background: var(--color-background);
-  --accordion-header-background: var(--color-background);
-  --accordion-header-hover-background: var(--color-background-secondary);
-  --accordion-content-background: var(--color-background);
-  --accordion-text-color: var(--color-text-primary);
-  --accordion-header-padding: var(--space-lg);
-  --accordion-content-padding: var(--space-lg);
-}
-
-/* Variantes */
-.base-accordion-outlined {
-  --accordion-border-color: var(--color-border);
-}
-
-.base-accordion-filled {
-  --accordion-header-background: var(--color-background-secondary);
-  --accordion-header-hover-background: var(--color-background-tertiary);
-}
-
-.base-accordion-borderless {
-  --accordion-border-color: transparent;
-}
-
-/* Tamaños */
-.base-accordion-sm {
-  --accordion-header-padding: var(--space-md);
-  --accordion-content-padding: var(--space-md);
-  font-size: var(--font-size-sm);
-}
-
-.base-accordion-md {
-  --accordion-header-padding: var(--space-lg);
-  --accordion-content-padding: var(--space-lg);
-  font-size: var(--font-size-base);
-}
-
-.base-accordion-lg {
-  --accordion-header-padding: var(--space-xl);
-  --accordion-content-padding: var(--space-xl);
-  font-size: var(--font-size-lg);
-}
-
-/* Estado deshabilitado */
-.base-accordion-disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Personalización global de PrimeVue Accordion */
-:deep(.p-accordion) {
-  border: 1px solid var(--accordion-border-color);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-:deep(.p-accordion-panel) {
-  border: none;
-  border-bottom: 1px solid var(--accordion-border-color);
-}
-
-:deep(.p-accordion-panel:last-child) {
-  border-bottom: none;
-}
-
-:deep(.p-accordion-header) {
-  background: var(--accordion-header-background);
-  border: none;
-  border-radius: 0;
-}
-
-:deep(.p-accordion-header-link) {
-  padding: var(--accordion-header-padding);
-  background: var(--accordion-header-background);
-  color: var(--accordion-text-color);
-  font-weight: var(--font-weight-semibold);
-  transition: all var(--transition-fast);
-  border-radius: 0;
-  border: none;
-}
-
-:deep(.p-accordion-header-link:hover) {
-  background: var(--accordion-header-hover-background);
-  color: var(--color-primary);
-}
-
-:deep(.p-accordion-header-link:focus) {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-  box-shadow: none;
-}
-
-:deep(.p-accordion-content) {
-  background: var(--accordion-content-background);
-  border: none;
-  border-top: 1px solid var(--accordion-border-color);
-  transition: all var(--transition-base);
-}
-
-:deep(.p-accordion-content-wrapper) {
-  padding: var(--accordion-content-padding);
-}
-
-/* Flecha del accordion - Corregir dirección */
-:deep(.p-accordion-toggle-icon) {
-  transition: transform var(--transition-fast);
-  transform: rotate(0deg); /* Flecha hacia abajo cuando está colapsado */
-}
-
-/* Cuando el panel está activo (expandido), rotar la flecha hacia arriba */
-:deep(.p-accordion-panel-active .p-accordion-toggle-icon) {
-  transform: rotate(180deg); /* Flecha hacia arriba cuando está expandido */
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-accordion-sm {
-    --accordion-header-padding: var(--space-sm);
-    --accordion-content-padding: var(--space-sm);
-  }
-
-  .base-accordion-md {
-    --accordion-header-padding: var(--space-md);
-    --accordion-content-padding: var(--space-md);
-  }
-
-  .base-accordion-lg {
-    --accordion-header-padding: var(--space-lg);
-    --accordion-content-padding: var(--space-lg);
-  }
-}
-</style>

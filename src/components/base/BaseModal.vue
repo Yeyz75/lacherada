@@ -12,9 +12,10 @@
     :maximizable="maximizable"
     :position="position"
     :style="dialogStyle"
+    :unstyled="true"
     class="base-modal"
     :class="modalClasses"
-    v-bind="$attrs">
+    v-bind="dialogBindings">
     <!-- Custom header template -->
     <template v-if="$slots.header" #header>
       <div class="base-modal-header">
@@ -51,19 +52,18 @@
         <slot v-if="$slots.footer" name="footer" />
 
         <!-- Default actions -->
-        <div v-else-if="showDefaultActions" class="base-modal-actions">
-          <Button
+        <div v-else-if="showDefaultActions" class="flex items-center gap-3">
+          <BaseButton
             v-if="showCancel"
             :label="cancelText || 'Cancelar'"
-            severity="secondary"
             variant="outlined"
             @click="handleCancel"
             :disabled="actionLoading" />
 
-          <Button
+          <BaseButton
             v-if="showConfirm"
             :label="confirmText || 'Confirmar'"
-            :severity="confirmSeverity"
+            :variant="confirmButtonVariant"
             @click="handleConfirm"
             :loading="actionLoading" />
         </div>
@@ -73,11 +73,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import { Icon } from '@iconify/vue'
 import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
 import type { BaseComponentProps } from '../../types'
+import BaseButton from './BaseButton.vue'
+import type { ButtonVariant } from '../../types'
 
 interface Props extends BaseComponentProps {
   // Dialog props
@@ -148,22 +149,26 @@ const emit = defineEmits<{
   'close': []
 }>()
 
+const attrs = useAttrs()
+
+const sizeClassMap: Record<NonNullable<Props['size']>, string> = {
+  small: 'max-w-md w-full',
+  medium: 'max-w-2xl w-full',
+  large: 'max-w-4xl w-full',
+  fullscreen: 'w-screen h-screen max-w-none',
+}
+
 const modalClasses = computed(() => [
-  'base-modal-wrapper',
+  'base-modal',
+  sizeClassMap[props.size ?? 'medium'],
   {
-    'base-modal-small': props.size === 'small',
-    'base-modal-large': props.size === 'large',
-    'base-modal-fullscreen': props.size === 'fullscreen',
-    'base-modal-loading': props.loading,
+    'pointer-events-none': props.loading && !props.showDefaultActions,
+    'rounded-none border-0 sm:rounded-2xl': props.size !== 'fullscreen',
   },
   props.class,
 ])
 
-const contentClasses = computed(() => [
-  {
-    'p-0': props.loading,
-  },
-])
+const contentClasses = computed(() => (props.loading ? 'p-0' : ''))
 
 const dialogStyle = computed(() => {
   const styles: Record<string, string> = {}
@@ -207,6 +212,49 @@ const handleCancel = () => {
 const handleConfirm = () => {
   emit('confirm')
 }
+
+const dialogBindings = computed(() => ({
+  ...attrs,
+  class: undefined,
+  pt: {
+    mask: 'bg-black/50 backdrop-blur-sm',
+    root: [
+      'relative m-4 overflow-hidden border border-border bg-surface-primary text-text-primary shadow-2xl transition duration-200',
+      props.size === 'fullscreen'
+        ? 'h-full rounded-none border-0 sm:m-6'
+        : 'rounded-2xl',
+    ],
+    header:
+      'flex items-center justify-between gap-3 border-b border-border bg-surface-primary px-6 py-4',
+    headerTitle: 'text-lg font-semibold text-text-primary',
+    headerIcon: 'text-primary-500 text-2xl',
+    closeButton:
+      'inline-flex h-9 w-9 items-center justify-center rounded-full text-text-muted transition hover:bg-surface-tertiary',
+    content: [
+      'px-6 py-5 text-text-secondary',
+      props.loading ? 'flex items-center justify-center' : '',
+    ],
+    footer:
+      'flex items-center justify-end gap-3 border-t border-border bg-surface-primary px-6 py-4',
+  },
+}))
+
+const confirmButtonVariant = computed<ButtonVariant>(() => {
+  switch (props.confirmSeverity) {
+    case 'success':
+      return 'success'
+    case 'info':
+      return 'secondary'
+    case 'warn':
+      return 'warning'
+    case 'danger':
+      return 'danger'
+    case 'secondary':
+      return 'secondary'
+    default:
+      return 'primary'
+  }
+})
 </script>
 
 <script lang="ts">
@@ -215,152 +263,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Usar el diseño nativo de PrimeVue con extensiones */
-.base-modal {
-  /* PrimeVue ya maneja los estilos base */
-}
-
-.base-modal-wrapper {
-  /* Extensiones específicas */
-}
-
-/* Header styling */
-.base-modal-header {
-  /* Custom header content */
-}
-
-.base-modal-header-default {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.base-modal-icon {
-  font-size: 1.5rem;
-  color: var(--p-primary-color);
-}
-
-.base-modal-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--p-text-color);
-}
-
-/* Content styling */
-.base-modal-content {
-  /* Contenido principal */
-}
-
-.base-modal-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  gap: 1rem;
-  color: var(--p-text-muted-color);
-}
-
-.base-modal-body {
-  /* Body content */
-}
-
-/* Footer styling */
-.base-modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--p-surface-border);
-}
-
-.base-modal-actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
-/* Size variants */
-.base-modal-small :deep(.p-dialog-content) {
-  padding: 1rem;
-}
-
-.base-modal-large :deep(.p-dialog-content) {
-  padding: 2rem;
-}
-
-.base-modal-fullscreen :deep(.p-dialog) {
-  border-radius: 0;
-  margin: 0;
-}
-
-.base-modal-fullscreen :deep(.p-dialog-content) {
-  height: calc(100vh - 120px); /* Ajustar por header y footer */
-  overflow-y: auto;
-}
-
-/* Loading state */
-.base-modal-loading :deep(.p-dialog-content) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-modal-wrapper :deep(.p-dialog) {
-    width: 95vw !important;
-    margin: 1rem;
-  }
-
-  .base-modal-fullscreen :deep(.p-dialog) {
-    width: 100vw !important;
-    height: 100vh !important;
-    margin: 0;
-  }
-
-  .base-modal-actions {
-    flex-direction: column;
-  }
-
-  .base-modal-header-default {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.5rem;
-  }
-
-  .base-modal-title {
-    font-size: 1.125rem;
-  }
-}
-
-/* Animation enhancements */
-.base-modal :deep(.p-dialog-enter-active),
-.base-modal :deep(.p-dialog-leave-active) {
-  transition: all 0.3s ease;
-}
-
-.base-modal :deep(.p-dialog-enter-from),
-.base-modal :deep(.p-dialog-leave-to) {
-  opacity: 0;
-  transform: scale(0.9) translateY(-20px);
-}
-
-/* Focus trap and accessibility */
-.base-modal :deep(.p-dialog) {
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.base-modal :deep(.p-dialog-header) {
-  border-bottom: 1px solid var(--p-surface-border);
-}
-
-.base-modal :deep(.p-dialog-footer) {
-  border-top: none; /* Ya lo manejamos en base-modal-footer */
-}
-</style>
