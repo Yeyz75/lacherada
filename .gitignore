@@ -18,6 +18,7 @@ dist-ssr
 .env.test.local
 .env.production.local
 CLAUDE.md
+AGENTS.md
 
 # Editor directories and files
 .vscode/*
