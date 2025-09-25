@@ -419,7 +419,9 @@
     "invalidFileSize": "El tamaño del archivo es demasiado grande",
     "invalidFileType": "Tipo de archivo no válido",
     "fileLimit": "Límite de archivos alcanzado",
-    "error": "Error al subir el archivo"
+    "error": "Error al subir el archivo",
+    "filesSelected": "{count} archivo(s) seleccionado(s)",
+    "noFilesSelected": "Ningún archivo seleccionado"
   },
   "comingSoon": {
     "whatToExpect": "¿Qué puedes esperar?",

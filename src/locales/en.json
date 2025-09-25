@@ -346,7 +346,9 @@
     "invalidFileSize": "File size is too large",
     "invalidFileType": "Invalid file type",
     "fileLimit": "File limit reached",
-    "error": "Error uploading file"
+    "error": "Error uploading file",
+    "filesSelected": "{count} file(s) selected",
+    "noFilesSelected": "No files selected"
   },
   "comingSoon": {
     "whatToExpect": "What to expect?",

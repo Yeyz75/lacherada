@@ -70,14 +70,16 @@
           :clear-callback="clearCallback"
           :files="files">
           <div
-            class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-surface-secondary px-4 py-3 shadow-sm">
-            <div class="flex flex-wrap items-center gap-2">
+            class="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface-secondary/80 px-4 py-4 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3">
               <BaseButton
                 @click="chooseCallback()"
                 :label="chooseLabel || t('fileUpload.choose')"
                 icon="pi pi-folder-open"
                 :disabled="disabled"
-                variant="outlined" />
+                variant="primary"
+                size="sm"
+                class="min-w-[8.5rem]" />
 
               <BaseButton
                 v-if="showUploadButton"
@@ -85,17 +87,25 @@
                 :label="uploadLabel || t('fileUpload.upload')"
                 icon="pi pi-upload"
                 :disabled="!files || files.length === 0 || disabled"
-                variant="primary"
-                class="ml-2" />
+                variant="success"
+                size="sm"
+                class="min-w-[8.5rem]" />
 
               <BaseButton
                 v-if="showCancelButton"
                 @click="clearCallback()"
                 :label="cancelLabel || t('fileUpload.cancel')"
                 icon="pi pi-times"
-                :disabled="(!files || files.length === 0) && disabled"
-                variant="secondary"
-                class="ml-2" />
+                :disabled="!files || files.length === 0 || disabled"
+                variant="ghost"
+                size="sm"
+                class="min-w-[8.5rem]" />
+            </div>
+
+            <div
+              class="flex flex-wrap items-center gap-2 text-xs text-text-muted">
+              <i class="pi pi-info-circle text-base text-primary/70" />
+              <span>{{ fileSelectionSummary(files) }}</span>
             </div>
 
             <div
@@ -337,13 +347,19 @@ const helperClasses = computed(() => [
 ])
 
 const fileUploadClasses = computed(() => [
-  'group relative flex w-full flex-col gap-4 rounded-2xl border border-dashed border-border bg-surface-secondary/50 p-6 transition duration-200 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary/20',
+  'group relative flex w-full flex-col gap-5 rounded-2xl p-1 transition duration-200 focus-within:ring-2 focus-within:ring-primary/20',
   {
-    'border-error focus-within:border-error focus-within:ring-error/25':
-      hasError.value,
+    'ring-2 ring-error/25 focus-within:ring-error/25': hasError.value,
     'opacity-75 pointer-events-none': props.disabled,
   },
 ])
+
+const fileSelectionSummary = (files?: File[]) => {
+  if (files && files.length > 0) {
+    return t('fileUpload.filesSelected', { count: files.length })
+  }
+  return t('fileUpload.noFilesSelected')
+}
 
 // Methods
 const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
