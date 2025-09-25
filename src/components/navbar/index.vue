@@ -45,7 +45,15 @@
           <!-- Auth Buttons -->
           <div class="auth-buttons">
             <!-- Not authenticated -->
-            <template v-if="!isAuthenticated">
+            <template v-if="!authReady">
+              <div class="auth-placeholder" aria-hidden="true">
+                <ProgressSpinner
+                  stroke-width="4"
+                  style="width: 24px; height: 24px" />
+              </div>
+            </template>
+
+            <template v-else-if="!isAuthenticated">
               <button @click="goToLogin" class="btn btn-ghost">
                 {{ t('navbar.login') }}
               </button>
@@ -161,7 +169,15 @@
 
         <div class="mobile-auth-buttons">
           <!-- Not authenticated -->
-          <template v-if="!isAuthenticated">
+          <template v-if="!authReady">
+            <div class="mobile-loading" aria-hidden="true">
+              <ProgressSpinner
+                stroke-width="4"
+                style="width: 28px; height: 28px" />
+            </div>
+          </template>
+
+          <template v-else-if="!isAuthenticated">
             <button @click="goToLogin" class="btn btn-ghost btn-full">
               {{ t('navbar.login') }}
             </button>
@@ -217,11 +233,20 @@ import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useTheme } from '../../composables/useTheme'
 import { useAuth } from '../../composables/useAuth'
+import ProgressSpinner from 'primevue/progressspinner'
 
 const { t, locale } = useI18n()
 const { isDark, toggleTheme } = useTheme()
-const { user, isAuthenticated, needsEmailVerification, signOut, loading } =
-  useAuth()
+const {
+  initialized,
+  user,
+  isAuthenticated,
+  needsEmailVerification,
+  signOut,
+  loading,
+} = useAuth()
+
+const authReady = computed(() => initialized.value)
 const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
@@ -229,6 +254,9 @@ const isUserDropdownOpen = ref(false)
 const userDropdownRef = ref<HTMLElement | null>(null)
 
 const navItems = computed(() => {
+  if (!authReady.value) {
+    return []
+  }
   // Si está autenticado pero no verificado, mostrar solo enlaces públicos
   if (isAuthenticated.value && needsEmailVerification.value) {
     return [
@@ -440,6 +468,14 @@ onUnmounted(() => {
   gap: var(--space-sm);
 }
 
+.auth-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
 .user-menu {
   position: relative;
   display: flex;
@@ -582,6 +618,13 @@ onUnmounted(() => {
   gap: var(--space-sm);
   margin-top: var(--space-md);
   padding: 0 var(--space-md);
+}
+
+.mobile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm);
 }
 
 .mobile-user-info {

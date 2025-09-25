@@ -12,6 +12,11 @@ const error = ref<string | null>(null)
 const initialized = ref(false)
 
 let unsubscribe: (() => void) | null = null
+let initializePromise: Promise<void> | null = null
+
+const setAuthState = (userData: UserData | null) => {
+  user.value = userData
+}
 
 export function useAuth() {
   const isAuthenticated = computed(() => Boolean(user.value))
@@ -25,35 +30,38 @@ export function useAuth() {
   })
 
   const initialize = async () => {
-    if (!initialized.value) {
+    if (initialized.value) return
+    if (initializePromise) return initializePromise
+
+    error.value = null
+
+    if (!unsubscribe) {
+      unsubscribe = SupabaseAuthService.onAuthStateChanged((userData) => {
+        setAuthState(userData)
+      })
+    }
+
+    initializePromise = (async () => {
       try {
-        await SupabaseAuthService.checkConnection()
-
-        unsubscribe = SupabaseAuthService.onAuthStateChanged((userData) => {
-          user.value = userData
-          initialized.value = true
-        })
-
-        setTimeout(() => {
-          if (!initialized.value) {
-            logger.warn('Auth initialization timeout', {
-              component: 'authMiddleware',
-              method: 'authMiddleware',
-            })
-            error.value =
-              'La inicialización de autenticación está tardando más de lo esperado'
-          }
-        }, 3000)
+        const currentUser = await SupabaseAuthService.getCurrentUser()
+        setAuthState(currentUser)
       } catch (err) {
         logger.error(
-          'Error initializing auth',
+          'Error obtaining current user during initialization',
           { component: 'useAuth', method: 'initialize' },
           err as Error,
         )
         error.value =
-          'Error al inicializar la autenticación. Verifica tu conexión a internet.'
+          'No se pudo obtener la sesión actual. Verifica tu conexión a internet.'
+      } finally {
         initialized.value = true
       }
+    })()
+
+    try {
+      await initializePromise
+    } finally {
+      initializePromise = null
     }
   }
 
@@ -62,6 +70,7 @@ export function useAuth() {
       unsubscribe()
       unsubscribe = null
       initialized.value = false
+      initializePromise = null
     }
   }
 

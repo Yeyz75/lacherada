@@ -25,24 +25,14 @@ export async function authMiddleware(
     useAuth()
 
   if (!initialized.value) {
-    await initialize()
-    let attempts = 0
-    const maxAttempts = 50
-
-    while (!initialized.value && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      attempts++
-    }
-
-    if (!initialized.value) {
-      logger.warn('Auth initialization timeout', {
+    try {
+      await initialize()
+    } catch (error) {
+      logger.warn('Error during auth initialization', {
         component: 'authMiddleware',
         method: 'authMiddleware',
+        error,
       })
-      logger.warn(
-        'Continuando sin autenticación inicializada. Algunas funciones pueden no estar disponibles.',
-        { component: 'authMiddleware', method: 'authMiddleware' },
-      )
     }
   }
 

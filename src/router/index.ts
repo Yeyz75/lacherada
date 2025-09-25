@@ -122,11 +122,10 @@ router.beforeEach(async (to, _from, next) => {
     useAuth()
 
   if (!initialized.value) {
-    await initialize()
-    let attempts = 0
-    while (!initialized.value && attempts < 30) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      attempts++
+    try {
+      await initialize()
+    } catch (error) {
+      console.error('Error during auth initialization in router', error)
     }
   }
 
