@@ -1,282 +1,107 @@
 /**
  * DESIGN TOKENS - LACHERADA DESIGN SYSTEM
- * ===========================================
  * 
  * Este archivo contiene todos los tokens de diseño extendidos
  * que se utilizan en el sistema de componentes base.
  */
 
 :root {
-  /* ==========================================================================
-     EXTENDED COLOR PALETTE
-     ========================================================================== */
-  
-  /* Status Colors */
-  --color-success: #10b981;
-  --color-success-light: #d1fae5;
-  --color-success-dark: #047857;
-  
-  --color-warning: #f59e0b;
-  --color-warning-light: #fef3c7;
-  --color-warning-dark: #d97706;
-  
-  --color-error: #ef4444;
-  --color-error-light: #fee2e2;
-  --color-error-dark: #dc2626;
-  
-  --color-info: #3b82f6;
-  --color-info-light: #dbeafe;
-  --color-info-dark: #1d4ed8;
+  /* Semantic aliases */
+  --interactive-primary: var(--color-primary-500);
+  --interactive-primary-hover: var(--color-primary-600);
+  --interactive-primary-active: var(--color-primary-700);
+  --interactive-secondary: var(--color-secondary-500);
+  --interactive-secondary-hover: var(--color-secondary-600);
+  --interactive-accent: var(--color-accent-500);
 
-  /* Neutral Extended */
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
+  --status-success: var(--color-success-500);
+  --status-warning: var(--color-warning-500);
+  --status-error: var(--color-error-500);
+  --status-info: var(--color-info-500);
 
-  /* ==========================================================================
-     COMPONENT-SPECIFIC TOKENS
-     ========================================================================== */
+  --surface-elevated: var(--color-surface-primary);
+  --surface-subtle: var(--color-surface-secondary);
+  --surface-muted: var(--color-surface-tertiary);
 
-  /* Button Tokens */
-  --btn-height-xs: 24px;
-  --btn-height-sm: 32px;
-  --btn-height-md: 40px;
-  --btn-height-lg: 48px;
-  --btn-height-xl: 56px;
-  
-  --btn-padding-xs: 0.375rem 0.75rem;
-  --btn-padding-sm: 0.5rem 1rem;
-  --btn-padding-md: 0.75rem 1.5rem;
-  --btn-padding-lg: 1rem 2rem;
-  --btn-padding-xl: 1.25rem 2.5rem;
-  
-  --btn-font-size-xs: var(--font-size-xs);
-  --btn-font-size-sm: var(--font-size-sm);
-  --btn-font-size-md: var(--font-size-base);
-  --btn-font-size-lg: var(--font-size-lg);
-  --btn-font-size-xl: var(--font-size-xl);
+  --text-subtle: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
 
-  /* Input Tokens */
-  --input-height-sm: 36px;
-  --input-height-md: 44px;
-  --input-height-lg: 52px;
-  
-  --input-padding-sm: 0.5rem 0.75rem;
-  --input-padding-md: 0.75rem 1rem;
-  --input-padding-lg: 1rem 1.25rem;
-  
-  --input-border-width: 1px;
-  --input-border-color: var(--color-border);
-  --input-border-color-focus: var(--color-primary);
-  --input-border-color-error: var(--color-error);
-  --input-border-color-success: var(--color-success);
+  /* Layout primitives */
+  --container-width-sm: 640px;
+  --container-width-md: 768px;
+  --container-width-lg: 1040px;
+  --container-width-xl: 1280px;
 
-  /* Card Tokens */
-  --card-padding-none: 0;
-  --card-padding-sm: var(--space-sm);
-  --card-padding-md: var(--space-lg);
-  --card-padding-lg: var(--space-xl);
-  --card-padding-xl: var(--space-2xl);
-  
-  --card-border-width: 1px;
-  --card-border-color: var(--color-border);
-  
-  /* Table Tokens */
-  --table-row-height: 48px;
-  --table-header-height: 56px;
-  --table-cell-padding: 0.75rem 1rem;
-  --table-border-color: var(--color-border);
-  --table-header-bg: var(--color-background-secondary);
-  --table-row-hover-bg: var(--color-background-secondary);
-  --table-selected-bg: var(--color-primary-light);
-
-  /* Form Tokens */
-  --form-gap: var(--space-md);
-  --form-label-spacing: var(--space-xs);
-  --form-error-color: var(--color-error);
-  --form-success-color: var(--color-success);
-
-  /* ==========================================================================
-     ANIMATION TOKENS
-     ========================================================================== */
-  
-  --animation-scale-up: scale(1.02);
-  --animation-scale-down: scale(0.98);
-  --animation-slide-up: translateY(-2px);
-  --animation-slide-down: translateY(2px);
-  
-  /* Hover Effects */
-  --hover-lift: translateY(-2px);
-  --hover-press: translateY(1px);
-  --hover-scale: scale(1.05);
-  
-  /* Loading Animation */
-  --loading-shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-
-  /* ==========================================================================
-     RESPONSIVE BREAKPOINTS
-     ========================================================================== */
-  
-  --breakpoint-xs: 480px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1536px;
-
-  /* ==========================================================================
-     FOCUS & ACCESSIBILITY
-     ========================================================================== */
-  
-  --focus-ring-width: 2px;
-  --focus-ring-color: rgba(249, 115, 22, 0.5);
-  --focus-ring-offset: 2px;
-  
-  /* High contrast mode */
-  --a11y-focus-outline: 2px solid var(--color-primary);
-  --a11y-text-contrast: var(--color-gray-900);
-
-  /* ==========================================================================
-     COMPONENT STATE TOKENS
-     ========================================================================== */
-  
-  /* Loading States */
-  --state-loading-bg: var(--color-gray-200);
-  --state-loading-shimmer: var(--color-gray-300);
-  
-  /* Disabled States */
-  --state-disabled-opacity: 0.6;
-  --state-disabled-cursor: not-allowed;
-  --state-disabled-bg: var(--color-gray-100);
-  --state-disabled-color: var(--color-gray-400);
-  
-  /* Hover States */
-  --state-hover-opacity: 0.9;
-  --state-hover-scale: 1.02;
-  --state-hover-shadow: var(--shadow-md);
-  
-  /* Active States */
-  --state-active-scale: 0.98;
-  --state-active-shadow: var(--shadow-sm);
-
-  /* ==========================================================================
-     LAYOUT TOKENS
-     ========================================================================== */
-  
-  /* Content Width */
-  --content-width-sm: 640px;
-  --content-width-md: 768px;
-  --content-width-lg: 1024px;
-  --content-width-xl: 1280px;
-  
-  /* Navigation */
   --nav-height: 64px;
   --sidebar-width: 280px;
-  --sidebar-width-collapsed: 72px;
-  
-  /* Modal */
-  --modal-width-sm: 400px;
-  --modal-width-md: 600px;
-  --modal-width-lg: 800px;
-  --modal-width-xl: 1000px;
-}
+  --sidebar-width-collapsed: 80px;
 
-/* =============================================================================
-   DARK THEME OVERRIDES
-   ============================================================================= */
+  --component-padding-sm: var(--space-sm);
+  --component-padding-md: var(--space-md);
+  --component-padding-lg: var(--space-lg);
+
+  --component-gap-sm: var(--space-sm);
+  --component-gap-md: var(--space-md);
+  --component-gap-lg: var(--space-lg);
+
+  --control-height-sm: 2.25rem;
+  --control-height-md: 2.75rem;
+  --control-height-lg: 3.25rem;
+
+  --control-padding-sm: 0.5rem 0.75rem;
+  --control-padding-md: 0.75rem 1rem;
+  --control-padding-lg: 0.875rem 1.25rem;
+
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  --loading-shimmer: linear-gradient(90deg, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0.16), rgba(148, 163, 184, 0.08));
+}
 
 [data-theme="dark"] {
-  /* Status colors adjustments for dark theme */
-  --color-success-light: rgba(16, 185, 129, 0.15);
-  --color-warning-light: rgba(245, 158, 11, 0.15);
-  --color-error-light: rgba(239, 68, 68, 0.15);
-  --color-info-light: rgba(59, 130, 246, 0.15);
+  --interactive-primary-hover: var(--color-primary-500);
+  --interactive-primary-active: var(--color-primary-400);
+  --interactive-secondary-hover: var(--color-secondary-500);
+  --interactive-accent: var(--color-accent-400);
 
-  /* Input adjustments */
-  --input-border-color: var(--color-gray-600);
-  --input-border-color-focus: var(--color-primary);
-  
-  /* Table adjustments */
-  --table-header-bg: var(--color-gray-800);
-  --table-row-hover-bg: var(--color-gray-800);
-  --table-selected-bg: rgba(249, 115, 22, 0.15);
-  
-  /* Loading states */
-  --state-loading-bg: var(--color-gray-700);
-  --state-loading-shimmer: var(--color-gray-600);
-  
-  /* Disabled states */
-  --state-disabled-bg: var(--color-gray-800);
-  --state-disabled-color: var(--color-gray-500);
+  --surface-elevated: rgba(17, 28, 50, 0.94);
+  --surface-subtle: rgba(21, 35, 69, 0.75);
+  --surface-muted: rgba(28, 46, 89, 0.65);
+
+  --text-subtle: rgba(203, 213, 245, 0.85);
+  --text-muted: rgba(148, 163, 211, 0.7);
+
+  --loading-shimmer: linear-gradient(90deg, rgba(79, 70, 229, 0.12), rgba(79, 70, 229, 0.2), rgba(79, 70, 229, 0.12));
 }
 
-/* =============================================================================
-   UTILITY CLASSES FOR DESIGN TOKENS
-   ============================================================================= */
+@layer utilities {
+  .focus-ring {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
+  }
 
-/* Status Colors */
-.text-success { color: var(--color-success) !important; }
-.text-warning { color: var(--color-warning) !important; }
-.text-error { color: var(--color-error) !important; }
-.text-info { color: var(--color-info) !important; }
+  .elevated-card {
+    background: var(--surface-elevated);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+  }
 
-.bg-success { background-color: var(--color-success) !important; }
-.bg-warning { background-color: var(--color-warning) !important; }
-.bg-error { background-color: var(--color-error) !important; }
-.bg-info { background-color: var(--color-info) !important; }
+  .surface-subtle {
+    background: var(--surface-subtle);
+    border-radius: var(--radius-lg);
+  }
 
-.bg-success-light { background-color: var(--color-success-light) !important; }
-.bg-warning-light { background-color: var(--color-warning-light) !important; }
-.bg-error-light { background-color: var(--color-error-light) !important; }
-.bg-info-light { background-color: var(--color-info-light) !important; }
+  .loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--loading-shimmer);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+  }
 
-/* Border Colors */
-.border-success { border-color: var(--color-success) !important; }
-.border-warning { border-color: var(--color-warning) !important; }
-.border-error { border-color: var(--color-error) !important; }
-.border-info { border-color: var(--color-info) !important; }
-
-/* Focus Ring */
-.focus-ring:focus {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
-}
-
-/* State Classes */
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-  position: relative;
-}
-
-.loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--loading-shimmer);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.disabled {
-  opacity: var(--state-disabled-opacity) !important;
-  cursor: var(--state-disabled-cursor) !important;
-  pointer-events: none !important;
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
 }
