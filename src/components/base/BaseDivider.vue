@@ -3,34 +3,34 @@
     :align="align"
     :layout="layout"
     :type="type"
-    v-bind="$attrs"
-    class="base-divider"
-    :class="dividerClasses">
+    v-bind="dividerBindings"
+    :class="dividerClasses"
+    :unstyled="true">
     <!-- Custom content slot -->
     <template v-if="$slots.default">
-      <div class="base-divider-content" :class="contentClasses">
+      <div :class="contentClasses">
         <slot />
       </div>
     </template>
 
     <!-- Text content -->
     <template v-else-if="text">
-      <div class="base-divider-content" :class="contentClasses">
-        <span class="base-divider-text">{{ text }}</span>
+      <div :class="contentClasses">
+        <span :class="textClasses">{{ text }}</span>
       </div>
     </template>
 
     <!-- Icon content -->
     <template v-else-if="icon">
-      <div class="base-divider-content" :class="contentClasses">
-        <Icon :icon="icon" class="base-divider-icon" />
+      <div :class="contentClasses">
+        <Icon :icon="icon" :class="iconClasses" />
       </div>
     </template>
   </Divider>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import { Icon } from '@iconify/vue'
 import Divider from 'primevue/divider'
 import type { BaseComponentProps } from '../../types'
@@ -51,22 +51,49 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
 })
 
+const attrs = useAttrs()
+
+const dividerBindings = computed(() => {
+  const { class: _class, ...rest } = Object.assign({}, attrs)
+  return rest
+})
+
+const baseDividerClasses =
+  'relative flex w-full items-center before:content-["" ] before:flex-1 before:border-current before:border-t after:content-["" ] after:flex-1 after:border-current after:border-t'
+
+const layoutClasses: Record<NonNullable<Props['layout']>, string> = {
+  horizontal: 'flex-row gap-3',
+  vertical:
+    'flex-col items-center justify-center gap-3 before:h-full before:w-px before:border-l after:h-full after:w-px after:border-l',
+}
+
+const variantClasses: Record<NonNullable<Props['variant']>, string> = {
+  default: 'text-border',
+  subtle: 'text-border-muted',
+  bold: 'text-primary-500',
+}
+
 const dividerClasses = computed(() => [
-  'base-divider-wrapper',
-  {
-    'base-divider-subtle': props.variant === 'subtle',
-    'base-divider-bold': props.variant === 'bold',
-  },
+  baseDividerClasses,
+  layoutClasses[props.layout ?? 'horizontal'],
+  variantClasses[props.variant ?? 'default'],
   props.class,
 ])
 
+const contentBaseClasses =
+  'flex items-center justify-center rounded-full bg-surface-primary px-3 py-1 text-sm font-medium'
+
 const contentClasses = computed(() => [
-  'flex items-center justify-center',
+  contentBaseClasses,
   {
-    'px-3': props.layout === 'horizontal',
-    'py-2': props.layout === 'vertical',
+    'px-3 py-1': props.layout === 'horizontal',
+    'px-2 py-2': props.layout === 'vertical',
   },
 ])
+
+const textClasses = computed(() => 'text-text-muted')
+
+const iconClasses = computed(() => 'text-text-muted text-base')
 </script>
 
 <script lang="ts">
@@ -75,61 +102,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Usar el diseño nativo de PrimeVue con extensiones */
-.base-divider {
-  /* PrimeVue ya maneja los estilos base */
-}
-
-.base-divider-wrapper {
-  /* Extensiones específicas */
-}
-
-.base-divider-content {
-  background: var(--p-surface-0);
-  color: var(--p-text-color);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.base-divider-text {
-  /* Text styling */
-}
-
-.base-divider-icon {
-  font-size: 1rem;
-  color: var(--p-text-muted-color);
-}
-
-/* Variantes */
-.base-divider-subtle :deep(.p-divider) {
-  border-color: var(--p-surface-200);
-}
-
-.base-divider-subtle .base-divider-content {
-  color: var(--p-text-muted-color);
-  font-weight: 400;
-}
-
-.base-divider-bold :deep(.p-divider) {
-  border-width: 2px;
-  border-color: var(--p-primary-color);
-}
-
-.base-divider-bold .base-divider-content {
-  color: var(--p-primary-color);
-  font-weight: 600;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-divider-content {
-    font-size: 0.8125rem;
-  }
-
-  .base-divider-icon {
-    font-size: 0.875rem;
-  }
-}
-</style>

@@ -1,148 +1,121 @@
 <template>
-  <div class="password-setup-container">
-    <!-- Header Section -->
-    <div class="password-setup-header">
-      <Icon :icon="icon" class="setup-icon" />
-      <h2 class="setup-title">{{ title }}</h2>
-      <p class="setup-description">{{ description }}</p>
-    </div>
+  <BaseCard :padding="'xl'" :loading="loading" :class="cardClass">
+    <header class="flex flex-col items-center gap-4 text-center">
+      <Icon :icon="icon" class="text-4xl text-primary-500" />
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-text-primary">{{ title }}</h2>
+        <p class="text-base text-text-muted">
+          {{ description }}
+        </p>
+      </div>
+    </header>
 
-    <!-- Form Section -->
-    <form @submit.prevent="handleSubmit" class="password-setup-form">
-      <!-- Password Field -->
-      <div class="form-field">
-        <label for="password" class="field-label">
-          {{ $t('auth.password') }}
-          <span class="required-indicator">*</span>
-        </label>
-        <Password
+    <form class="flex flex-col gap-6" @submit.prevent="handleSubmit">
+      <div class="space-y-2">
+        <BaseInput
           id="password"
           v-model="password"
-          :placeholder="$t('auth.passwordPlaceholder')"
-          :invalid="!!passwordError"
+          :label="t('auth.password')"
+          :placeholder="t('auth.passwordPlaceholder')"
+          type="password"
+          :error="passwordError"
           :disabled="loading"
-          toggle-mask
-          :feedback="false"
-          class="password-field"
-          @blur="validatePassword" />
-        <small v-if="passwordError" class="field-error">
-          {{ passwordError }}
-        </small>
+          required
+          @blur="validatePassword"
+          :show-password-toggle="true"
+          :clearable="false" />
       </div>
 
-      <!-- Confirm Password Field -->
-      <div class="form-field">
-        <label for="confirmPassword" class="field-label">
-          {{ $t('auth.confirmPassword') }}
-          <span class="required-indicator">*</span>
-        </label>
-        <Password
+      <div class="space-y-2">
+        <BaseInput
           id="confirmPassword"
           v-model="confirmPassword"
-          :placeholder="$t('auth.confirmPasswordPlaceholder')"
-          :invalid="!!confirmPasswordError"
+          :label="t('auth.confirmPassword')"
+          :placeholder="t('auth.confirmPasswordPlaceholder')"
+          type="password"
+          :error="confirmPasswordError"
           :disabled="loading"
-          toggle-mask
-          :feedback="false"
-          class="password-field"
-          @blur="validateConfirmPassword" />
-        <small v-if="confirmPasswordError" class="field-error">
-          {{ confirmPasswordError }}
-        </small>
+          required
+          @blur="validateConfirmPassword"
+          :show-password-toggle="true"
+          :clearable="false" />
       </div>
 
-      <!-- Password Requirements -->
-      <div class="password-requirements">
-        <h4 class="requirements-title">
-          {{ $t('auth.passwordRequirements') }}
+      <section
+        class="rounded-2xl border border-border bg-surface-secondary/40 p-4">
+        <h4 class="text-sm font-semibold text-text-primary">
+          {{ t('auth.passwordRequirements') }}
         </h4>
-        <ul class="requirements-list">
-          <li :class="{ valid: hasMinLength }">
+        <ul class="mt-3 space-y-2 text-sm">
+          <li
+            v-for="rule in rules"
+            :key="rule.key"
+            class="flex items-center gap-2">
             <Icon
-              :icon="hasMinLength ? 'mdi:check-circle' : 'mdi:circle-outline'"
-              :class="hasMinLength ? 'check-icon' : 'circle-icon'" />
-            {{ $t('auth.minLength') }}
-          </li>
-          <li :class="{ valid: hasUpperCase }">
-            <Icon
-              :icon="hasUpperCase ? 'mdi:check-circle' : 'mdi:circle-outline'"
-              :class="hasUpperCase ? 'check-icon' : 'circle-icon'" />
-            {{ $t('auth.upperCase') }}
-          </li>
-          <li :class="{ valid: hasLowerCase }">
-            <Icon
-              :icon="hasLowerCase ? 'mdi:check-circle' : 'mdi:circle-outline'"
-              :class="hasLowerCase ? 'check-icon' : 'circle-icon'" />
-            {{ $t('auth.lowerCase') }}
-          </li>
-          <li :class="{ valid: hasNumber }">
-            <Icon
-              :icon="hasNumber ? 'mdi:check-circle' : 'mdi:circle-outline'"
-              :class="hasNumber ? 'check-icon' : 'circle-icon'" />
-            {{ $t('auth.hasNumber') }}
+              :icon="rule.met ? 'mdi:check-circle' : 'mdi:circle-outline'"
+              :class="rule.met ? 'text-success' : 'text-text-muted'" />
+            <span :class="rule.met ? 'text-success' : 'text-text-muted'">
+              {{ rule.label }}
+            </span>
           </li>
         </ul>
-      </div>
+      </section>
 
-      <!-- Action Buttons -->
-      <div class="form-actions">
-        <Button
+      <footer class="flex flex-col gap-3">
+        <BaseButton
+          type="submit"
+          variant="primary"
+          :loading="loading"
+          :disabled="!isFormValid">
+          {{ t('auth.setPassword') }}
+        </BaseButton>
+        <BaseButton
           v-if="showCancel"
           type="button"
-          severity="secondary"
-          :label="$t('common.cancel')"
-          @click="handleCancel"
+          variant="ghost"
           :disabled="loading"
-          class="cancel-button" />
+          @click="handleCancel">
+          {{ t('common.cancel') }}
+        </BaseButton>
+      </footer>
 
-        <Button
-          type="submit"
-          :label="$t('auth.setPassword')"
-          :loading="loading"
-          :disabled="!isFormValid"
-          :class="showCancel ? 'submit-button' : 'submit-button-full'" />
-      </div>
-
-      <!-- Info Message for Google Users -->
       <Message
         v-if="showGoogleInfo"
         severity="info"
-        :closable="false"
-        class="message">
-        <div class="google-info-content">
-          <Icon icon="mdi:information" class="info-icon" />
-          <div>
-            <p>
-              <strong>{{ $t('auth.googleReauthInfo') }}</strong>
+        variant="simple"
+        class="border-info/20 bg-info/5 text-sm">
+        <div class="flex items-start gap-3">
+          <Icon icon="mdi:information" class="mt-0.5 text-lg text-info" />
+          <div class="space-y-1 text-left">
+            <p class="font-semibold text-text-primary">
+              {{ t('auth.googleReauthInfo') }}
             </p>
-            <p>{{ $t('auth.googleReauthDescription') }}</p>
+            <p class="text-text-muted">
+              {{ t('auth.googleReauthDescription') }}
+            </p>
           </div>
         </div>
       </Message>
 
-      <!-- Error Message -->
-      <Message v-if="error" severity="error" :closable="false" class="message">
+      <Message v-if="error" severity="error" variant="simple">
         {{ error }}
       </Message>
 
-      <!-- Success Message -->
-      <Message
-        v-if="success"
-        severity="success"
-        :closable="false"
-        class="message">
+      <Message v-if="success" severity="success" variant="simple">
         {{ success }}
       </Message>
     </form>
-  </div>
+  </BaseCard>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
 import Message from 'primevue/message'
+import BaseCard from './BaseCard.vue'
+import BaseInput from './BaseInput.vue'
+import BaseButton from './BaseButton.vue'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   title?: string
@@ -153,6 +126,7 @@ interface Props {
   success?: string | null
   showCancel?: boolean
   showGoogleInfo?: boolean
+  class?: string
 }
 
 interface Emits {
@@ -160,7 +134,7 @@ interface Emits {
   (e: 'cancel'): void
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: 'Establece tu contraseña',
   description:
     'Para completar tu registro con Google, establece una contraseña que podrás usar para iniciar sesión más adelante.',
@@ -170,47 +144,74 @@ withDefaults(defineProps<Props>(), {
   success: null,
   showCancel: true,
   showGoogleInfo: false,
+  class: '',
 })
 
 const emit = defineEmits<Emits>()
 
-// Form data
+const { t } = useI18n()
+
 const password = ref('')
 const confirmPassword = ref('')
 const passwordError = ref('')
 const confirmPasswordError = ref('')
 
-// Password validation computed properties
 const hasMinLength = computed(() => password.value.length >= 8)
 const hasUpperCase = computed(() => /[A-Z]/.test(password.value))
 const hasLowerCase = computed(() => /[a-z]/.test(password.value))
 const hasNumber = computed(() => /\d/.test(password.value))
 
-const isPasswordValid = computed(() => {
-  return (
+const isPasswordValid = computed(
+  () =>
     hasMinLength.value &&
     hasUpperCase.value &&
     hasLowerCase.value &&
-    hasNumber.value
-  )
-})
+    hasNumber.value,
+)
 
-const passwordsMatch = computed(() => {
-  return (
-    password.value === confirmPassword.value && confirmPassword.value.length > 0
-  )
-})
+const passwordsMatch = computed(
+  () =>
+    password.value === confirmPassword.value &&
+    confirmPassword.value.length > 0,
+)
 
-const isFormValid = computed(() => {
-  return (
+const isFormValid = computed(
+  () =>
     isPasswordValid.value &&
     passwordsMatch.value &&
     !passwordError.value &&
-    !confirmPasswordError.value
-  )
-})
+    !confirmPasswordError.value,
+)
 
-// Watchers for real-time validation
+const rules = computed(() => [
+  {
+    key: 'minLength',
+    met: hasMinLength.value,
+    label: t('auth.minLength'),
+  },
+  {
+    key: 'upperCase',
+    met: hasUpperCase.value,
+    label: t('auth.upperCase'),
+  },
+  {
+    key: 'lowerCase',
+    met: hasLowerCase.value,
+    label: t('auth.lowerCase'),
+  },
+  {
+    key: 'number',
+    met: hasNumber.value,
+    label: t('auth.hasNumber'),
+  },
+])
+
+const cardClass = computed(() =>
+  props.class
+    ? `mx-auto w-full max-w-lg space-y-8 ${props.class}`
+    : 'mx-auto w-full max-w-lg space-y-8',
+)
+
 watch(password, () => {
   validatePassword()
   if (confirmPassword.value) {
@@ -222,7 +223,6 @@ watch(confirmPassword, () => {
   validateConfirmPassword()
 })
 
-// Validation functions
 const validatePassword = () => {
   if (!password.value) {
     passwordError.value = 'La contraseña es requerida'
@@ -243,7 +243,6 @@ const validateConfirmPassword = () => {
   }
 }
 
-// Event handlers
 const handleSubmit = () => {
   validatePassword()
   validateConfirmPassword()
@@ -258,220 +257,9 @@ const handleCancel = () => {
 }
 </script>
 
-<style scoped>
-.password-setup-container {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: var(--space-xl);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+<script lang="ts">
+export default {
+  name: 'BasePasswordSetup',
+  inheritAttrs: false,
 }
-
-.password-setup-header {
-  text-align: center;
-  margin-bottom: var(--space-xl);
-}
-
-.setup-icon {
-  font-size: 3rem;
-  color: var(--color-primary);
-  margin-bottom: var(--space-md);
-  display: block;
-  transition: color var(--transition-fast);
-}
-
-.setup-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-sm) 0;
-  line-height: var(--line-height-tight);
-}
-
-.setup-description {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  margin: 0;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.password-setup-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.field-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.required-indicator {
-  color: var(--color-error);
-  font-size: var(--font-size-sm);
-}
-
-.password-field {
-  width: 100%;
-}
-
-.field-error {
-  color: var(--color-error);
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-xs);
-  display: block;
-}
-
-.password-requirements {
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.requirements-title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-sm) 0;
-}
-
-.requirements-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.requirements-list li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  transition: color var(--transition-fast);
-}
-
-.requirements-list li.valid {
-  color: var(--color-success);
-}
-
-.check-icon {
-  color: var(--color-success);
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.circle-icon {
-  color: var(--color-text-tertiary);
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.form-actions {
-  display: flex;
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-}
-
-.cancel-button {
-  flex: 0 0 auto;
-}
-
-.submit-button {
-  flex: 1;
-}
-
-.submit-button-full {
-  flex: 1;
-  width: 100%;
-}
-
-.message {
-  margin-top: var(--space-md);
-}
-
-.google-info-content {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-}
-
-.info-icon {
-  color: var(--color-info);
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.google-info-content p {
-  margin: 0 0 var(--space-xs) 0;
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-}
-
-.google-info-content p:last-child {
-  margin-bottom: 0;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .password-setup-container {
-    margin: var(--space-md);
-    padding: var(--space-md);
-  }
-
-  .setup-title {
-    font-size: var(--font-size-xl);
-  }
-
-  .setup-description {
-    font-size: var(--font-size-sm);
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .cancel-button,
-  .submit-button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .password-setup-container {
-    margin: var(--space-sm);
-    padding: var(--space-sm);
-  }
-
-  .password-setup-form {
-    gap: var(--space-md);
-  }
-}
-</style>
+</script>

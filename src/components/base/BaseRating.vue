@@ -1,7 +1,7 @@
 <template>
-  <div class="base-rating" :class="ratingClasses">
+  <div v-bind="rootAttrs" :class="wrapperClasses">
     <!-- Label -->
-    <label v-if="label" class="base-rating-label">
+    <label v-if="label" :class="labelClasses">
       {{ label }}
     </label>
 
@@ -13,7 +13,8 @@
       :disabled="disabled"
       :stars="stars"
       :cancel="cancel"
-      class="base-rating-component"
+      :class="ratingClasses"
+      :unstyled="true"
       v-bind="$attrs">
       <!-- Custom star template si se necesita -->
       <template v-if="$slots.onicon" #onicon>
@@ -26,36 +27,36 @@
     </Rating>
 
     <!-- Rating display con texto -->
-    <div v-if="showText || showCount" class="base-rating-display">
-      <span v-if="showText" class="base-rating-text">
+    <div v-if="showText || showCount" :class="displayClasses">
+      <span v-if="showText" :class="textClasses">
         {{ ratingText }}
       </span>
 
-      <span v-if="showCount && totalRatings" class="base-rating-count">
+      <span v-if="showCount && totalRatings" :class="countClasses">
         ({{ formatCount(totalRatings) }})
       </span>
     </div>
 
     <!-- Rating breakdown (para mostrar distribución) -->
-    <div v-if="showBreakdown && breakdown" class="base-rating-breakdown">
+    <div v-if="showBreakdown && breakdown" :class="breakdownClasses">
       <div
         v-for="(count, star) in breakdown"
         :key="star"
-        class="base-rating-breakdown-item">
-        <span class="base-rating-breakdown-stars">{{ star }}★</span>
-        <div class="base-rating-breakdown-bar">
+        :class="breakdownItemClasses">
+        <span :class="breakdownStarClasses">{{ star }}★</span>
+        <div :class="breakdownBarClasses">
           <div
-            class="base-rating-breakdown-fill"
+            :class="breakdownFillClasses"
             :style="{ width: getBreakdownPercentage(count) + '%' }" />
         </div>
-        <span class="base-rating-breakdown-count">{{ count }}</span>
+        <span :class="breakdownCountClasses">{{ count }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import Rating from 'primevue/rating'
 import type { BaseComponentProps } from '../../types'
 
@@ -96,16 +97,56 @@ const emit = defineEmits<{
   'change': [value: number]
 }>()
 
-const ratingClasses = computed(() => [
-  'base-rating-wrapper',
+const attrs = useAttrs()
+
+const rootAttrs = computed(() => {
+  const { class: _class, ...rest } = Object.assign({}, attrs)
+  return rest
+})
+
+const wrapperClasses = computed(() => [
+  'flex w-full flex-col gap-2',
   {
-    'base-rating-small': props.size === 'small',
-    'base-rating-large': props.size === 'large',
-    'base-rating-readonly': props.readonly,
-    'base-rating-disabled': props.disabled,
+    'opacity-60 pointer-events-none': props.disabled,
   },
   props.class,
+  attrs.class,
 ])
+
+const labelClasses = computed(() => 'text-sm font-medium text-text-primary')
+
+const ratingClasses = computed(() => [
+  'flex items-center gap-1 text-warning',
+  {
+    'text-sm': props.size === 'small',
+    'text-base': props.size === 'normal',
+    'text-lg': props.size === 'large',
+  },
+])
+
+const displayClasses = computed(() => 'flex items-center gap-2 text-sm')
+
+const textClasses = computed(() => 'font-medium text-text-primary')
+
+const countClasses = computed(() => 'text-text-muted')
+
+const breakdownClasses = computed(
+  () => 'mt-2 flex flex-col gap-2 text-xs text-text-muted',
+)
+
+const breakdownItemClasses = computed(() => 'flex items-center gap-2')
+
+const breakdownStarClasses = computed(() => 'min-w-[2rem] text-right')
+
+const breakdownBarClasses = computed(
+  () => 'flex-1 overflow-hidden rounded-full bg-border-muted',
+)
+
+const breakdownFillClasses = computed(
+  () => 'h-2 rounded-full bg-warning transition-all duration-200 ease-out',
+)
+
+const breakdownCountClasses = computed(() => 'min-w-[2rem] text-right')
 
 const ratingText = computed(() => {
   if (!props.modelValue) return 'Sin calificación'
@@ -145,118 +186,3 @@ export default {
   inheritAttrs: false,
 }
 </script>
-
-<style scoped>
-/* Usar el diseño nativo de PrimeVue con extensiones */
-.base-rating-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.base-rating-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--p-text-color);
-}
-
-.base-rating-component {
-  display: flex;
-  align-items: center;
-}
-
-.base-rating-display {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.base-rating-text {
-  font-weight: 500;
-  color: var(--p-text-color);
-}
-
-.base-rating-count {
-  color: var(--p-text-muted-color);
-}
-
-/* Size variants */
-.base-rating-small .base-rating-component {
-  font-size: 0.875rem;
-}
-
-.base-rating-small .base-rating-display {
-  font-size: 0.75rem;
-}
-
-.base-rating-large .base-rating-component {
-  font-size: 1.25rem;
-}
-
-.base-rating-large .base-rating-display {
-  font-size: 1rem;
-}
-
-/* States */
-.base-rating-readonly .base-rating-component {
-  pointer-events: none;
-}
-
-.base-rating-disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* Breakdown styling */
-.base-rating-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.5rem;
-}
-
-.base-rating-breakdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-}
-
-.base-rating-breakdown-stars {
-  min-width: 2rem;
-  color: var(--p-text-muted-color);
-}
-
-.base-rating-breakdown-bar {
-  flex: 1;
-  height: 4px;
-  background: var(--p-surface-200);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.base-rating-breakdown-fill {
-  height: 100%;
-  background: var(--p-warning-color);
-  transition: width 0.3s ease;
-}
-
-.base-rating-breakdown-count {
-  min-width: 2rem;
-  text-align: right;
-  color: var(--p-text-muted-color);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .base-rating-breakdown-item {
-    font-size: 0.6875rem;
-  }
-
-  .base-rating-breakdown-stars,
-  .base-rating-breakdown-count {
-    min-width: 1.5rem;
-  }
-}
-</style>
