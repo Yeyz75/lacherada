@@ -43,16 +43,13 @@
       @clear="handleClear"
       @remove="handleRemove"
       @progress="handleProgress"
-      :class="fileUploadClasses"
-      :unstyled="true">
+      :class="fileUploadClasses">
       <!-- Empty template slot -->
       <template #empty>
-        <div
-          class="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border bg-surface-secondary/40 p-8 text-center">
+        <div class="flex items-center justify-center flex-col p-6 text-center">
           <slot name="empty">
-            <i
-              class="pi pi-cloud-upload inline-flex h-16 w-16 items-center justify-center rounded-full border-2 border-border bg-surface-primary text-4xl text-text-muted" />
-            <p class="mt-4 mb-0 text-sm text-text-muted">
+            <i class="pi pi-cloud-upload text-4xl text-muted-color" />
+            <p class="mt-4 mb-0 text-sm">
               {{ emptyMessage || t('fileUpload.dragAndDrop') }}
             </p>
           </slot>
@@ -69,160 +66,40 @@
           :upload-callback="uploadCallback"
           :clear-callback="clearCallback"
           :files="files">
-          <div
-            class="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface-secondary/80 px-4 py-4 shadow-sm">
-            <div class="flex flex-wrap items-center gap-3">
-              <BaseButton
+          <div class="flex flex-wrap justify-between items-center gap-4 w-full">
+            <div class="flex gap-2">
+              <Button
                 @click="chooseCallback()"
-                :label="chooseLabel || t('fileUpload.choose')"
-                icon="pi pi-folder-open"
-                :disabled="disabled"
-                variant="primary"
-                size="sm"
-                class="min-w-[8.5rem]" />
-
-              <BaseButton
+                icon="pi pi-images"
+                rounded
+                variant="outlined"
+                severity="secondary"
+                :disabled="disabled" />
+              <Button
                 v-if="showUploadButton"
                 @click="uploadCallback()"
-                :label="uploadLabel || t('fileUpload.upload')"
-                icon="pi pi-upload"
-                :disabled="!files || files.length === 0 || disabled"
-                variant="success"
-                size="sm"
-                class="min-w-[8.5rem]" />
-
-              <BaseButton
+                icon="pi pi-cloud-upload"
+                rounded
+                variant="outlined"
+                severity="success"
+                :disabled="!files || files.length === 0 || disabled" />
+              <Button
                 v-if="showCancelButton"
                 @click="clearCallback()"
-                :label="cancelLabel || t('fileUpload.cancel')"
                 icon="pi pi-times"
-                :disabled="!files || files.length === 0 || disabled"
-                variant="ghost"
-                size="sm"
-                class="min-w-[8.5rem]" />
+                rounded
+                variant="outlined"
+                severity="danger"
+                :disabled="!files || files.length === 0 || disabled" />
             </div>
-
-            <div
-              class="flex flex-wrap items-center gap-2 text-xs text-text-muted">
-              <i class="pi pi-info-circle text-base text-primary/70" />
-              <span>{{ fileSelectionSummary(files) }}</span>
-            </div>
-
-            <div
-              v-if="showProgress && uploadProgress > 0"
-              class="flex w-full items-center gap-3">
-              <ProgressBar
-                :value="uploadProgress"
-                :show-value="true"
-                class="h-2 w-full overflow-hidden rounded-full bg-surface-tertiary text-xs shadow-inner" />
-            </div>
-          </div>
-        </slot>
-      </template>
-
-      <!-- Content template slot -->
-      <template
-        #content="{
-          files,
-          uploadedFiles,
-          removeFileCallback,
-          removeUploadedFileCallback,
-        }"
-        v-if="mode === 'advanced'">
-        <slot
-          name="content"
-          :files="files"
-          :uploaded-files="uploadedFiles"
-          :remove-file-callback="removeFileCallback"
-          :remove-uploaded-file-callback="removeUploadedFileCallback">
-          <div class="flex flex-col gap-6">
-            <!-- Pending files -->
-            <div v-if="files && files.length > 0" class="flex flex-col gap-3">
-              <h5 class="text-sm font-semibold text-text-primary">
-                {{ t('fileUpload.pending') }}
-              </h5>
-              <div class="flex flex-col gap-3">
-                <div
-                  v-for="(file, index) of files"
-                  :key="file.name + file.type + file.size"
-                  class="flex items-center gap-4 rounded-xl border border-border bg-surface-primary/70 p-4 shadow-sm">
-                  <div
-                    class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-surface-secondary">
-                    <img
-                      v-if="isImageFile(file)"
-                      role="presentation"
-                      :alt="file.name"
-                      :src="(file as any).objectURL"
-                      class="h-full w-full object-cover" />
-                    <i v-else class="pi pi-file text-2xl text-text-muted" />
-                  </div>
-                  <div class="flex flex-1 flex-col gap-1 text-sm">
-                    <span class="font-medium text-text-primary">
-                      {{ file.name }}
-                    </span>
-                    <span class="text-text-muted">
-                      {{ formatFileSize(file.size) }}
-                    </span>
-                  </div>
-                  <BaseButton
-                    v-if="!disabled"
-                    icon="pi pi-times"
-                    @click="removeFileCallback(index)"
-                    variant="ghost"
-                    severity="danger"
-                    size="sm"
-                    class="h-9 w-9 rounded-full text-text-muted hover:text-error"
-                    :aria-label="t('fileUpload.removeFile')" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Uploaded files -->
-            <div
-              v-if="uploadedFiles && uploadedFiles.length > 0"
-              class="flex flex-col gap-3">
-              <h5 class="text-sm font-semibold text-text-primary">
-                {{ t('fileUpload.uploaded') }}
-              </h5>
-              <div class="flex flex-col gap-3">
-                <div
-                  v-for="(file, index) of uploadedFiles"
-                  :key="file.name + file.type + file.size"
-                  class="flex items-center gap-4 rounded-xl border border-success/40 bg-success/5 p-4 shadow-sm">
-                  <div
-                    class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-surface-secondary">
-                    <img
-                      v-if="isImageFile(file)"
-                      role="presentation"
-                      :alt="file.name"
-                      :src="(file as any).objectURL"
-                      class="h-full w-full object-cover" />
-                    <i v-else class="pi pi-file text-2xl text-success" />
-                  </div>
-                  <div class="flex flex-1 flex-col gap-1 text-sm">
-                    <span class="font-medium text-text-primary">
-                      {{ file.name }}
-                    </span>
-                    <span class="text-text-muted">
-                      {{ formatFileSize(file.size) }}
-                    </span>
-                    <Badge
-                      :value="t('fileUpload.uploadedBadge') ?? 'Completed'"
-                      severity="success"
-                      class="w-fit" />
-                  </div>
-                  <BaseButton
-                    v-if="!disabled"
-                    icon="pi pi-times"
-                    @click="removeUploadedFileCallback(index)"
-                    variant="ghost"
-                    severity="danger"
-                    size="sm"
-                    class="h-9 w-9 rounded-full text-text-muted hover:text-error"
-                    :aria-label="t('fileUpload.removeFile')" />
-                </div>
-              </div>
-            </div>
+            <ProgressBar
+              :value="totalSizePercent"
+              :show-value="false"
+              class="md:w-80 h-1 w-full md:ml-auto">
+              <span class="whitespace-nowrap text-xs">
+                {{ totalSizeLabel }}
+              </span>
+            </ProgressBar>
           </div>
         </slot>
       </template>
@@ -250,9 +127,8 @@ import { ref, computed, useAttrs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import FileUpload from 'primevue/fileupload'
 import ProgressBar from 'primevue/progressbar'
-import Badge from 'primevue/badge'
+import Button from 'primevue/button'
 import Message from 'primevue/message'
-import BaseButton from './BaseButton.vue'
 import type {
   FileUploadErrorEvent,
   FileUploadRemoveEvent,
@@ -294,7 +170,10 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const attrs = useAttrs()
 const fileUploadRef = ref<any>()
-const uploadProgress = ref(0)
+// Selected files state to support v-model and progress display
+const selected = ref<File[] | File | null>(null)
+const totalBytes = ref(0)
+const currentCount = ref(0)
 const generatedId = `base-file-upload-${Math.random().toString(36).slice(2, 11)}`
 const inputId = computed(() => props.id ?? generatedId)
 
@@ -320,9 +199,7 @@ const helperText = computed(() => props.helperText)
 // CSS Classes
 const wrapperClasses = computed(() => [
   'flex w-full flex-col gap-2',
-  {
-    'opacity-60 pointer-events-none': props.disabled,
-  },
+  { 'opacity-60 pointer-events-none': props.disabled },
   props.class,
   attrs.class,
 ])
@@ -346,35 +223,53 @@ const helperClasses = computed(() => [
   },
 ])
 
+// Keep styling minimal to let PrimeVue theme drive the look
 const fileUploadClasses = computed(() => [
-  'group relative flex w-full flex-col gap-5 rounded-2xl p-1 transition duration-200 focus-within:ring-2 focus-within:ring-primary/20',
-  {
-    'ring-2 ring-error/25 focus-within:ring-error/25': hasError.value,
-    'opacity-75 pointer-events-none': props.disabled,
-  },
+  'w-full',
+  { 'opacity-75 pointer-events-none': props.disabled },
 ])
 
-const fileSelectionSummary = (files?: File[]) => {
-  if (files && files.length > 0) {
-    return t('fileUpload.filesSelected', { count: files.length })
-  }
-  return t('fileUpload.noFilesSelected')
-}
+// Total size progress helpers
+const maxDisplayBytes = computed(() => {
+  if (!props.maxFileSize) return Infinity
+  const perFile = props.maxFileSize
+  const count = Math.max(1, currentCount.value || (props.multiple ? 1 : 1))
+  // If fileLimit is provided, use that as an upper bound for display purposes
+  const limitCount = props.fileLimit ? Math.max(count, props.fileLimit) : count
+  return perFile * limitCount
+})
+
+const totalSizePercent = computed(() => {
+  if (!isFinite(maxDisplayBytes.value) || maxDisplayBytes.value <= 0) return 0
+  return Math.min(
+    100,
+    Math.round((totalBytes.value / maxDisplayBytes.value) * 100),
+  )
+})
+
+const totalSizeLabel = computed(() => {
+  const total = formatFileSize(totalBytes.value)
+  if (!isFinite(maxDisplayBytes.value)) return total
+  return `${total} / ${formatFileSize(maxDisplayBytes.value)}`
+})
 
 // Methods
 const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
   emit('select', event)
-  if (props.customUpload && props.auto) {
-    // Handle custom upload logic here if needed
+  const files = Array.from(event.files || [])
+  currentCount.value = files.length
+  totalBytes.value = files.reduce((sum, f) => sum + (f?.size || 0), 0)
+  if (props.multiple) {
+    selected.value = files
+    emit('update:modelValue', files)
+  } else {
+    selected.value = files[0] || null
+    emit('update:modelValue', files[0] || null)
   }
 }
 
 const handleUpload = (event: any) => {
   emit('upload', event)
-  // Reset progress after upload
-  setTimeout(() => {
-    uploadProgress.value = 0
-  }, 1000)
 }
 
 const handleBeforeUpload = (event: {
@@ -394,19 +289,40 @@ const handleError = (event: FileUploadErrorEvent) => {
 
 const handleClear = () => {
   emit('clear')
+  selected.value = props.multiple ? [] : null
+  totalBytes.value = 0
+  currentCount.value = 0
+  emit('update:modelValue', selected.value as any)
 }
 
 const handleRemove = (event: FileUploadRemoveEvent) => {
   emit('remove', event)
+  const file = event.file as File | undefined
+  if (!file) return
+  if (Array.isArray(selected.value)) {
+    const idx = selected.value.findIndex(
+      (f) =>
+        f.name === file.name && f.size === file.size && f.type === file.type,
+    )
+    if (idx > -1) {
+      selected.value.splice(idx, 1)
+      totalBytes.value = selected.value.reduce(
+        (sum, f) => sum + (f.size || 0),
+        0,
+      )
+      currentCount.value = selected.value.length
+      emit('update:modelValue', [...selected.value])
+    }
+  } else if (selected.value && (selected.value as File).name === file.name) {
+    selected.value = null
+    totalBytes.value = 0
+    currentCount.value = 0
+    emit('update:modelValue', null)
+  }
 }
 
 const handleProgress = (event: { originalEvent: Event; progress: number }) => {
   emit('progress', event)
-  uploadProgress.value = event.progress
-}
-
-const isImageFile = (file: any): boolean => {
-  return file.type && file.type.startsWith('image/')
 }
 
 const formatFileSize = (bytes: number): string => {
