@@ -256,16 +256,29 @@ const totalSizeLabel = computed(() => {
 // Methods
 const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
   emit('select', event)
-  const files = Array.from(event.files || [])
-  currentCount.value = files.length
-  totalBytes.value = files.reduce((sum, f) => sum + (f?.size || 0), 0)
+  const newFiles = Array.from(event.files || [])
   if (props.multiple) {
-    selected.value = files
-    emit('update:modelValue', files)
+    const current = Array.isArray(selected.value) ? selected.value : []
+    // Append and deduplicate by name+size+type to avoid duplicates when reselecting
+    const combined = [...current, ...newFiles]
+    const uniqueMap = new Map<string, File>()
+    for (const f of combined) {
+      uniqueMap.set(`${f.name}-${f.size}-${f.type}`, f)
+    }
+    const result = Array.from(uniqueMap.values())
+    selected.value = result
+    emit('update:modelValue', result)
   } else {
-    selected.value = files[0] || null
-    emit('update:modelValue', files[0] || null)
+    selected.value = newFiles[0] || null
+    emit('update:modelValue', newFiles[0] || null)
   }
+  const arr = Array.isArray(selected.value)
+    ? selected.value
+    : selected.value
+      ? [selected.value as File]
+      : []
+  currentCount.value = arr.length
+  totalBytes.value = arr.reduce((sum, f) => sum + (f?.size || 0), 0)
 }
 
 const handleUpload = (event: any) => {

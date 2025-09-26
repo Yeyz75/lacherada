@@ -522,29 +522,36 @@ const validateAllFields = () => {
 }
 
 // Métodos de manejo de archivos
-const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
-  const files = Array.from(event.files)
-  selectedFiles.value = files
+const handleFileSelect = (_event?: {
+  files: FileList
+  originalEvent: Event
+}) => {
+  // BaseFileUpload emite v-model con la selección agregada; usamos esa fuente
+  const files = Array.isArray(selectedFiles.value)
+    ? selectedFiles.value
+    : selectedFiles.value
+      ? [selectedFiles.value as File]
+      : []
 
-  // Crear previews
+  // Limpiar URLs previas para evitar fugas de memoria
+  imagePreviews.value.forEach((p) => URL.revokeObjectURL(p.url))
+
+  // Crear previews a partir del v-model actual
   imagePreviews.value = files.map((file) => ({
     file,
     url: URL.createObjectURL(file),
   }))
 }
 
-const handleFileRemove = (event: FileUploadRemoveEvent) => {
-  // El evento contiene información sobre el archivo removido
-  // Necesitamos encontrar el archivo en selectedFiles que corresponde
-  const fileIndex = selectedFiles.value.findIndex(
-    (file) => file.name === event.file?.name && file.size === event.file?.size,
-  )
-
-  if (fileIndex > -1) {
-    URL.revokeObjectURL(imagePreviews.value[fileIndex].url)
-    selectedFiles.value.splice(fileIndex, 1)
-    imagePreviews.value.splice(fileIndex, 1)
-  }
+const handleFileRemove = (_event: FileUploadRemoveEvent) => {
+  // BaseFileUpload ya actualizó el v-model; sincronizamos previews
+  // Limpiar todas las URLs actuales
+  imagePreviews.value.forEach((p) => URL.revokeObjectURL(p.url))
+  const files = Array.isArray(selectedFiles.value) ? selectedFiles.value : []
+  imagePreviews.value = files.map((file) => ({
+    file,
+    url: URL.createObjectURL(file),
+  }))
 }
 
 const removeImagePreview = (index: number) => {
