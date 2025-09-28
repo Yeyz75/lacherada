@@ -269,7 +269,6 @@
       size="medium">
       <BaseFileUpload
         v-model="avatarFile"
-        :label="t('profile.changePhoto')"
         :accept="'image/*'"
         :max-file-size="2000000"
         :multiple="false"

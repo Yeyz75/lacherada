@@ -68,29 +68,29 @@
           :files="files">
           <div class="flex flex-wrap justify-between items-center gap-4 w-full">
             <div class="flex gap-2">
-              <Button
+              <BaseButton
                 @click="chooseCallback()"
-                icon="pi pi-images"
-                rounded
-                variant="outlined"
-                severity="secondary"
-                :disabled="disabled" />
-              <Button
+                icon="mdi:image-plus"
+                variant="ghost"
+                size="sm"
+                :disabled="disabled"
+                aria-label="Seleccionar archivos" />
+              <BaseButton
                 v-if="showUploadButton"
                 @click="uploadCallback()"
-                icon="pi pi-cloud-upload"
-                rounded
-                variant="outlined"
-                severity="success"
-                :disabled="!files || files.length === 0 || disabled" />
-              <Button
+                icon="mdi:cloud-upload-outline"
+                variant="success"
+                size="sm"
+                :disabled="!files || files.length === 0 || disabled"
+                aria-label="Subir archivos" />
+              <BaseButton
                 v-if="showCancelButton"
                 @click="clearCallback()"
-                icon="pi pi-times"
-                rounded
-                variant="outlined"
-                severity="danger"
-                :disabled="!files || files.length === 0 || disabled" />
+                icon="mdi:close-circle-outline"
+                variant="danger"
+                size="sm"
+                :disabled="!files || files.length === 0 || disabled"
+                aria-label="Cancelar selección" />
             </div>
             <ProgressBar
               :value="totalSizePercent"
@@ -127,8 +127,8 @@ import { ref, computed, useAttrs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import FileUpload from 'primevue/fileupload'
 import ProgressBar from 'primevue/progressbar'
-import Button from 'primevue/button'
 import Message from 'primevue/message'
+import BaseButton from './BaseButton.vue'
 import type {
   FileUploadErrorEvent,
   FileUploadRemoveEvent,
