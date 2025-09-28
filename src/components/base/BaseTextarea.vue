@@ -164,7 +164,7 @@ const countClasses = computed(() => [
 ])
 
 const textareaBaseClasses = computed(() => [
-  'w-full rounded-2xl border border-border bg-surface-primary text-text-primary placeholder:text-text-muted transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary/30',
+  'w-full rounded-xl border border-border bg-surface-primary text-text-primary placeholder:text-text-muted transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary/30 px-4 py-3',
   {
     'border-error text-error focus:ring-error/30': hasError.value,
     'border-success focus:ring-success/25': hasSuccess.value,
