@@ -85,21 +85,19 @@
               @click="toggleUserDropdown">
               <div
                 class="flex items-center gap-xs rounded-lg border border-border bg-surface-secondary px-sm py-xs transition hover:bg-surface-tertiary">
-                <Icon
-                  :icon="
-                    needsEmailVerification
-                      ? 'mdi:alert-circle'
-                      : 'mdi:account-circle'
-                  "
-                  :class="
-                    needsEmailVerification
-                      ? 'text-warning text-xl'
-                      : 'text-primary-500 text-xl'
-                  " />
+                <BaseAvatar
+                  :image="user?.photoURL || undefined"
+                  :size="'small'"
+                  :verified="isEmailVerified"
+                  class="flex-shrink-0" />
                 <span
                   class="max-w-[160px] truncate text-sm font-medium text-text-primary">
                   {{ user?.displayName || user?.email }}
                 </span>
+                <Icon
+                  v-if="needsEmailVerification"
+                  icon="mdi:alert-circle"
+                  class="text-warning text-sm" />
                 <Icon
                   icon="mdi:chevron-down"
                   class="text-xs text-text-muted transition-transform duration-200"
@@ -208,9 +206,11 @@
             <div
               class="flex flex-col gap-xs rounded-xl border border-border bg-surface-secondary px-sm py-sm">
               <div class="flex items-center gap-xs">
-                <Icon
-                  icon="mdi:account-circle"
-                  class="text-2xl text-primary-500" />
+                <BaseAvatar
+                  :image="user?.photoURL || undefined"
+                  :size="'normal'"
+                  :verified="isEmailVerified"
+                  class="flex-shrink-0" />
                 <span class="text-sm font-semibold text-text-primary">
                   {{ user?.displayName || user?.email }}
                 </span>
@@ -249,12 +249,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useTheme } from '../../composables/useTheme'
 import { useAuth } from '../../composables/useAuth'
+import BaseAvatar from '../base/BaseAvatar.vue'
 import ProgressSpinner from 'primevue/progressspinner'
 
 const { t, locale } = useI18n()
@@ -263,6 +264,7 @@ const {
   initialized,
   user,
   isAuthenticated,
+  isEmailVerified,
   needsEmailVerification,
   signOut,
   loading,
@@ -271,6 +273,13 @@ const router = useRouter()
 const route = useRoute()
 
 const authReady = computed(() => initialized.value)
+
+// Debug: Log user photoURL changes
+watchEffect(() => {
+  if (user.value?.photoURL) {
+    console.log('Navbar user photoURL:', user.value.photoURL)
+  }
+})
 
 const isMobileMenuOpen = ref(false)
 const isUserDropdownOpen = ref(false)

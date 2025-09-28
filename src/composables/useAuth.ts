@@ -43,7 +43,7 @@ export function useAuth() {
 
     initializePromise = (async () => {
       try {
-        const currentUser = await SupabaseAuthService.getCurrentUser()
+        const currentUser = await SupabaseAuthService.getCurrentUserProfile()
         setAuthState(currentUser)
       } catch (err) {
         logger.error(
@@ -231,12 +231,28 @@ export function useAuth() {
     }
   }
 
+  const userPhotoURL = computed(() => user.value?.photoURL || null)
+
+  const refreshUserProfile = async (): Promise<void> => {
+    try {
+      const currentUser = await SupabaseAuthService.getCurrentUserProfile()
+      setAuthState(currentUser)
+    } catch (err) {
+      logger.error(
+        'Error refreshing user profile',
+        { component: 'useAuth', method: 'refreshUserProfile' },
+        err as Error,
+      )
+    }
+  }
+
   const clearError = () => {
     error.value = null
   }
 
   return {
     user: computed(() => user.value),
+    userPhotoURL,
     isAuthenticated,
     isEmailVerified,
     needsEmailVerification,
@@ -253,6 +269,7 @@ export function useAuth() {
     resetPassword,
     resendEmailVerification,
 
+    refreshUserProfile,
     clearError,
     cleanup,
     initialize,

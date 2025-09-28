@@ -25,11 +25,18 @@ const { initTheme } = useTheme()
 const { initialized, initialize } = useAuth()
 const authReady = computed(() => initialized.value)
 
-onMounted(() => {
+onMounted(async () => {
+  console.log('App mounted, initializing...')
   initTheme()
-  initialize().catch((err) => {
+
+  try {
+    await initialize()
+    console.log('Auth initialization completed successfully')
+  } catch (err) {
     console.error('Auth initialization failed in App', err)
-  })
+    // Force set initialized to true to avoid infinite loading
+    // initialized.value = true // This won't work, need to handle in useAuth
+  }
 })
 </script>
 

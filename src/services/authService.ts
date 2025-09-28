@@ -65,10 +65,10 @@ export class SupabaseAuthService {
       null
 
     const photoURL =
-      supabaseUser.user_metadata?.avatar_url ||
+      supabaseUser.user_metadata?.photo_url ||
       supabaseUser.user_metadata?.picture ||
       (supabaseUser.identities && supabaseUser.identities.length > 0
-        ? supabaseUser.identities[0].identity_data?.avatar_url ||
+        ? supabaseUser.identities[0].identity_data?.photo_url ||
           supabaseUser.identities[0].identity_data?.picture
         : null) ||
       null
@@ -150,7 +150,7 @@ export class SupabaseAuthService {
         uid: data.user.id,
         email: data.user.email || null,
         displayName: displayName || data.user.user_metadata?.full_name || null,
-        photoURL: data.user.user_metadata?.avatar_url || null,
+        photoURL: data.user.user_metadata?.photo_url || null,
         emailVerified: false,
         createdAt: new Date(data.user.created_at),
         lastLoginAt: new Date(),
@@ -334,7 +334,7 @@ export class SupabaseAuthService {
         displayName:
           user.user_metadata?.full_name || user.user_metadata?.name || null,
         photoURL:
-          user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+          user.user_metadata?.photo_url || user.user_metadata?.picture || null,
         emailVerified,
         createdAt: new Date(user.created_at),
         lastLoginAt: new Date(),
@@ -377,6 +377,12 @@ export class SupabaseAuthService {
               false
           }
 
+          // Usar photo_url de metadatos por ahora (optimización temporal)
+          const photoURL =
+            session.user.user_metadata?.photo_url ||
+            session.user.user_metadata?.picture ||
+            null
+
           const userData: UserData = {
             uid: session.user.id,
             email: session.user.email || null,
@@ -384,10 +390,7 @@ export class SupabaseAuthService {
               session.user.user_metadata?.full_name ||
               session.user.user_metadata?.name ||
               null,
-            photoURL:
-              session.user.user_metadata?.avatar_url ||
-              session.user.user_metadata?.picture ||
-              null,
+            photoURL,
             emailVerified,
             createdAt: new Date(session.user.created_at),
             lastLoginAt: new Date(),
@@ -503,7 +506,7 @@ export class SupabaseAuthService {
         email: user.email || null,
         displayName:
           profile.display_name || user.user_metadata?.full_name || null,
-        photoURL: profile.photo_url || user.user_metadata?.avatar_url || null,
+        photoURL: profile.photo_url || user.user_metadata?.photo_url || null,
         emailVerified: user.email_confirmed_at != null,
         createdAt: new Date(user.created_at),
         lastLoginAt: new Date(profile.last_login_at),

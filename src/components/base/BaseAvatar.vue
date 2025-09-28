@@ -1,16 +1,26 @@
 <template>
-  <Avatar
-    :image="image"
-    :icon="icon || defaultIcon"
-    :label="label"
-    :size="size"
-    :shape="shape"
-    :unstyled="true"
-    class="base-avatar"
-    :class="avatarClasses"
-    v-bind="avatarBindings">
-    <!-- Slot para contenido custom -->
-    <slot />
+  <div class="relative inline-flex">
+    <!-- Custom avatar implementation -->
+    <div class="base-avatar" :class="avatarClasses">
+      <!-- Image if available -->
+      <img
+        v-if="image"
+        :src="image"
+        :alt="label || 'Avatar'"
+        class="h-full w-full object-cover"
+        @error="handleImageError" />
+      <!-- Icon fallback -->
+      <Icon
+        v-else-if="icon || defaultIcon"
+        :icon="icon || defaultIcon"
+        class="text-current" />
+      <!-- Label fallback -->
+      <span v-else-if="label" class="text-current font-medium">
+        {{ label.charAt(0).toUpperCase() }}
+      </span>
+      <!-- Slot para contenido custom -->
+      <slot />
+    </div>
 
     <!-- Badge de estado online/offline -->
     <Badge
@@ -26,16 +36,16 @@
       value=""
       severity="info"
       :unstyled="true"
-      class="base-avatar-verified">
+      class="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-surface-primary bg-success-500 text-white shadow-sm">
       <Icon icon="mdi:check-decagram" class="text-xs" />
     </Badge>
-  </Avatar>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { Icon } from '@iconify/vue'
-import Avatar from 'primevue/avatar'
+// import Avatar from 'primevue/avatar' // Not using PrimeVue Avatar anymore
 import Badge from 'primevue/badge'
 import type { BaseComponentProps } from '../../types'
 
@@ -64,7 +74,18 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const attrs = useAttrs()
+// Debug: Log image prop changes
+watchEffect(() => {
+  if (props.image) {
+    console.log('BaseAvatar image prop:', props.image)
+  }
+})
+
+const handleImageError = (event: Event) => {
+  console.error('Image failed to load:', props.image, event)
+}
+
+// attrs removed - no longer needed with custom implementation
 
 const defaultIcon = computed(() => 'mdi:account')
 
@@ -118,10 +139,7 @@ const statusClasses = computed(() => [
   },
 ])
 
-const avatarBindings = computed(() => ({
-  ...attrs,
-  class: undefined,
-}))
+// avatarBindings removed - no longer needed with custom implementation
 </script>
 
 <script lang="ts">

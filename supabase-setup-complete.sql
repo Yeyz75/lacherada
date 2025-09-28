@@ -154,11 +154,11 @@ BEGIN
         -- Obtener avatar de forma segura
         BEGIN
             user_avatar := COALESCE(
-                NEW.user_metadata->>'avatar_url',
+                NEW.user_metadata->>'photo_url',
                 NEW.user_metadata->>'picture',
-                NEW.app_metadata->>'avatar_url',
+                NEW.app_metadata->>'photo_url',
                 NEW.app_metadata->>'picture',
-                (SELECT identity_data->>'avatar_url' FROM auth.identities WHERE user_id = NEW.id LIMIT 1),
+                (SELECT identity_data->>'photo_url' FROM auth.identities WHERE user_id = NEW.id LIMIT 1),
                 (SELECT identity_data->>'picture' FROM auth.identities WHERE user_id = NEW.id LIMIT 1)
             );
         EXCEPTION

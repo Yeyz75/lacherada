@@ -315,7 +315,8 @@ import BaseFileUpload from '../../components/base/BaseFileUpload.vue'
 import AvatarService from '../../services/avatarService'
 
 const { t } = useI18n()
-const { user, isEmailVerified, resendEmailVerification } = useAuth()
+const { user, isEmailVerified, resendEmailVerification, refreshUserProfile } =
+  useAuth()
 
 // Profile state
 const savingProfile = ref(false)
@@ -331,12 +332,12 @@ const profileForm = ref({
   addressVerified: false,
 })
 
-// Mock user profile data
+// User profile data from auth
 const userProfile = computed(() => ({
   avatarUrl: user.value?.photoURL || '',
   displayName: user.value?.displayName || t('profile.anonymousUser'),
   email: user.value?.email || '',
-  verified: true,
+  verified: isEmailVerified.value,
   stats: {
     exchanges: 12,
     reputation: '4.8 ★',
@@ -421,11 +422,9 @@ const uploadAvatar = async () => {
 
     if (result.success) {
       handleAvatarUpload()
-      // Update user photo URL in auth state if needed
-      if (user.value) {
-        // The avatar will be updated automatically when the component re-renders
-        // through the computed property that gets data from user
-      }
+      // Refresh user profile to get updated photo_url
+      await refreshUserProfile()
+      avatarFile.value = null
     }
   } catch (error) {
     handleAvatarError(error)
