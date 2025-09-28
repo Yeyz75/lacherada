@@ -445,4 +445,78 @@ export class SupabaseAuthService {
 
     return new Error(message)
   }
+
+  /**
+   * Obtiene el perfil completo del usuario actual desde la base de datos
+   */
+  static async getCurrentUserProfile(): Promise<UserData | null> {
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser()
+
+      if (authError) {
+        logger.error(
+          'Error obteniendo usuario autenticado',
+          { component: 'auth', method: 'getCurrentUserProfile' },
+          authError,
+        )
+        return null
+      }
+
+      if (!user) {
+        logger.warn('No hay usuario autenticado', {
+          component: 'auth',
+          method: 'getCurrentUserProfile',
+        })
+        return null
+      }
+
+      // Obtener datos del perfil desde user_profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) {
+        logger.error(
+          'Error obteniendo perfil de usuario',
+          { component: 'auth', method: 'getCurrentUserProfile' },
+          profileError,
+        )
+        return null
+      }
+
+      if (!profile) {
+        logger.warn('Perfil de usuario no encontrado', {
+          component: 'auth',
+          method: 'getCurrentUserProfile',
+          userId: user.id,
+        })
+        return null
+      }
+
+      return {
+        uid: user.id,
+        email: user.email || null,
+        displayName:
+          profile.display_name || user.user_metadata?.full_name || null,
+        photoURL: profile.photo_url || user.user_metadata?.avatar_url || null,
+        emailVerified: user.email_confirmed_at != null,
+        createdAt: new Date(user.created_at),
+        lastLoginAt: new Date(profile.last_login_at),
+        hasPassword: profile.has_password,
+        loginMethod: profile.login_method as 'email' | 'google' | 'mixed',
+      }
+    } catch (error) {
+      logger.error(
+        'Error inesperado obteniendo perfil de usuario',
+        { component: 'auth', method: 'getCurrentUserProfile' },
+        error as Error,
+      )
+      return null
+    }
+  }
 }

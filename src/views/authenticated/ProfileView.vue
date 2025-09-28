@@ -312,6 +312,7 @@ import BaseRating from '../../components/base/BaseRating.vue'
 import BaseBadge from '../../components/base/BaseBadge.vue'
 import BaseModal from '../../components/base/BaseModal.vue'
 import BaseFileUpload from '../../components/base/BaseFileUpload.vue'
+import AvatarService from '../../services/avatarService'
 
 const { t } = useI18n()
 const { user, isEmailVerified, resendEmailVerification } = useAuth()
@@ -410,14 +411,27 @@ const handleAvatarError = (error: any) => {
   // Show error message
 }
 
-const uploadAvatar = () => {
+const uploadAvatar = async () => {
   if (!avatarFile.value) return
 
   uploadingAvatar.value = true
-  // Simulate upload process
-  setTimeout(() => {
-    handleAvatarUpload()
-  }, 1500)
+
+  try {
+    const result = await AvatarService.uploadAvatar(avatarFile.value)
+
+    if (result.success) {
+      handleAvatarUpload()
+      // Update user photo URL in auth state if needed
+      if (user.value) {
+        // The avatar will be updated automatically when the component re-renders
+        // through the computed property that gets data from user
+      }
+    }
+  } catch (error) {
+    handleAvatarError(error)
+  } finally {
+    uploadingAvatar.value = false
+  }
 }
 
 const handleResendVerification = async () => {

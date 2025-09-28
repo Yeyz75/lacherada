@@ -354,7 +354,7 @@ CREATE POLICY "Item images public read"
         )
     );
 
-DROP POLICY IF EXISTS "Item images owner manage" ON public.item_images;
+DROP POLICY IF EXISTS "Item images owner insert" ON public.item_images;
 CREATE POLICY "Item images owner insert"
     ON public.item_images
     FOR INSERT
@@ -646,6 +646,67 @@ CREATE POLICY "Item images service role manage"
     FOR ALL TO service_role
     USING (bucket_id = 'item-images')
     WITH CHECK (bucket_id = 'item-images');
+
+-- =====================================================
+-- 11. STORAGE CONFIGURATION FOR USER AVATARS
+-- =====================================================
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'user-avatars',
+    'user-avatars',
+    TRUE,
+    5242880,
+    ARRAY['image/jpeg', 'image/png', 'image/webp']
+)
+ON CONFLICT (id) DO UPDATE
+SET public = EXCLUDED.public,
+    file_size_limit = EXCLUDED.file_size_limit,
+    allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+DROP POLICY IF EXISTS "User avatars public access" ON storage.objects;
+CREATE POLICY "User avatars public access"
+    ON storage.objects
+    FOR SELECT
+    USING (bucket_id = 'user-avatars');
+
+DROP POLICY IF EXISTS "User avatars owner upload" ON storage.objects;
+CREATE POLICY "User avatars owner upload"
+    ON storage.objects
+    FOR INSERT TO authenticated
+    WITH CHECK (
+        bucket_id = 'user-avatars'
+        AND auth.uid()::text = split_part(name, '/', 1)
+    );
+
+DROP POLICY IF EXISTS "User avatars owner update" ON storage.objects;
+CREATE POLICY "User avatars owner update"
+    ON storage.objects
+    FOR UPDATE TO authenticated
+    USING (
+        bucket_id = 'user-avatars'
+        AND auth.uid()::text = split_part(name, '/', 1)
+    )
+    WITH CHECK (
+        bucket_id = 'user-avatars'
+        AND auth.uid()::text = split_part(name, '/', 1)
+    );
+
+DROP POLICY IF EXISTS "User avatars owner delete" ON storage.objects;
+CREATE POLICY "User avatars owner delete"
+    ON storage.objects
+    FOR DELETE TO authenticated
+    USING (
+        bucket_id = 'user-avatars'
+        AND auth.uid()::text = split_part(name, '/', 1)
+    );
+
+DROP POLICY IF EXISTS "User avatars service role manage" ON storage.objects;
+CREATE POLICY "User avatars service role manage"
+    ON storage.objects
+    FOR ALL TO service_role
+    USING (bucket_id = 'user-avatars')
+    WITH CHECK (bucket_id = 'user-avatars');
 
 -- =====================================================
 -- 11. FINAL VERIFICATION QUERIES (SAFE TO RUN MULTIPLE TIMES)
