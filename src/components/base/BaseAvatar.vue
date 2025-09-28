@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 // import Avatar from 'primevue/avatar' // Not using PrimeVue Avatar anymore
 import Badge from 'primevue/badge'
@@ -74,15 +74,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-// Debug: Log image prop changes
-watchEffect(() => {
-  if (props.image) {
-    console.log('BaseAvatar image prop:', props.image)
-  }
-})
-
-const handleImageError = (event: Event) => {
-  console.error('Image failed to load:', props.image, event)
+const handleImageError = () => {
+  console.warn('Avatar image failed to load:', props.image)
 }
 
 // attrs removed - no longer needed with custom implementation

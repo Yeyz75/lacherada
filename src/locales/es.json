@@ -89,6 +89,7 @@
     "cancel": "Cancelar",
     "accept": "Aceptar",
     "close": "Cerrar",
+    "save": "Guardar",
     "lend": "Prestar",
     "items": "elementos",
     "explore": "Explorar",
@@ -360,6 +361,13 @@
   "profile": {
     "anonymousUser": "Usuario Anónimo",
     "changePhoto": "Cambiar Foto",
+    "currentPhoto": "Foto Actual",
+    "newPhoto": "Nueva Foto",
+    "preview": "Vista Previa",
+    "hasPhoto": "Tienes una foto de perfil",
+    "noPhoto": "No tienes foto de perfil",
+    "uploadNew": "Subir Nueva Foto",
+    "removePhoto": "Eliminar Foto",
     "saveChanges": "Guardar Cambios",
     "stats": {
       "exchanges": "Intercambios",

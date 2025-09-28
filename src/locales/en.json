@@ -86,6 +86,7 @@
     "cancel": "Cancel",
     "accept": "Accept",
     "close": "Close",
+    "save": "Save",
     "lend": "Lend",
     "items": "items",
     "explore": "Explore",
@@ -333,6 +334,64 @@
       "tools": "Tools",
       "books": "Books",
       "sports": "Sports"
+    }
+  },
+  "profile": {
+    "anonymousUser": "Anonymous User",
+    "changePhoto": "Change Photo",
+    "currentPhoto": "Current Photo",
+    "newPhoto": "New Photo",
+    "preview": "Preview",
+    "hasPhoto": "You have a profile photo",
+    "noPhoto": "You don't have a profile photo",
+    "uploadNew": "Upload New Photo",
+    "removePhoto": "Remove Photo",
+    "saveChanges": "Save Changes",
+    "stats": {
+      "exchanges": "Exchanges",
+      "reputation": "Reputation",
+      "memberSince": "Member since"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "bio": "Biography",
+      "bioPlaceholder": "Tell us a bit about yourself..."
+    },
+    "verification": {
+      "title": "Verification",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "verify": "Verify",
+      "resendEmail": "Resend Email"
+    },
+    "reputation": {
+      "title": "Reputation",
+      "description": "Based on reviews from other users in past exchanges",
+      "reviews": "Reviews",
+      "onTime": "On time",
+      "positive": "Positive"
+    },
+    "badges": {
+      "title": "Badges",
+      "names": {
+        "firstExchange": "First Exchange",
+        "trustedMember": "Trusted Member",
+        "helpfulNeighbor": "Helpful Neighbor",
+        "communityLeader": "Community Leader"
+      },
+      "descriptions": {
+        "firstExchange": "Completed your first exchange",
+        "trustedMember": "More than 10 completed exchanges",
+        "helpfulNeighbor": "Received 20 positive reviews",
+        "communityLeader": "Organized 5 community events"
+      }
     }
   },
   "fileUpload": {

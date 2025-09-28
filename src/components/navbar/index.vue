@@ -249,7 +249,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
@@ -273,13 +273,6 @@ const router = useRouter()
 const route = useRoute()
 
 const authReady = computed(() => initialized.value)
-
-// Debug: Log user photoURL changes
-watchEffect(() => {
-  if (user.value?.photoURL) {
-    console.log('Navbar user photoURL:', user.value.photoURL)
-  }
-})
 
 const isMobileMenuOpen = ref(false)
 const isUserDropdownOpen = ref(false)

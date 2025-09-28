@@ -267,33 +267,71 @@
       :dismissable-mask="true"
       position="center"
       size="medium">
-      <BaseFileUpload
-        v-model="avatarFile"
-        :accept="'image/*'"
-        :max-file-size="2000000"
-        :multiple="false"
-        :auto="false"
-        :mode="'advanced'"
-        :show-upload-button="true"
-        :show-cancel-button="true"
-        @upload="handleAvatarUpload"
-        @select="handleAvatarSelect"
-        @error="handleAvatarError" />
+      <div class="avatar-upload-content">
+        <!-- Current Avatar Preview -->
+        <div class="current-avatar-section">
+          <h4 class="section-title">{{ t('profile.currentPhoto') }}</h4>
+          <div class="current-avatar-preview">
+            <BaseAvatar
+              :image="userProfile.avatarUrl"
+              :size="'large'"
+              :verified="userProfile.verified"
+              class="preview-avatar" />
+            <p class="avatar-status">
+              {{
+                userProfile.avatarUrl
+                  ? t('profile.hasPhoto')
+                  : t('profile.noPhoto')
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- New Avatar Upload -->
+        <div class="new-avatar-section">
+          <h4 class="section-title">{{ t('profile.newPhoto') }}</h4>
+          <BaseFileUpload
+            v-model="avatarFile"
+            :accept="'image/*'"
+            :max-file-size="2000000"
+            :multiple="false"
+            :auto="false"
+            :mode="'advanced'"
+            :show-upload-button="false"
+            :show-cancel-button="false"
+            @select="handleAvatarSelect"
+            @error="handleAvatarError" />
+        </div>
+
+        <!-- Preview of new image if selected -->
+        <div v-if="avatarPreview" class="new-avatar-preview">
+          <h4 class="section-title">{{ t('profile.preview') }}</h4>
+          <img :src="avatarPreview" alt="Preview" class="preview-image" />
+        </div>
+      </div>
 
       <div class="avatar-upload-actions">
         <BaseButton
-          @click="uploadAvatar"
-          :disabled="!avatarFile"
-          :loading="uploadingAvatar"
-          variant="primary">
-          {{ t('common.accept') }}
+          v-if="userProfile.avatarUrl && !avatarFile"
+          @click="removeAvatar"
+          :loading="removingAvatar"
+          variant="danger"
+          size="small">
+          {{ t('profile.removePhoto') }}
         </BaseButton>
-        <BaseButton
-          @click="showAvatarUpload = false"
-          variant="secondary"
-          class="ml-2">
-          {{ t('common.cancel') }}
-        </BaseButton>
+
+        <div class="main-actions">
+          <BaseButton @click="showAvatarUpload = false" variant="secondary">
+            {{ t('common.cancel') }}
+          </BaseButton>
+          <BaseButton
+            @click="uploadAvatar"
+            :disabled="!avatarFile"
+            :loading="uploadingAvatar"
+            variant="primary">
+            {{ avatarFile ? t('profile.uploadNew') : t('common.accept') }}
+          </BaseButton>
+        </div>
       </div>
     </BaseModal>
   </div>
@@ -322,7 +360,9 @@ const { user, isEmailVerified, resendEmailVerification, refreshUserProfile } =
 const savingProfile = ref(false)
 const showAvatarUpload = ref(false)
 const avatarFile = ref<File | null>(null)
+const avatarPreview = ref<string | null>(null)
 const uploadingAvatar = ref(false)
+const removingAvatar = ref(false)
 const resendingEmail = ref(false)
 const profileForm = ref({
   firstName: '',
@@ -389,13 +429,19 @@ const saveProfile = () => {
   }, 1000)
 }
 
-const openAvatarUpload = () => {
-  showAvatarUpload.value = true
-}
+// openAvatarUpload moved below with enhanced functionality
 
 const handleAvatarSelect = (event: { files: FileList }) => {
   if (event.files && event.files.length > 0) {
     avatarFile.value = event.files[0]
+
+    // Create preview URL
+    const file = event.files[0]
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      avatarPreview.value = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
   }
 }
 
@@ -403,6 +449,8 @@ const handleAvatarUpload = () => {
   // Handle successful upload
   uploadingAvatar.value = false
   showAvatarUpload.value = false
+  avatarFile.value = null
+  avatarPreview.value = null
   // Show success message
 }
 
@@ -424,13 +472,35 @@ const uploadAvatar = async () => {
       handleAvatarUpload()
       // Refresh user profile to get updated photo_url
       await refreshUserProfile()
-      avatarFile.value = null
     }
   } catch (error) {
     handleAvatarError(error)
   } finally {
     uploadingAvatar.value = false
   }
+}
+
+const removeAvatar = async () => {
+  removingAvatar.value = true
+
+  try {
+    await AvatarService.deleteAvatar()
+    // Refresh user profile to remove photo_url
+    await refreshUserProfile()
+    showAvatarUpload.value = false
+  } catch (error) {
+    console.error('Error removing avatar:', error)
+    // Show error message
+  } finally {
+    removingAvatar.value = false
+  }
+}
+
+const openAvatarUpload = () => {
+  // Reset state when opening modal
+  avatarFile.value = null
+  avatarPreview.value = null
+  showAvatarUpload.value = true
 }
 
 const handleResendVerification = async () => {
@@ -715,15 +785,78 @@ onMounted(() => {
 }
 
 /* Avatar Upload Modal */
-.avatar-upload-modal {
+.avatar-upload-content {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  padding: var(--space-md);
+}
+
+.section-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.current-avatar-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.current-avatar-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.preview-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-status {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.new-avatar-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.new-avatar-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.preview-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  align-self: center;
 }
 
 .avatar-upload-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.main-actions {
+  display: flex;
   gap: var(--space-sm);
 }
 
@@ -769,11 +902,30 @@ onMounted(() => {
 
   .avatar-upload-actions {
     flex-direction: column;
+    gap: var(--space-md);
   }
 
   .avatar-upload-actions .ml-2 {
     margin-left: 0;
     margin-top: var(--space-sm);
+  }
+
+  .main-actions {
+    width: 100%;
+  }
+
+  .main-actions .btn {
+    flex: 1;
+  }
+
+  .current-avatar-preview {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .preview-image {
+    width: 100px;
+    height: 100px;
   }
 }
 </style>
