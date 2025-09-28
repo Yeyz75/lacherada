@@ -860,6 +860,59 @@ onMounted(() => {
   gap: var(--space-sm);
 }
 
+/* Custom Single File Upload */
+.single-file-upload {
+  width: 100%;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.upload-area {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  background: var(--color-background-secondary);
+}
+
+.upload-area:hover {
+  border-color: var(--color-primary);
+  background: var(--color-background-tertiary);
+}
+
+.upload-area:active {
+  transform: scale(0.98);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.upload-text {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.upload-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.file-requirements {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .profile-content-grid {

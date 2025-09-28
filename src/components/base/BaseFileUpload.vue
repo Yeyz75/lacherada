@@ -257,6 +257,7 @@ const totalSizeLabel = computed(() => {
 const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
   emit('select', event)
   const newFiles = Array.from(event.files || [])
+
   if (props.multiple) {
     const current = Array.isArray(selected.value) ? selected.value : []
     // Append and deduplicate by name+size+type to avoid duplicates when reselecting
@@ -269,9 +270,25 @@ const handleFileSelect = (event: { files: FileList; originalEvent: Event }) => {
     selected.value = result
     emit('update:modelValue', result)
   } else {
+    // Para single file, siempre reemplazar con el nuevo archivo
+    // Limpiar archivos anteriores del componente PrimeVue
+    if (
+      fileUploadRef.value &&
+      fileUploadRef.value.files &&
+      fileUploadRef.value.files.length > 0
+    ) {
+      fileUploadRef.value.clear()
+    }
+
     selected.value = newFiles[0] || null
     emit('update:modelValue', newFiles[0] || null)
+
+    // Forzar que PrimeVue solo muestre un archivo
+    if (fileUploadRef.value && newFiles[0]) {
+      fileUploadRef.value.files = [newFiles[0]]
+    }
   }
+
   const arr = Array.isArray(selected.value)
     ? selected.value
     : selected.value

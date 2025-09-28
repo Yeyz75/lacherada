@@ -347,6 +347,9 @@
     "uploadNew": "Upload New Photo",
     "removePhoto": "Remove Photo",
     "saveChanges": "Save Changes",
+    "clickToUpload": "Click to select file",
+    "dragDropHint": "or drag and drop here",
+    "fileRequirements": "Images only, max 2MB",
     "stats": {
       "exchanges": "Exchanges",
       "reputation": "Reputation",

@@ -369,6 +369,9 @@
     "uploadNew": "Subir Nueva Foto",
     "removePhoto": "Eliminar Foto",
     "saveChanges": "Guardar Cambios",
+    "clickToUpload": "Haz clic para seleccionar archivo",
+    "dragDropHint": "o arrastra y suelta aquí",
+    "fileRequirements": "Solo imágenes, máximo 2MB",
     "stats": {
       "exchanges": "Intercambios",
       "reputation": "Reputación",
