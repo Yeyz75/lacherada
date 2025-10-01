@@ -81,7 +81,7 @@ export class ItemService {
         .from(this.TABLE_ITEMS)
         .select(
           includeRelations
-            ? '*, category:categories(*), images:item_images(*)'
+            ? '*, category:categories(*), images:item_images(*), userProfile:user_profiles!userId(displayName, avatarUrl)'
             : '*',
         )
         .eq('id', id)
@@ -121,7 +121,7 @@ export class ItemService {
         .from(this.TABLE_ITEMS)
         .select(
           includeRelations
-            ? '*, category:categories(*), images:item_images(*)'
+            ? '*, category:categories(*), images:item_images(*), userProfile:user_profiles!userId(displayName, avatarUrl)'
             : '*',
         )
         .eq('slug', slug)
@@ -230,9 +230,12 @@ export class ItemService {
 
       let query = supabase
         .from(this.TABLE_ITEMS)
-        .select('*, category:categories(*), images:item_images(*)', {
-          count: 'exact',
-        })
+        .select(
+          '*, category:categories(*), images:item_images(*), userProfile:user_profiles!userId(displayName, avatarUrl)',
+          {
+            count: 'exact',
+          },
+        )
 
       // Aplicar filtros
       if (filters.onlyPublished !== false)

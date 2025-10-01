@@ -229,7 +229,7 @@
                     class="text-2xl text-primary-600" />
                   <span
                     class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {{ item.userId }}
+                    {{ item.userProfile?.displayName || t('common.anonymous') }}
                   </span>
                 </div>
                 <BaseButton

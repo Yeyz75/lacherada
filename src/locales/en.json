@@ -87,12 +87,22 @@
     "accept": "Accept",
     "close": "Close",
     "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "retry": "Retry",
+    "next": "Next",
+    "previous": "Previous",
     "lend": "Lend",
     "items": "items",
     "explore": "Explore",
+    "anonymous": "Anonymous",
     "changeLanguage": "Change language",
     "lightMode": "Light mode",
-    "darkMode": "Dark mode"
+    "darkMode": "Dark mode",
+    "warning": "Warning",
+    "pagination": {
+      "info": "Page {page} of {total}"
+    }
   },
   "auth": {
     "email": "Email",
@@ -287,13 +297,16 @@
       "favorite": "Item added to favorites"
     },
     "timeAgo": {
+      "minutes": "{count} minutes ago",
       "hours": "{count} hours ago",
       "days": "{count} days ago"
     },
     "statusLabels": {
       "completed": "Completed",
       "new": "New",
-      "saved": "Saved"
+      "saved": "Saved",
+      "viewed": "Viewed",
+      "published": "Published"
     },
     "badgeNames": {
       "firstExchange": "First Exchange",

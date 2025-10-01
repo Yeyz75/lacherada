@@ -1,242 +1,263 @@
 <template>
   <div class="dashboard-container">
-    <!-- Welcome Header -->
-    <div class="welcome-header">
-      <div class="welcome-content">
-        <h1 class="welcome-title">
-          {{
-            t('dashboard.welcome', {
-              name: user?.displayName || t('dashboard.user'),
-            })
-          }}
-        </h1>
-        <p class="welcome-subtitle">
-          {{ t('dashboard.subtitle') }}
-        </p>
-      </div>
-      <div class="welcome-avatar">
-        <Icon icon="mdi:account-circle" class="avatar-icon" />
-      </div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-20">
+      <Icon icon="mdi:loading" class="text-6xl text-primary-500 animate-spin" />
     </div>
 
-    <!-- Quick Stats -->
-    <div class="stats-grid">
-      <BaseCard
-        v-for="stat in stats"
-        :key="stat.key"
-        class="stat-card"
-        :class="`stat-${stat.key}`">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <Icon :icon="stat.icon" />
-          </div>
-          <div class="stat-info">
-            <h3 class="stat-value">{{ stat.value }}</h3>
-            <p class="stat-label">{{ t(`dashboard.stats.${stat.key}`) }}</p>
-          </div>
+    <!-- Dashboard Content -->
+    <div v-else>
+      <!-- Welcome Header -->
+      <div class="welcome-header">
+        <div class="welcome-content">
+          <h1 class="welcome-title">
+            {{
+              t('dashboard.welcome', {
+                name: user?.displayName || t('dashboard.user'),
+              })
+            }}
+          </h1>
+          <p class="welcome-subtitle">
+            {{ t('dashboard.subtitle') }}
+          </p>
         </div>
-      </BaseCard>
-    </div>
-
-    <!-- Main Content Grid -->
-    <div class="dashboard-grid">
-      <!-- Quick Actions -->
-      <BaseCard class="quick-actions-card">
-        <template #header>
-          <h2 class="card-title">
-            <Icon icon="mdi:lightning-bolt" />
-            {{ t('dashboard.quickActions') }}
-          </h2>
-        </template>
-        <div class="quick-actions">
-          <router-link
-            v-for="action in quickActions"
-            :key="action.key"
-            :to="action.path"
-            class="action-button"
-            :class="`action-${action.key}`">
-            <Icon :icon="action.icon" class="action-icon" />
-            <span class="action-label">
-              {{ t(`dashboard.actions.${action.key}`) }}
-            </span>
-          </router-link>
+        <div class="welcome-avatar">
+          <Icon icon="mdi:account-circle" class="avatar-icon" />
         </div>
-      </BaseCard>
+      </div>
 
-      <!-- Recent Activity -->
-      <BaseCard class="activity-card">
-        <template #header>
-          <h2 class="card-title">
-            <Icon icon="mdi:clock-outline" />
-            {{ t('dashboard.recentActivity') }}
-          </h2>
-        </template>
-        <div class="activity-list">
-          <div
-            v-for="activity in recentActivities"
-            :key="activity.id"
-            class="activity-item">
-            <div class="activity-icon">
-              <Icon :icon="activity.icon" />
+      <!-- Quick Stats -->
+      <div class="stats-grid">
+        <BaseCard
+          v-for="stat in stats"
+          :key="stat.key"
+          class="stat-card"
+          :class="`stat-${stat.key}`">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <Icon :icon="stat.icon" />
             </div>
-            <div class="activity-details">
-              <p class="activity-title">{{ activity.title }}</p>
-              <p class="activity-time">{{ activity.time }}</p>
-            </div>
-            <div class="activity-status">
-              <BaseBadge
-                :value="activity.status"
-                :severity="getActivitySeverity(activity.type)" />
+            <div class="stat-info">
+              <h3 class="stat-value">{{ stat.value }}</h3>
+              <p class="stat-label">{{ t(`dashboard.stats.${stat.key}`) }}</p>
             </div>
           </div>
+        </BaseCard>
+      </div>
 
-          <div v-if="recentActivities.length === 0" class="empty-state">
-            <Icon icon="mdi:inbox-outline" class="empty-icon" />
-            <p class="empty-text">{{ t('dashboard.noActivity') }}</p>
-            <router-link to="/explore" class="empty-action">
-              {{ t('dashboard.startExploring') }}
+      <!-- Main Content Grid -->
+      <div class="dashboard-grid">
+        <!-- Quick Actions -->
+        <BaseCard class="quick-actions-card">
+          <template #header>
+            <h2 class="card-title">
+              <Icon icon="mdi:lightning-bolt" />
+              {{ t('dashboard.quickActions') }}
+            </h2>
+          </template>
+          <div class="quick-actions">
+            <router-link
+              v-for="action in quickActions"
+              :key="action.key"
+              :to="action.path"
+              class="action-button"
+              :class="`action-${action.key}`">
+              <Icon :icon="action.icon" class="action-icon" />
+              <span class="action-label">
+                {{ t(`dashboard.actions.${action.key}`) }}
+              </span>
             </router-link>
           </div>
-        </div>
-      </BaseCard>
+        </BaseCard>
 
-      <!-- Reputation & Community -->
-      <BaseCard class="reputation-card">
-        <template #header>
-          <h2 class="card-title">
-            <Icon icon="mdi:star-outline" />
-            {{ t('dashboard.reputation') }}
-          </h2>
-        </template>
-        <div class="reputation-content">
-          <div class="reputation-score">
-            <BaseRating
-              :model-value="userReputation.rating"
-              readonly
-              :stars="5"
-              class="rating-display" />
-            <div class="score-info">
-              <span class="score-value">{{ userReputation.rating }}/5</span>
-              <span class="score-reviews">
-                ({{ userReputation.reviews }} {{ t('dashboard.reviews') }})
-              </span>
+        <!-- Recent Activity -->
+        <BaseCard class="activity-card">
+          <template #header>
+            <h2 class="card-title">
+              <Icon icon="mdi:clock-outline" />
+              {{ t('dashboard.recentActivity') }}
+            </h2>
+          </template>
+          <div class="activity-list">
+            <div
+              v-for="activity in recentActivities"
+              :key="activity.id"
+              class="activity-item">
+              <div class="activity-icon">
+                <Icon :icon="activity.icon" />
+              </div>
+              <div class="activity-details">
+                <p class="activity-title">{{ activity.title }}</p>
+                <p class="activity-time">{{ activity.time }}</p>
+              </div>
+              <div class="activity-status">
+                <BaseBadge
+                  :value="activity.status"
+                  :severity="getActivitySeverity(activity.type)" />
+              </div>
+            </div>
+
+            <div v-if="recentActivities.length === 0" class="empty-state">
+              <Icon icon="mdi:inbox-outline" class="empty-icon" />
+              <p class="empty-text">{{ t('dashboard.noActivity') }}</p>
+              <router-link to="/explore" class="empty-action">
+                {{ t('dashboard.startExploring') }}
+              </router-link>
             </div>
           </div>
+        </BaseCard>
 
-          <div class="reputation-progress">
-            <div class="progress-info">
-              <span class="progress-label">
-                {{ t('dashboard.nextLevel') }}
-              </span>
-              <span class="progress-value">{{ userReputation.progress }}%</span>
-            </div>
-            <div class="progress-bar">
-              <div
-                class="progress-fill"
-                :style="{ width: `${userReputation.progress}%` }"></div>
-            </div>
-          </div>
-
-          <div class="badges-section">
-            <h4 class="badges-title">{{ t('dashboard.badges') }}</h4>
-            <div class="badges-grid">
-              <div
-                v-for="badge in userBadges"
-                :key="badge.key"
-                class="badge-item"
-                :class="{ earned: badge.earned }">
-                <Icon :icon="badge.icon" class="badge-icon" />
-                <span class="badge-name">
-                  {{ t(`dashboard.badgeNames.${badge.key}`) }}
+        <!-- Reputation & Community -->
+        <BaseCard class="reputation-card">
+          <template #header>
+            <h2 class="card-title">
+              <Icon icon="mdi:star-outline" />
+              {{ t('dashboard.reputation') }}
+            </h2>
+          </template>
+          <div class="reputation-content">
+            <div class="reputation-score">
+              <BaseRating
+                :model-value="reputation.rating"
+                readonly
+                :stars="5"
+                class="rating-display" />
+              <div class="score-info">
+                <span class="score-value">{{ reputation.rating }}/5</span>
+                <span class="score-reviews">
+                  ({{ reputation.reviews }} {{ t('dashboard.reviews') }})
                 </span>
               </div>
             </div>
-          </div>
-        </div>
-      </BaseCard>
 
-      <!-- Recommendations -->
-      <BaseCard class="recommendations-card">
-        <template #header>
-          <h2 class="card-title">
-            <Icon icon="mdi:thumb-up-outline" />
-            {{ t('dashboard.recommendations') }}
-          </h2>
-        </template>
-        <div class="recommendations-list">
-          <div
-            v-for="item in recommendations"
-            :key="item.id"
-            class="recommendation-item">
-            <div class="recommendation-image">
-              <Icon :icon="item.icon" />
-            </div>
-            <div class="recommendation-details">
-              <h4 class="recommendation-title">{{ item.title }}</h4>
-              <p class="recommendation-description">{{ item.description }}</p>
-              <div class="recommendation-meta">
-                <span class="recommendation-distance">
-                  <Icon icon="mdi:map-marker" />
-                  {{ item.distance }}
+            <div class="reputation-progress">
+              <div class="progress-info">
+                <span class="progress-label">
+                  {{ t('dashboard.nextLevel') }}
                 </span>
-                <span class="recommendation-category">
-                  {{ item.category }}
-                </span>
+                <span class="progress-value">{{ reputation.progress }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  :style="{ width: `${reputation.progress}%` }"></div>
               </div>
             </div>
-            <BaseButton
-              icon="mdi:heart-outline"
-              class="favorite-btn"
-              severity="secondary"
-              text />
-          </div>
 
-          <div class="recommendations-footer">
-            <router-link to="/explore" class="view-more-link">
-              {{ t('dashboard.viewMore') }}
-              <Icon icon="mdi:arrow-right" />
-            </router-link>
+            <div class="badges-section">
+              <h4 class="badges-title">{{ t('dashboard.badges') }}</h4>
+              <div class="badges-grid">
+                <div
+                  v-for="badge in userBadges"
+                  :key="badge.key"
+                  class="badge-item"
+                  :class="{ earned: badge.earned }">
+                  <Icon :icon="badge.icon" class="badge-icon" />
+                  <span class="badge-name">
+                    {{ t(`dashboard.badgeNames.${badge.key}`) }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </BaseCard>
+        </BaseCard>
+
+        <!-- Recommendations -->
+        <BaseCard class="recommendations-card">
+          <template #header>
+            <h2 class="card-title">
+              <Icon icon="mdi:thumb-up-outline" />
+              {{ t('dashboard.recommendations') }}
+            </h2>
+          </template>
+          <div class="recommendations-list">
+            <div
+              v-for="item in recommendations"
+              :key="item.id"
+              class="recommendation-item"
+              @click="navigateToItem(item.id)"
+              style="cursor: pointer">
+              <div class="recommendation-image">
+                <Icon :icon="item.icon" />
+              </div>
+              <div class="recommendation-details">
+                <h4 class="recommendation-title">{{ item.title }}</h4>
+                <p class="recommendation-description">{{ item.description }}</p>
+                <div class="recommendation-meta">
+                  <span v-if="item.distance" class="recommendation-distance">
+                    <Icon icon="mdi:map-marker" />
+                    {{ item.distance }}
+                  </span>
+                  <span v-if="item.category" class="recommendation-category">
+                    {{ item.category }}
+                  </span>
+                </div>
+              </div>
+              <BaseButton
+                icon="mdi:arrow-right"
+                class="favorite-btn"
+                severity="secondary"
+                text
+                @click.stop="navigateToItem(item.id)" />
+            </div>
+
+            <div class="recommendations-footer">
+              <router-link to="/explore" class="view-more-link">
+                {{ t('dashboard.viewMore') }}
+                <Icon icon="mdi:arrow-right" />
+              </router-link>
+            </div>
+          </div>
+        </BaseCard>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '../../composables/useAuth'
+import { useStats } from '../../composables/useStats'
 import BaseCard from '../../components/base/BaseCard.vue'
 import BaseButton from '../../components/base/BaseButton.vue'
 import BaseBadge from '../../components/base/BaseBadge.vue'
 import BaseRating from '../../components/base/BaseRating.vue'
 
 const { t } = useI18n()
+const router = useRouter()
 const { user } = useAuth()
+const {
+  stats: userStats,
+  activities: userActivities,
+  reputation: userReputation,
+  recommendations: userRecommendations,
+  isLoading,
+  loadAllDashboardData,
+} = useStats()
 
-// Mock data for dashboard
 const stats = computed(() => [
   {
     key: 'published',
     icon: 'mdi:package-variant',
-    value: 12,
+    value: userStats.value?.publishedItems || 0,
   },
   {
     key: 'exchanges',
     icon: 'mdi:swap-horizontal',
-    value: 8,
+    value: userStats.value?.totalViews || 0,
   },
   {
     key: 'favorites',
     icon: 'mdi:heart',
-    value: 15,
+    value: userStats.value?.totalFavorites || 0,
   },
   {
     key: 'messages',
     icon: 'mdi:message-text',
-    value: 3,
+    value: userStats.value?.unreadMessages || 0,
   },
 ])
 
@@ -263,37 +284,44 @@ const quickActions = computed(() => [
   },
 ])
 
-const recentActivities = computed(() => [
-  {
-    id: 1,
-    icon: 'mdi:handshake',
-    title: t('dashboard.activityExamples.exchange'),
-    time: t('dashboard.timeAgo.hours', { count: 2 }),
-    status: t('dashboard.statusLabels.completed'),
-    type: 'exchange',
-  },
-  {
-    id: 2,
-    icon: 'mdi:message',
-    title: t('dashboard.activityExamples.message'),
-    time: t('dashboard.timeAgo.days', { count: 1 }),
-    status: t('dashboard.statusLabels.new'),
-    type: 'message',
-  },
-  {
-    id: 3,
-    icon: 'mdi:heart',
-    title: t('dashboard.activityExamples.favorite'),
-    time: t('dashboard.timeAgo.days', { count: 3 }),
-    status: t('dashboard.statusLabels.saved'),
-    type: 'favorite',
-  },
-])
+const recentActivities = computed(() => {
+  return userActivities.value.map((activity) => {
+    const iconMap = {
+      exchange: 'mdi:handshake',
+      message: 'mdi:message',
+      favorite: 'mdi:heart',
+      view: 'mdi:eye',
+      publish: 'mdi:publish',
+    }
 
-const userReputation = computed(() => ({
-  rating: 4.5,
-  reviews: 12,
-  progress: 75,
+    const statusMap = {
+      exchange: t('dashboard.statusLabels.completed'),
+      message: t('dashboard.statusLabels.new'),
+      favorite: t('dashboard.statusLabels.saved'),
+      view: t('dashboard.statusLabels.viewed'),
+      publish: t('dashboard.statusLabels.published'),
+    }
+
+    const timeAgo = getTimeAgo(activity.createdAt)
+
+    return {
+      id: activity.id,
+      icon: iconMap[activity.type] || 'mdi:information',
+      title: activity.title,
+      time: timeAgo,
+      status: statusMap[activity.type] || activity.type,
+      type: activity.type,
+    }
+  })
+})
+
+const reputation = computed(() => ({
+  rating: userReputation.value?.rating || 0,
+  reviews: userReputation.value?.totalReviews || 0,
+  progress: Math.min(
+    100,
+    Math.round(((userReputation.value?.totalReviews || 0) / 50) * 100),
+  ),
 }))
 
 const userBadges = computed(() => [
@@ -319,32 +347,27 @@ const userBadges = computed(() => [
   },
 ])
 
-const recommendations = computed(() => [
-  {
-    id: 1,
-    title: t('dashboard.exampleItems.drill'),
-    description: t('dashboard.exampleItems.drillDescription'),
-    icon: 'mdi:tools',
-    distance: '0.5 km',
-    category: t('dashboard.categories.tools'),
-  },
-  {
-    id: 2,
-    title: t('dashboard.exampleItems.book'),
-    description: t('dashboard.exampleItems.bookDescription'),
-    icon: 'mdi:book',
-    distance: '1.2 km',
-    category: t('dashboard.categories.books'),
-  },
-  {
-    id: 3,
-    title: t('dashboard.exampleItems.bike'),
-    description: t('dashboard.exampleItems.bikeDescription'),
-    icon: 'mdi:bicycle',
-    distance: '0.8 km',
-    category: t('dashboard.categories.sports'),
-  },
-])
+const recommendations = computed(() => {
+  return userRecommendations.value.map((item: any) => {
+    const categoryIconMap: Record<string, string> = {
+      tools: 'mdi:tools',
+      technology: 'mdi:laptop',
+      home: 'mdi:home-variant',
+      services: 'mdi:account-tie',
+      education: 'mdi:book-open-variant',
+      sports: 'mdi:basketball',
+    }
+
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description || '',
+      icon: categoryIconMap[item.category?.slug || ''] || 'mdi:tag',
+      distance: item.locationCity || '',
+      category: item.category?.name || '',
+    }
+  })
+})
 
 const getActivitySeverity = (type: string) => {
   switch (type) {
@@ -354,10 +377,41 @@ const getActivitySeverity = (type: string) => {
       return 'info'
     case 'favorite':
       return 'contrast'
+    case 'publish':
+      return 'success'
+    case 'view':
+      return 'secondary'
     default:
       return 'secondary'
   }
 }
+
+const getTimeAgo = (dateString: string): string => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+
+  if (diffMins < 60) {
+    return t('dashboard.timeAgo.minutes', { count: diffMins || 1 })
+  } else if (diffHours < 24) {
+    return t('dashboard.timeAgo.hours', { count: diffHours })
+  } else {
+    return t('dashboard.timeAgo.days', { count: diffDays })
+  }
+}
+
+const navigateToItem = (itemId: string) => {
+  router.push(`/items/${itemId}`)
+}
+
+onMounted(async () => {
+  if (user.value?.uid) {
+    await loadAllDashboardData(user.value.uid)
+  }
+})
 </script>
 
 <style scoped>

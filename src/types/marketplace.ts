@@ -92,6 +92,10 @@ export interface Item {
   updatedAt: string
   category?: Category
   images?: ItemImage[]
+  userProfile?: {
+    displayName?: string | null
+    avatarUrl?: string | null
+  }
 }
 
 export interface CreateItemInput {

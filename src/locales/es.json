@@ -90,12 +90,22 @@
     "accept": "Aceptar",
     "close": "Cerrar",
     "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "retry": "Reintentar",
+    "next": "Siguiente",
+    "previous": "Anterior",
     "lend": "Prestar",
     "items": "elementos",
     "explore": "Explorar",
+    "anonymous": "Anónimo",
     "changeLanguage": "Cambiar idioma",
     "lightMode": "Modo claro",
-    "darkMode": "Modo oscuro"
+    "darkMode": "Modo oscuro",
+    "warning": "Advertencia",
+    "pagination": {
+      "info": "Página {page} de {total}"
+    }
   },
   "auth": {
     "email": "Correo Electrónico",
@@ -309,13 +319,16 @@
       "favorite": "Elemento agregado a favoritos"
     },
     "timeAgo": {
+      "minutes": "hace {count} minutos",
       "hours": "hace {count} horas",
       "days": "hace {count} días"
     },
     "statusLabels": {
       "completed": "Completado",
       "new": "Nuevo",
-      "saved": "Guardado"
+      "saved": "Guardado",
+      "viewed": "Visto",
+      "published": "Publicado"
     },
     "badgeNames": {
       "firstExchange": "Primer Intercambio",
