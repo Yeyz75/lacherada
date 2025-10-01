@@ -88,12 +88,14 @@
     </section>
 
     <!-- Results Section -->
-    <section class="results-section">
-      <div class="container">
+    <section class="py-8 md:py-12">
+      <div class="max-w-7xl mx-auto px-4">
         <!-- Results Header -->
-        <div class="results-header">
-          <div class="results-info">
-            <h2 class="results-title">
+        <div
+          class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div class="flex-1">
+            <h2
+              class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
               {{
                 currentSection === 'featured'
                   ? t('explore.featured')
@@ -102,92 +104,136 @@
                     : t('explore.popular')
               }}
             </h2>
-            <p class="results-count">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               {{ filteredItems.length }} resultados encontrados
             </p>
           </div>
 
-          <div class="results-tabs">
+          <div class="flex gap-2 flex-wrap">
             <BaseButton
               @click="currentSection = 'featured'"
               :variant="currentSection === 'featured' ? 'primary' : 'outlined'"
-              size="sm"
-              class="tab-button">
+              size="sm">
               {{ t('explore.featured') }}
             </BaseButton>
             <BaseButton
               @click="currentSection = 'recent'"
               :variant="currentSection === 'recent' ? 'primary' : 'outlined'"
-              size="sm"
-              class="tab-button">
+              size="sm">
               {{ t('explore.recent') }}
             </BaseButton>
             <BaseButton
               @click="currentSection = 'popular'"
               :variant="currentSection === 'popular' ? 'primary' : 'outlined'"
-              size="sm"
-              class="tab-button">
+              size="sm">
               {{ t('explore.popular') }}
             </BaseButton>
           </div>
         </div>
 
         <!-- Items Grid -->
-        <div v-if="filteredItems.length > 0" class="items-grid">
+        <div
+          v-if="filteredItems.length > 0"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             v-for="(item, index) in displayedItems"
             :key="item.id"
-            class="item-card"
-            :style="{ animationDelay: `${index * 0.1}s` }">
-            <div class="item-image">
-              <img :src="item.image" :alt="item.title" />
-              <div class="item-type-badge" :class="item.type">
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+            :style="{ animationDelay: `${index * 0.1}s` }"
+            @click="navigateToItem(item.id)">
+            <!-- Image -->
+            <div
+              class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+              <img
+                :src="item.image"
+                :alt="item.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+
+              <!-- Type Badge -->
+              <div
+                class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold uppercase text-white"
+                :class="{
+                  'bg-green-500': item.type === 'lend',
+                  'bg-primary-500': item.type === 'sell',
+                  'bg-yellow-500': item.type === 'exchange',
+                  'bg-blue-500': item.type === 'donate',
+                }">
                 {{ t(`explore.filters.${item.type}`) }}
               </div>
-              <div class="item-actions">
-                <BaseButton
-                  class="action-btn"
-                  icon="mdi:heart-outline"
-                  variant="ghost"
-                  size="sm" />
-                <BaseButton
-                  class="action-btn"
-                  icon="mdi:share-variant"
-                  variant="ghost"
-                  size="sm" />
+
+              <!-- Actions -->
+              <div
+                class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click.stop="toggleFavorite(item.id)">
+                  <Icon
+                    icon="mdi:heart-outline"
+                    class="text-lg text-gray-700 dark:text-gray-300" />
+                </button>
+                <button
+                  class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  @click.stop="shareItem(item.id)">
+                  <Icon
+                    icon="mdi:share-variant"
+                    class="text-lg text-gray-700 dark:text-gray-300" />
+                </button>
               </div>
             </div>
 
-            <div class="item-content">
-              <div class="item-header">
-                <h3 class="item-title">{{ item.title }}</h3>
-                <div class="item-price" v-if="item.price">
+            <!-- Content -->
+            <div class="p-4">
+              <!-- Header -->
+              <div class="flex justify-between items-start mb-2">
+                <h3
+                  class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1 flex-1">
+                  {{ item.title }}
+                </h3>
+                <div
+                  v-if="item.price"
+                  class="text-lg font-bold text-primary-600 ml-2">
                   {{ item.price }}
                 </div>
               </div>
 
-              <p class="item-description">{{ item.description }}</p>
+              <!-- Description -->
+              <p
+                class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                {{ item.description }}
+              </p>
 
-              <div class="item-meta">
-                <div class="item-category">
-                  <Icon :icon="getCategoryIcon(item.category)" />
-                  {{ t(`home.categories.${item.category}`) }}
+              <!-- Meta -->
+              <div
+                class="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                <div class="flex items-center gap-1">
+                  <Icon
+                    :icon="getCategoryIcon(item.category)"
+                    class="text-sm" />
+                  <span>{{ t(`home.categories.${item.category}`) }}</span>
                 </div>
-                <div class="item-location">
-                  <Icon icon="mdi:map-marker" />
-                  {{ item.location }}
+                <div class="flex items-center gap-1">
+                  <Icon icon="mdi:map-marker" class="text-sm" />
+                  <span>{{ item.location }}</span>
                 </div>
               </div>
 
-              <div class="item-footer">
-                <div class="item-user">
-                  <div class="user-avatar">
-                    <Icon icon="mdi:account-circle" />
-                  </div>
-                  <span class="user-name">{{ item.user.name }}</span>
+              <!-- Footer -->
+              <div
+                class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-2">
+                  <Icon
+                    icon="mdi:account-circle"
+                    class="text-2xl text-primary-600" />
+                  <span
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ item.user.name }}
+                  </span>
                 </div>
-                <BaseButton variant="primary" size="sm" icon="mdi:message-text">
-                  Contactar
+                <BaseButton
+                  variant="primary"
+                  size="sm"
+                  @click.stop="contactSeller(item.id)">
+                  <Icon icon="mdi:message-text" />
                 </BaseButton>
               </div>
             </div>
@@ -195,31 +241,33 @@
         </div>
 
         <!-- No Results -->
-        <div v-else class="no-results">
-          <Icon icon="mdi:inbox" class="no-results-icon" />
-          <h3 class="no-results-title">{{ t('explore.noResults') }}</h3>
-          <p class="no-results-text">
-            Prueba ajustando los filtros o cambiando los términos de búsqueda
+        <div
+          v-else
+          class="flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <Icon icon="mdi:inbox" class="text-6xl text-gray-400" />
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
+            {{ t('explore.empty.title') }}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 max-w-md">
+            {{ t('explore.empty.description') }}
           </p>
-          <BaseButton
-            @click="clearFilters"
-            variant="primary"
-            size="md"
-            icon="mdi:filter-remove">
-            Limpiar Filtros
+          <BaseButton @click="clearFilters" variant="primary">
+            <Icon icon="mdi:filter-remove" />
+            {{ t('explore.filters.clear') }}
           </BaseButton>
         </div>
 
         <!-- Load More Button -->
-        <div v-if="hasMoreItems" class="load-more-container">
+        <div v-if="hasMoreItems" class="flex justify-center mt-8">
           <BaseButton
             @click="loadMoreItems"
             variant="outlined"
-            size="lg"
             :disabled="loadingMore"
-            :loading="loadingMore"
-            :icon="loadingMore ? 'mdi:loading' : 'mdi:plus'">
-            {{ t('explore.loadMore') }}
+            :loading="loadingMore">
+            <Icon
+              :icon="loadingMore ? 'mdi:loading' : 'mdi:plus'"
+              :class="{ 'animate-spin': loadingMore }" />
+            {{ loadingMore ? t('common.loading') : t('explore.loadMore') }}
           </BaseButton>
         </div>
       </div>
@@ -230,14 +278,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
-// Base components
-import { BaseInput, BaseButton, BaseSelect } from '@/components/base'
-
-// PrimeVue components
-// Removed InputGroup and InputGroupAddon - no longer needed
+import { BaseButton, BaseSelect } from '@/components/base'
 
 const { t } = useI18n()
+const router = useRouter()
 
 // Search and filters
 const searchQuery = ref('')
@@ -448,383 +494,30 @@ const getCategoryIcon = (categoryKey: string) => {
   return category?.icon || 'mdi:tag'
 }
 
+const navigateToItem = (itemId: number) => {
+  router.push(`/items/${itemId}`)
+}
+
+const toggleFavorite = (itemId: number) => {
+  console.log('Toggle favorite:', itemId)
+  // TODO: Implement favorite toggle
+}
+
+const shareItem = (itemId: number) => {
+  console.log('Share item:', itemId)
+  // TODO: Implement share functionality
+}
+
+const contactSeller = (itemId: number) => {
+  console.log('Contact seller for item:', itemId)
+  // TODO: Implement contact seller
+}
+
 onMounted(() => {
   // Initialize page
 })
 </script>
 
 <style scoped>
-.explore-page {
-  min-height: 100vh;
-}
-
-/* Hero Section */
-.hero-section {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-light) 0%,
-    var(--color-primary) 50%,
-    var(--color-secondary) 100%
-  );
-  color: white;
-  padding: var(--space-2xl) 0;
-  text-align: center;
-}
-
-.hero-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: var(--font-size-4xl); /* 36px - Hero Title */
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--space-sm);
-}
-
-.hero-subtitle {
-  font-size: var(--font-size-lg); /* 18px - Hero Subtitle */
-  margin-bottom: var(--space-2xl);
-  opacity: 0.9;
-}
-
-/* Search Layout */
-.search-container {
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.search-input-wrapper {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: flex-end;
-  width: 100%;
-}
-
-.search-input {
-  flex: 1;
-  min-width: 0;
-}
-
-/* Filters Layout */
-.filters-section {
-  background: var(--color-background-secondary);
-  padding: var(--space-xl) 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.filters-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-lg);
-  align-items: end;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.filter-actions {
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-
-/* Results Layout */
-.results-section {
-  padding: var(--space-2xl) 0;
-}
-
-.results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-xl);
-  flex-wrap: wrap;
-  gap: var(--space-md);
-}
-
-.results-title {
-  font-size: var(--font-size-2xl); /* 24px - Section Title */
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--space-xs);
-}
-
-.results-count {
-  font-size: var(--font-size-sm); /* 14px - Secondary Info */
-  color: var(--color-text-secondary);
-}
-
-.results-tabs {
-  display: flex;
-  gap: var(--space-xs);
-  flex-wrap: wrap;
-}
-
-/* Items Grid Layout */
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-xl);
-}
-
-.item-card {
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: transform var(--transition-normal);
-}
-
-.item-card:hover {
-  transform: translateY(-5px);
-}
-
-.item-image {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-}
-
-.item-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.item-type-badge {
-  position: absolute;
-  top: var(--space-sm);
-  left: var(--space-sm);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  text-transform: uppercase;
-}
-
-.item-type-badge.lend {
-  background: var(--color-success);
-  color: white;
-}
-
-.item-type-badge.sell {
-  background: var(--color-primary);
-  color: white;
-}
-
-.item-type-badge.exchange {
-  background: var(--color-warning);
-  color: white;
-}
-
-.item-type-badge.donate {
-  background: var(--color-info);
-  color: white;
-}
-
-.item-actions {
-  position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  display: flex;
-  gap: var(--space-xs);
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.item-card:hover .item-actions {
-  opacity: 1;
-}
-
-.item-content {
-  padding: var(--space-md);
-}
-
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: var(--space-sm);
-}
-
-.item-title {
-  font-size: var(--font-size-xl); /* 20px - Card Title */
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  line-height: var(--line-height-tight);
-}
-
-.item-price {
-  font-size: var(--font-size-lg); /* 18px - Important Info */
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-.item-description {
-  font-size: var(--font-size-base); /* 16px - Body Text */
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-normal);
-  margin-bottom: var(--space-md);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.item-meta {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-md);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-}
-
-.item-category,
-.item-location {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.item-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--space-md);
-}
-
-.item-user {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.user-avatar {
-  font-size: var(--font-size-lg);
-  color: var(--color-primary);
-}
-
-.user-name {
-  font-size: var(--font-size-sm); /* 14px - User Info */
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-/* No Results */
-.no-results {
-  text-align: center;
-  padding: var(--space-3xl) var(--space-md);
-}
-
-.no-results-icon {
-  font-size: 4rem;
-  color: var(--color-text-tertiary);
-  margin-bottom: var(--space-lg);
-}
-
-.no-results-title {
-  font-size: var(--font-size-xl); /* 20px - Message Title */
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-sm);
-}
-
-.no-results-text {
-  font-size: var(--font-size-base); /* 16px - Message Text */
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-lg);
-}
-
-/* Load More */
-.load-more-container {
-  text-align: center;
-  margin-top: var(--space-2xl);
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: var(--font-size-3xl); /* 30px - Responsive Hero */
-  }
-
-  .hero-section {
-    padding: var(--space-xl) 0;
-  }
-
-  .search-input-wrapper {
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .filters-container {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  .filter-actions {
-    order: 4;
-    justify-content: stretch;
-    align-items: stretch;
-  }
-
-  .results-header {
-    flex-direction: column;
-    align-items: start;
-    gap: var(--space-md);
-  }
-
-  .results-title {
-    font-size: var(--font-size-xl); /* 20px - Responsive Section */
-  }
-
-  .results-tabs {
-    order: -1;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .items-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-section {
-    padding: var(--space-lg) 0;
-  }
-
-  .hero-title {
-    font-size: var(--font-size-2xl); /* 24px - Mobile Hero */
-  }
-
-  .hero-subtitle {
-    font-size: var(--font-size-base); /* 16px - Mobile Subtitle */
-  }
-
-  .search-container {
-    padding: 0 var(--space-sm);
-  }
-
-  .item-content {
-    padding: var(--space-sm);
-  }
-
-  .item-title {
-    font-size: var(--font-size-lg); /* 18px - Mobile Card Title */
-  }
-}
+/* No custom CSS needed - 100% Tailwind CSS */
 </style>
