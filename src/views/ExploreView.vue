@@ -145,7 +145,10 @@
             <div
               class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
               <img
-                :src="item.image"
+                :src="
+                  item.images?.[0]?.publicUrl ||
+                  'https://via.placeholder.com/400x300?text=No+Image'
+                "
                 :alt="item.title"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
@@ -153,12 +156,12 @@
               <div
                 class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold uppercase text-white"
                 :class="{
-                  'bg-green-500': item.type === 'lend',
-                  'bg-primary-500': item.type === 'sell',
-                  'bg-yellow-500': item.type === 'exchange',
-                  'bg-blue-500': item.type === 'donate',
+                  'bg-green-500': item.listingType === 'lend',
+                  'bg-primary-500': item.listingType === 'sell',
+                  'bg-yellow-500': item.listingType === 'exchange',
+                  'bg-blue-500': item.listingType === 'donate',
                 }">
-                {{ t(`explore.filters.${item.type}`) }}
+                {{ t(`explore.filters.${item.listingType}`) }}
               </div>
 
               <!-- Actions -->
@@ -205,15 +208,15 @@
               <!-- Meta -->
               <div
                 class="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                <div class="flex items-center gap-1">
+                <div v-if="item.category" class="flex items-center gap-1">
                   <Icon
-                    :icon="getCategoryIcon(item.category)"
+                    :icon="getCategoryIcon(item.category.slug || '')"
                     class="text-sm" />
-                  <span>{{ t(`home.categories.${item.category}`) }}</span>
+                  <span>{{ item.category.name }}</span>
                 </div>
-                <div class="flex items-center gap-1">
+                <div v-if="item.locationCity" class="flex items-center gap-1">
                   <Icon icon="mdi:map-marker" class="text-sm" />
-                  <span>{{ item.location }}</span>
+                  <span>{{ item.locationCity }}</span>
                 </div>
               </div>
 
@@ -226,7 +229,7 @@
                     class="text-2xl text-primary-600" />
                   <span
                     class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {{ item.user.name }}
+                    {{ item.userId }}
                   </span>
                 </div>
                 <BaseButton
@@ -280,10 +283,23 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
+import { useToast } from 'primevue/usetoast'
 import { BaseButton, BaseSelect } from '@/components/base'
+import { useAuth } from '@/composables/useAuth'
+import { useItems } from '@/composables/useItems'
 
 const { t } = useI18n()
 const router = useRouter()
+const toast = useToast()
+const { user, isAuthenticated } = useAuth()
+const {
+  items,
+  pagination,
+  loadItems,
+  addToFavorites,
+  removeFromFavorites,
+  isItemFavorite,
+} = useItems()
 
 // Search and filters
 const searchQuery = ref('')
@@ -293,9 +309,10 @@ const locationFilter = ref('')
 const currentSection = ref('featured')
 
 // Pagination
-const itemsPerPage = 12
-const currentPage = ref(1)
 const loadingMore = ref(false)
+
+// Favorites tracking
+const favoriteItems = ref<Set<string>>(new Set())
 
 // Categories data
 const categories = [
@@ -324,169 +341,56 @@ const typeOptions = computed(() => [
   { label: t('explore.filters.donate'), value: 'donate' },
 ])
 
-// Mock data
-const allItems = ref([
-  {
-    id: 1,
-    title: 'Taladro Profesional Bosch',
-    description:
-      'Taladro profesional en excelente estado, perfecto para trabajos de bricolaje y construcción.',
-    type: 'lend',
-    category: 'tools',
-    price: null,
-    location: 'Madrid Centro',
-    image:
-      'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop',
-    user: { name: 'Carlos Méndez', rating: 4.8 },
-    featured: true,
-    createdAt: new Date('2024-01-15'),
-  },
-  {
-    id: 2,
-    title: 'Laptop Gaming MSI',
-    description:
-      'Laptop gaming de alta gama, perfecta para diseño y desarrollo. Incluye cargador y mouse.',
-    type: 'sell',
-    category: 'technology',
-    price: '850€',
-    location: 'Barcelona',
-    image:
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop',
-    user: { name: 'Ana García', rating: 4.9 },
-    featured: true,
-    createdAt: new Date('2024-01-14'),
-  },
-  {
-    id: 3,
-    title: 'Clases de Matemáticas',
-    description:
-      'Profesor universitario ofrece clases particulares de matemáticas para todos los niveles.',
-    type: 'sell',
-    category: 'services',
-    price: '25€/hora',
-    location: 'Valencia',
-    image:
-      'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=300&fit=crop',
-    user: { name: 'Miguel Rodríguez', rating: 5.0 },
-    featured: false,
-    createdAt: new Date('2024-01-13'),
-  },
-  {
-    id: 4,
-    title: 'Bicicleta de Montaña',
-    description:
-      'Bicicleta Trek en buen estado, perfecta para rutas de montaña. Incluye casco.',
-    type: 'exchange',
-    category: 'sports',
-    price: null,
-    location: 'Sevilla',
-    image:
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-    user: { name: 'Laura Martín', rating: 4.7 },
-    featured: false,
-    createdAt: new Date('2024-01-12'),
-  },
-  {
-    id: 5,
-    title: 'Libros de Programación',
-    description:
-      'Colección de libros sobre JavaScript, Python y desarrollo web. En perfecto estado.',
-    type: 'donate',
-    category: 'education',
-    price: null,
-    location: 'Bilbao',
-    image:
-      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop',
-    user: { name: 'David López', rating: 4.6 },
-    featured: true,
-    createdAt: new Date('2024-01-11'),
-  },
-  {
-    id: 6,
-    title: 'Sofá 3 Plazas',
-    description:
-      'Sofá cómodo en excelente estado, color gris. Perfecto para salón o estudio.',
-    type: 'lend',
-    category: 'home',
-    price: null,
-    location: 'Málaga',
-    image:
-      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
-    user: { name: 'Elena Ruiz', rating: 4.8 },
-    featured: false,
-    createdAt: new Date('2024-01-10'),
-  },
-])
-
 // Computed properties
 const filteredItems = computed(() => {
-  let items = [...allItems.value]
-
-  // Filter by section
-  if (currentSection.value === 'featured') {
-    items = items.filter((item) => item.featured)
-  } else if (currentSection.value === 'recent') {
-    items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-  } else {
-    // Popular: sort by user rating
-    items.sort((a, b) => b.user.rating - a.user.rating)
-  }
-
-  // Apply filters
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    items = items.filter(
-      (item) =>
-        item.title.toLowerCase().includes(query) ||
-        item.description.toLowerCase().includes(query),
-    )
-  }
-
-  if (selectedCategory.value) {
-    items = items.filter((item) => item.category === selectedCategory.value)
-  }
-
-  if (selectedType.value) {
-    items = items.filter((item) => item.type === selectedType.value)
-  }
-
-  if (locationFilter.value) {
-    const location = locationFilter.value.toLowerCase()
-    items = items.filter((item) =>
-      item.location.toLowerCase().includes(location),
-    )
-  }
-
-  return items
+  // Los items ya vienen filtrados del backend
+  return items.value
 })
 
-const displayedItems = computed(() => {
-  return filteredItems.value.slice(0, currentPage.value * itemsPerPage)
-})
+const displayedItems = computed(() => items.value)
 
 const hasMoreItems = computed(() => {
-  return displayedItems.value.length < filteredItems.value.length
+  return pagination.value.page < pagination.value.totalPages
 })
 
 // Methods
-const handleSearch = () => {
-  currentPage.value = 1
+const handleSearch = async () => {
+  await loadItems(
+    {
+      query: searchQuery.value,
+      categoryId: selectedCategory.value || undefined,
+      listingType: (selectedType.value as any) || undefined,
+      onlyPublished: true,
+    },
+    { page: 1, limit: 20 },
+  )
 }
 
-const clearFilters = () => {
+const clearFilters = async () => {
   searchQuery.value = ''
   selectedCategory.value = ''
   selectedType.value = ''
   locationFilter.value = ''
-  currentPage.value = 1
+  await loadItems({ onlyPublished: true }, { page: 1, limit: 20 })
 }
 
 const loadMoreItems = async () => {
+  if (!hasMoreItems.value || loadingMore.value) return
+
   loadingMore.value = true
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  currentPage.value++
-  loadingMore.value = false
+  try {
+    await loadItems(
+      {
+        query: searchQuery.value || undefined,
+        categoryId: selectedCategory.value || undefined,
+        listingType: (selectedType.value as any) || undefined,
+        onlyPublished: true,
+      },
+      { page: pagination.value.page + 1, limit: 20 },
+    )
+  } finally {
+    loadingMore.value = false
+  }
 }
 
 const getCategoryIcon = (categoryKey: string) => {
@@ -494,27 +398,112 @@ const getCategoryIcon = (categoryKey: string) => {
   return category?.icon || 'mdi:tag'
 }
 
-const navigateToItem = (itemId: number) => {
+const navigateToItem = (itemId: string) => {
   router.push(`/items/${itemId}`)
 }
 
-const toggleFavorite = (itemId: number) => {
-  console.log('Toggle favorite:', itemId)
-  // TODO: Implement favorite toggle
+const toggleFavorite = async (itemId: string) => {
+  if (!isAuthenticated.value) {
+    toast.add({
+      severity: 'warn',
+      summary: t('common.warning'),
+      detail: t('auth.loginRequired'),
+      life: 3000,
+    })
+    router.push('/login')
+    return
+  }
+
+  const isFav = favoriteItems.value.has(itemId)
+
+  if (isFav) {
+    const success = await removeFromFavorites(user.value!.uid, itemId)
+    if (success) {
+      favoriteItems.value.delete(itemId)
+      toast.add({
+        severity: 'success',
+        summary: t('itemDetail.messages.unfavorited'),
+        life: 2000,
+      })
+    }
+  } else {
+    const success = await addToFavorites(user.value!.uid, itemId)
+    if (success) {
+      favoriteItems.value.add(itemId)
+      toast.add({
+        severity: 'success',
+        summary: t('itemDetail.messages.favorited'),
+        life: 2000,
+      })
+    }
+  }
 }
 
-const shareItem = (itemId: number) => {
-  console.log('Share item:', itemId)
-  // TODO: Implement share functionality
+const shareItem = async (itemId: string) => {
+  const item = items.value.find((i) => i.id === itemId)
+  if (!item) return
+
+  const shareData = {
+    title: item.title,
+    text: item.description || '',
+    url: `${window.location.origin}/items/${itemId}`,
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData)
+      toast.add({
+        severity: 'success',
+        summary: t('common.success'),
+        detail: 'Item compartido exitosamente',
+        life: 2000,
+      })
+    } catch (err) {
+      // Usuario canceló o error
+    }
+  } else {
+    // Fallback: copiar al portapapeles
+    navigator.clipboard.writeText(shareData.url)
+    toast.add({
+      severity: 'info',
+      summary: 'Link copiado',
+      detail: 'El enlace ha sido copiado al portapapeles',
+      life: 2000,
+    })
+  }
 }
 
-const contactSeller = (itemId: number) => {
-  console.log('Contact seller for item:', itemId)
-  // TODO: Implement contact seller
+const contactSeller = (_itemId: string) => {
+  // TODO: Implementar cuando tengamos sistema de mensajería
+  toast.add({
+    severity: 'info',
+    summary: 'Próximamente',
+    detail: 'El sistema de mensajería estará disponible pronto',
+    life: 3000,
+  })
 }
 
-onMounted(() => {
-  // Initialize page
+// Cargar favoritos del usuario si está autenticado
+const loadUserFavorites = async () => {
+  if (!isAuthenticated.value || !user.value) return
+
+  // Verificar favoritos para los items actuales
+  for (const item of items.value) {
+    const isFav = await isItemFavorite(user.value.uid, item.id)
+    if (isFav) {
+      favoriteItems.value.add(item.id)
+    }
+  }
+}
+
+onMounted(async () => {
+  // Cargar items iniciales
+  await loadItems({ onlyPublished: true }, { page: 1, limit: 20 })
+
+  // Cargar favoritos si está autenticado
+  if (isAuthenticated.value) {
+    await loadUserFavorites()
+  }
 })
 </script>
 
