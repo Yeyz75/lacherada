@@ -1,4 +1,53 @@
 {
+  "explore": {
+    "title": "Explore the Community",
+    "subtitle": "Discover items and services shared by your community",
+    "featured": "Featured",
+    "recent": "Recent",
+    "popular": "Popular",
+    "loadMore": "Load More",
+    "search": {
+      "placeholder": "Search items, services...",
+      "button": "Search"
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "allCategories": "All categories",
+      "listingType": "Listing Type",
+      "allTypes": "All types",
+      "priceRange": "Price Range",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
+      "location": "Location",
+      "city": "City",
+      "condition": "Condition",
+      "allConditions": "All Conditions",
+      "apply": "Apply Filters",
+      "clear": "Clear Filters",
+      "all": "All",
+      "lend": "Lend",
+      "sell": "Sell",
+      "exchange": "Exchange",
+      "donate": "Donate"
+    },
+    "sort": {
+      "label": "Sort by",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "popular": "Most Popular"
+    },
+    "empty": {
+      "title": "No results found",
+      "description": "Try adjusting your filters or search for something different"
+    },
+    "results": {
+      "showing": "Showing {count} of {total} items",
+      "found": "{count} items found"
+    }
+  },
   "home": {
     "welcome": "Welcome to LaCherada",
     "subtitle": "Share, exchange and connect with your community",
@@ -345,7 +394,10 @@
     "stats": {
       "exchanges": "Exchanges",
       "reputation": "Reputation",
-      "memberSince": "Member since"
+      "memberSince": "Member since",
+      "year": "year",
+      "years": "years",
+      "newMember": "New"
     },
     "personalInfo": {
       "title": "Personal Information",
@@ -364,7 +416,9 @@
       "verified": "Verified",
       "notVerified": "Not verified",
       "verify": "Verify",
-      "resendEmail": "Resend Email"
+      "resendEmail": "Resend Email",
+      "resending": "Resending email...",
+      "resendError": "Error resending email"
     },
     "reputation": {
       "title": "Reputation",
@@ -718,46 +772,6 @@
         "explore": "Explore Items",
         "dashboard": "Go to Dashboard"
       }
-    }
-  },
-  "explore": {
-    "title": "Explore",
-    "subtitle": "Discover items and services in your community",
-    "search": {
-      "placeholder": "Search items, services...",
-      "button": "Search"
-    },
-    "filters": {
-      "title": "Filters",
-      "category": "Category",
-      "allCategories": "All Categories",
-      "listingType": "Listing Type",
-      "allTypes": "All Types",
-      "priceRange": "Price Range",
-      "minPrice": "Min Price",
-      "maxPrice": "Max Price",
-      "location": "Location",
-      "city": "City",
-      "condition": "Condition",
-      "allConditions": "All Conditions",
-      "apply": "Apply Filters",
-      "clear": "Clear Filters"
-    },
-    "sort": {
-      "label": "Sort by",
-      "newest": "Newest",
-      "oldest": "Oldest",
-      "priceLow": "Price: Low to High",
-      "priceHigh": "Price: High to Low",
-      "popular": "Most Popular"
-    },
-    "empty": {
-      "title": "No results found",
-      "description": "Try adjusting your filters or search"
-    },
-    "results": {
-      "showing": "Showing {count} of {total} items",
-      "found": "{count} items found"
     }
   },
   "itemEdit": {

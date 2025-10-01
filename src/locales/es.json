@@ -1,4 +1,53 @@
 {
+  "explore": {
+    "title": "Explora la Comunidad",
+    "subtitle": "Descubre items y servicios compartidos por tu comunidad",
+    "featured": "Destacados",
+    "recent": "Recientes",
+    "popular": "Populares",
+    "loadMore": "Cargar Más",
+    "search": {
+      "placeholder": "Buscar items, servicios...",
+      "button": "Buscar"
+    },
+    "filters": {
+      "title": "Filtros",
+      "category": "Categoría",
+      "allCategories": "Todas las categorías",
+      "listingType": "Tipo de Publicación",
+      "allTypes": "Todos los tipos",
+      "priceRange": "Rango de Precio",
+      "minPrice": "Precio Mínimo",
+      "maxPrice": "Precio Máximo",
+      "location": "Ubicación",
+      "city": "Ciudad",
+      "condition": "Condición",
+      "allConditions": "Todas las Condiciones",
+      "apply": "Aplicar Filtros",
+      "clear": "Limpiar Filtros",
+      "all": "Todos",
+      "lend": "Prestar",
+      "sell": "Vender",
+      "exchange": "Intercambiar",
+      "donate": "Donar"
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "newest": "Más Recientes",
+      "oldest": "Más Antiguos",
+      "priceLow": "Precio: Menor a Mayor",
+      "priceHigh": "Precio: Mayor a Menor",
+      "popular": "Más Populares"
+    },
+    "empty": {
+      "title": "No se encontraron resultados",
+      "description": "Intenta ajustar tus filtros o busca algo diferente"
+    },
+    "results": {
+      "showing": "Mostrando {count} de {total} items",
+      "found": "{count} items encontrados"
+    }
+  },
   "home": {
     "welcome": "Bienvenido a LaCherada",
     "subtitle": "Comparte, intercambia y conecta con tu comunidad",
@@ -367,7 +416,10 @@
     "stats": {
       "exchanges": "Intercambios",
       "reputation": "Reputación",
-      "memberSince": "Miembro desde"
+      "memberSince": "Miembro desde",
+      "year": "año",
+      "years": "años",
+      "newMember": "Nuevo"
     },
     "personalInfo": {
       "title": "Información Personal",
@@ -386,7 +438,9 @@
       "verified": "Verificado",
       "notVerified": "No verificado",
       "verify": "Verificar",
-      "resendEmail": "Reenviar Email"
+      "resendEmail": "Reenviar Email",
+      "resending": "Reenviando email...",
+      "resendError": "Error al reenviar el email"
     },
     "reputation": {
       "title": "Reputación",
@@ -740,46 +794,6 @@
         "explore": "Explorar Items",
         "dashboard": "Ir al Dashboard"
       }
-    }
-  },
-  "explore": {
-    "title": "Explorar",
-    "subtitle": "Descubre items y servicios en tu comunidad",
-    "search": {
-      "placeholder": "Buscar items, servicios...",
-      "button": "Buscar"
-    },
-    "filters": {
-      "title": "Filtros",
-      "category": "Categoría",
-      "allCategories": "Todas las Categorías",
-      "listingType": "Tipo de Publicación",
-      "allTypes": "Todos los Tipos",
-      "priceRange": "Rango de Precio",
-      "minPrice": "Precio Mínimo",
-      "maxPrice": "Precio Máximo",
-      "location": "Ubicación",
-      "city": "Ciudad",
-      "condition": "Condición",
-      "allConditions": "Todas las Condiciones",
-      "apply": "Aplicar Filtros",
-      "clear": "Limpiar Filtros"
-    },
-    "sort": {
-      "label": "Ordenar por",
-      "newest": "Más Recientes",
-      "oldest": "Más Antiguos",
-      "priceLow": "Precio: Menor a Mayor",
-      "priceHigh": "Precio: Mayor a Menor",
-      "popular": "Más Populares"
-    },
-    "empty": {
-      "title": "No se encontraron resultados",
-      "description": "Intenta ajustar tus filtros o búsqueda"
-    },
-    "results": {
-      "showing": "Mostrando {count} de {total} items",
-      "found": "{count} items encontrados"
     }
   },
   "itemEdit": {

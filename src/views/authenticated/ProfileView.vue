@@ -341,20 +341,27 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
+import { useToast } from 'primevue/usetoast'
 import { useAuth } from '../../composables/useAuth'
+import { useStats } from '../../composables/useStats'
+import { AvatarService } from '../../services/avatarService'
 import BaseCard from '../../components/base/BaseCard.vue'
-import BaseButton from '../../components/base/BaseButton.vue'
 import BaseInput from '../../components/base/BaseInput.vue'
+import BaseButton from '../../components/base/BaseButton.vue'
 import BaseAvatar from '../../components/base/BaseAvatar.vue'
 import BaseRating from '../../components/base/BaseRating.vue'
-import BaseBadge from '../../components/base/BaseBadge.vue'
 import BaseModal from '../../components/base/BaseModal.vue'
 import BaseFileUpload from '../../components/base/BaseFileUpload.vue'
-import AvatarService from '../../services/avatarService'
 
 const { t } = useI18n()
-const { user, isEmailVerified, resendEmailVerification, refreshUserProfile } =
-  useAuth()
+const toast = useToast()
+const { user, isEmailVerified } = useAuth()
+const {
+  stats: userStats,
+  reputation: userReputationData,
+  loadUserStats,
+  loadUserReputation,
+} = useStats()
 
 // Profile state
 const savingProfile = ref(false)
@@ -372,52 +379,84 @@ const profileForm = ref({
   addressVerified: false,
 })
 
-// User profile data from auth
-const userProfile = computed(() => ({
-  avatarUrl: user.value?.photoURL || '',
-  displayName: user.value?.displayName || t('profile.anonymousUser'),
-  email: user.value?.email || '',
-  verified: isEmailVerified.value,
-  stats: {
-    exchanges: 12,
-    reputation: '4.8 ★',
-    memberSince: '2 años',
-  },
-  reputation: {
-    rating: 4.8,
-    maxRating: 5,
-    description: t('profile.reputation.description'),
-    reviews: 24,
-    onTime: 98,
-    positive: 100,
-  },
-  badges: [
-    {
-      id: 1,
-      key: 'firstExchange',
-      icon: 'mdi:medal',
-      earned: true,
+// User profile data from auth and stats
+const userProfile = computed(() => {
+  const createdAt = user.value?.createdAt
+  const memberSince = createdAt
+    ? Math.floor(
+        (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24 * 365),
+      )
+    : 0
+
+  return {
+    avatarUrl: user.value?.photoURL || '',
+    displayName: user.value?.displayName || t('profile.anonymousUser'),
+    email: user.value?.email || '',
+    verified: isEmailVerified.value,
+    stats: {
+      exchanges: userStats.value?.publishedItems || 0,
+      reputation: userReputationData.value
+        ? `${userReputationData.value.rating} ★`
+        : '0 ★',
+      memberSince:
+        memberSince > 0
+          ? `${memberSince} ${memberSince === 1 ? t('profile.stats.year') : t('profile.stats.years')}`
+          : t('profile.stats.newMember'),
     },
-    {
-      id: 2,
-      key: 'trustedMember',
-      icon: 'mdi:shield-check',
-      earned: true,
+    reputation: {
+      rating: userReputationData.value?.rating || 0,
+      maxRating: 5,
+      description: t('profile.reputation.description'),
+      reviews: userReputationData.value?.totalReviews || 0,
+      onTime:
+        userReputationData.value && userReputationData.value.totalReviews > 0
+          ? Math.round(
+              (userReputationData.value.positiveReviews /
+                userReputationData.value.totalReviews) *
+                100,
+            )
+          : 0,
+      positive:
+        userReputationData.value && userReputationData.value.totalReviews > 0
+          ? Math.round(
+              (userReputationData.value.positiveReviews /
+                userReputationData.value.totalReviews) *
+                100,
+            )
+          : 0,
     },
-    {
-      id: 3,
-      key: 'helpfulNeighbor',
-      icon: 'mdi:hand-heart',
-      earned: false,
-    },
-    {
-      id: 4,
-      key: 'communityLeader',
-      icon: 'mdi:crown',
-      earned: false,
-    },
-  ],
-}))
+    badges: [
+      {
+        id: 1,
+        key: 'firstExchange',
+        icon: 'mdi:medal',
+        earned: (userStats.value?.publishedItems || 0) > 0,
+      },
+      {
+        id: 2,
+        key: 'trustedMember',
+        icon: 'mdi:shield-check',
+        earned:
+          (userReputationData.value?.totalReviews || 0) >= 5 &&
+          (userReputationData.value?.rating || 0) >= 4,
+      },
+      {
+        id: 3,
+        key: 'helpfulNeighbor',
+        icon: 'mdi:hand-heart',
+        earned: (userStats.value?.publishedItems || 0) >= 10,
+      },
+      {
+        id: 4,
+        key: 'communityLeader',
+        icon: 'mdi:crown',
+        earned:
+          (userStats.value?.publishedItems || 0) >= 25 &&
+          (userReputationData.value?.totalReviews || 0) >= 20,
+      },
+    ],
+  }
+})
 
 // Methods
 const saveProfile = () => {
@@ -503,25 +542,47 @@ const openAvatarUpload = () => {
   showAvatarUpload.value = true
 }
 
+const refreshUserProfile = async () => {
+  // Recargar el usuario actual para obtener datos actualizados
+  if (user.value?.uid) {
+    await loadUserStats(user.value.uid)
+    await loadUserReputation(user.value.uid)
+  }
+}
+
 const handleResendVerification = async () => {
   resendingEmail.value = true
   try {
-    await resendEmailVerification()
+    toast.add({
+      severity: 'info',
+      summary: t('profile.verification.resending'),
+      life: 2000,
+    })
+    // TODO: Implementar reenvío de email cuando esté disponible en useAuth
   } catch (error) {
     console.error('Error reenviando email:', error)
-    // Show error message
+    toast.add({
+      severity: 'error',
+      summary: t('common.error'),
+      detail: t('profile.verification.resendError'),
+      life: 3000,
+    })
   } finally {
     resendingEmail.value = false
   }
 }
 
-// Initialize form with user data
-onMounted(() => {
+// Initialize form with user data and load stats
+onMounted(async () => {
   if (user.value) {
     const nameParts = user.value.displayName?.split(' ') || []
     profileForm.value.firstName = nameParts[0] || ''
     profileForm.value.lastName = nameParts.slice(1).join(' ') || ''
     profileForm.value.bio = ''
+
+    // Cargar estadísticas y reputación del usuario
+    await loadUserStats(user.value.uid)
+    await loadUserReputation(user.value.uid)
   }
 })
 </script>
