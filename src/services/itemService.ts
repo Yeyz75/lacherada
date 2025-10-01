@@ -14,6 +14,20 @@ import type {
 } from '@/types/marketplace'
 import type { PostgrestError } from '@supabase/supabase-js'
 
+type CategoryRow = {
+  id: string
+  slug: string
+  name: string
+  description?: string | null
+  icon?: string | null
+  parent_id?: string | null
+  is_active: boolean
+  sort_order: number | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+}
+
 export class ItemService {
   private static readonly TABLE_ITEMS = 'items'
   private static readonly TABLE_ITEM_IMAGES = 'item_images'
@@ -742,9 +756,21 @@ export class ItemService {
     try {
       const { data, error } = await supabase
         .from(this.TABLE_CATEGORIES)
-        .select('*')
-        .eq('isActive', true)
-        .order('sortOrder', { ascending: true })
+        .select(
+          `id,
+          slug,
+          name,
+          description,
+          icon,
+          parent_id,
+          is_active,
+          sort_order,
+          metadata,
+          created_at,
+          updated_at`,
+        )
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
 
       if (error) {
         throw this.createError(
@@ -754,7 +780,23 @@ export class ItemService {
         )
       }
 
-      return data as Category[]
+      if (!data) return []
+
+      const rows = data as CategoryRow[]
+
+      return rows.map((category) => ({
+        id: category.id,
+        slug: category.slug,
+        name: category.name,
+        description: category.description ?? undefined,
+        icon: category.icon ?? undefined,
+        parentId: category.parent_id ?? undefined,
+        isActive: category.is_active,
+        sortOrder: category.sort_order ?? 0,
+        metadata: category.metadata ?? {},
+        createdAt: category.created_at,
+        updatedAt: category.updated_at,
+      }))
     } catch (error) {
       if (error instanceof Error && 'message' in error) throw error
 
