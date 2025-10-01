@@ -43,7 +43,7 @@
     <section
       class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-6">
       <div class="max-w-7xl mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
           <BaseSelect
             v-model="selectedCategory"
             :label="t('explore.filters.category')"
@@ -75,6 +75,30 @@
                 :placeholder="t('explore.filters.city')"
                 class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
             </div>
+          </div>
+
+          <div class="relative">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {{ t('explore.filters.minPrice') }}
+            </label>
+            <input
+              v-model.number="minPrice"
+              type="number"
+              min="0"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+          </div>
+
+          <div class="relative">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {{ t('explore.filters.maxPrice') }}
+            </label>
+            <input
+              v-model.number="maxPrice"
+              type="number"
+              min="0"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
           </div>
 
           <div class="flex items-end">
@@ -209,9 +233,7 @@
               <div
                 class="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400 mb-3">
                 <div v-if="item.category" class="flex items-center gap-1">
-                  <Icon
-                    :icon="getCategoryIcon(item.category.slug || '')"
-                    class="text-sm" />
+                  <Icon :icon="getCategoryIcon()" class="text-sm" />
                   <span>{{ item.category.name }}</span>
                 </div>
                 <div v-if="item.locationCity" class="flex items-center gap-1">
@@ -287,6 +309,7 @@ import { useToast } from 'primevue/usetoast'
 import { BaseButton, BaseSelect } from '@/components/base'
 import { useAuth } from '@/composables/useAuth'
 import { useItems } from '@/composables/useItems'
+import type { Item } from '@/types/marketplace'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -299,6 +322,8 @@ const {
   addToFavorites,
   removeFromFavorites,
   isItemFavorite,
+  categories,
+  loadCategories,
 } = useItems()
 
 // Search and filters
@@ -307,30 +332,20 @@ const selectedCategory = ref('')
 const selectedType = ref('')
 const locationFilter = ref('')
 const currentSection = ref('featured')
+const minPrice = ref<number | null>(null)
+const maxPrice = ref<number | null>(null)
 
 // Pagination
 const loadingMore = ref(false)
+const accumulatedItems = ref<Item[]>([])
 
 // Favorites tracking
 const favoriteItems = ref<Set<string>>(new Set())
 
-// Categories data
-const categories = [
-  { key: 'tools', icon: 'mdi:tools' },
-  { key: 'technology', icon: 'mdi:laptop' },
-  { key: 'home', icon: 'mdi:home-variant' },
-  { key: 'services', icon: 'mdi:account-tie' },
-  { key: 'education', icon: 'mdi:book-open-variant' },
-  { key: 'sports', icon: 'mdi:basketball' },
-]
-
 // Select options
 const categoryOptions = computed(() => [
   { label: t('explore.filters.all'), value: '' },
-  ...categories.map((category) => ({
-    label: t(`home.categories.${category.key}`),
-    value: category.key,
-  })),
+  ...categories.value.map((c) => ({ label: c.name, value: c.id })),
 ])
 
 const typeOptions = computed(() => [
@@ -342,12 +357,9 @@ const typeOptions = computed(() => [
 ])
 
 // Computed properties
-const filteredItems = computed(() => {
-  // Los items ya vienen filtrados del backend
-  return items.value
-})
+const filteredItems = computed(() => accumulatedItems.value)
 
-const displayedItems = computed(() => items.value)
+const displayedItems = computed(() => accumulatedItems.value)
 
 const hasMoreItems = computed(() => {
   return pagination.value.page < pagination.value.totalPages
@@ -360,10 +372,14 @@ const handleSearch = async () => {
       query: searchQuery.value,
       categoryId: selectedCategory.value || undefined,
       listingType: (selectedType.value as any) || undefined,
+      minPrice: minPrice.value ?? undefined,
+      maxPrice: maxPrice.value ?? undefined,
+      city: locationFilter.value || undefined,
       onlyPublished: true,
     },
     { page: 1, limit: 20 },
   )
+  accumulatedItems.value = items.value.slice()
 }
 
 const clearFilters = async () => {
@@ -371,7 +387,10 @@ const clearFilters = async () => {
   selectedCategory.value = ''
   selectedType.value = ''
   locationFilter.value = ''
+  minPrice.value = null
+  maxPrice.value = null
   await loadItems({ onlyPublished: true }, { page: 1, limit: 20 })
+  accumulatedItems.value = items.value.slice()
 }
 
 const loadMoreItems = async () => {
@@ -384,18 +403,21 @@ const loadMoreItems = async () => {
         query: searchQuery.value || undefined,
         categoryId: selectedCategory.value || undefined,
         listingType: (selectedType.value as any) || undefined,
+        minPrice: minPrice.value ?? undefined,
+        maxPrice: maxPrice.value ?? undefined,
+        city: locationFilter.value || undefined,
         onlyPublished: true,
       },
       { page: pagination.value.page + 1, limit: 20 },
     )
+    accumulatedItems.value = accumulatedItems.value.concat(items.value)
   } finally {
     loadingMore.value = false
   }
 }
 
-const getCategoryIcon = (categoryKey: string) => {
-  const category = categories.find((cat) => cat.key === categoryKey)
-  return category?.icon || 'mdi:tag'
+const getCategoryIcon = () => {
+  return 'mdi:tag'
 }
 
 const navigateToItem = (itemIdOrSlug: string) => {
@@ -499,6 +521,10 @@ const loadUserFavorites = async () => {
 onMounted(async () => {
   // Cargar items iniciales
   await loadItems({ onlyPublished: true }, { page: 1, limit: 20 })
+  accumulatedItems.value = items.value.slice()
+  if (categories.value.length === 0) {
+    await loadCategories()
+  }
 
   // Cargar favoritos si está autenticado
   if (isAuthenticated.value) {

@@ -21,6 +21,27 @@
       </div>
     </div>
 
+    <!-- Filtros -->
+    <div
+      v-if="favorites.length > 0"
+      class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div>
+          <BaseSelect
+            v-model="selectedCategory"
+            :label="t('explore.filters.category')"
+            :placeholder="t('explore.filters.allCategories')"
+            :options="categoryOptions"
+            clearable
+            filter />
+        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-400 md:col-span-2">
+          {{ filteredFavorites.length }} / {{ favorites.length }}
+          {{ t('common.items') }}
+        </div>
+      </div>
+    </div>
+
     <!-- Loading -->
     <div
       v-if="isLoading"
@@ -61,12 +82,30 @@
     <div
       v-else
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <ItemCard
-        v-for="favorite in favorites"
+      <div
+        v-for="favorite in filteredFavorites"
         :key="favorite.id"
-        :item="favorite.item!"
-        :show-actions="false"
-        @click="handleItemClick(favorite.item!)" />
+        class="flex flex-col gap-3">
+        <ItemCard
+          :item="favorite.item!"
+          :show-actions="false"
+          @click="handleItemClick(favorite.item!)" />
+        <div class="flex justify-between">
+          <BaseButton
+            variant="outlined"
+            size="small"
+            @click.stop="handleItemClick(favorite.item!)">
+            <Icon icon="mdi:open-in-new" />
+          </BaseButton>
+          <BaseButton
+            variant="danger"
+            size="small"
+            @click.stop="handleRemoveFavorite(favorite.item!.id)">
+            <Icon icon="mdi:heart-broken" />
+            {{ t('itemDetail.actions.unfavorite') }}
+          </BaseButton>
+        </div>
+      </div>
     </div>
 
     <!-- Paginación -->
@@ -104,13 +143,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '@/composables/useAuth'
 import { useItems } from '@/composables/useItems'
-import BaseButton from '@/components/base/BaseButton.vue'
+import { BaseButton, BaseSelect } from '@/components/base'
 import ItemCard from '@/components/marketplace/ItemCard.vue'
 import type { Item } from '@/types/marketplace'
 
@@ -127,6 +166,7 @@ const {
   loadUserFavorites,
   nextPage,
   prevPage,
+  removeFromFavorites,
 } = useItems()
 
 const handleRetry = async () => {
@@ -144,4 +184,36 @@ onMounted(async () => {
     await loadUserFavorites(user.value.uid)
   }
 })
+
+// Filtro por categoría (client-side)
+const selectedCategory = ref('')
+const categoryOptions = computed(() => {
+  const set = new Map<string, string>()
+  for (const fav of favorites.value) {
+    const cat = fav.item?.category
+    if (cat) set.set(cat.id, cat.name)
+  }
+  return [
+    { label: t('explore.filters.allCategories'), value: '' },
+    ...Array.from(set.entries()).map(([id, name]) => ({
+      label: name,
+      value: id,
+    })),
+  ]
+})
+
+const filteredFavorites = computed(() => {
+  if (!selectedCategory.value) return favorites.value
+  return favorites.value.filter(
+    (f) => f.item?.categoryId === selectedCategory.value,
+  )
+})
+
+const handleRemoveFavorite = async (itemId: string) => {
+  if (!user.value?.uid) return
+  const ok = await removeFromFavorites(user.value.uid, itemId)
+  if (ok) {
+    // No-op: useItems ya actualiza favorites localmente
+  }
+}
 </script>
