@@ -110,7 +110,7 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
-      path: '/items/:id',
+      path: '/items/:slug',
       name: 'itemDetail',
       component: () => import('../views/marketplace/ItemDetailView.vue'),
     },

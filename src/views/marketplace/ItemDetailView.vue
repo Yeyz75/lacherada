@@ -282,6 +282,11 @@
             }}
           </BaseButton>
 
+          <BaseButton variant="outlined" @click="shareCurrentItem">
+            <Icon icon="mdi:share-variant" />
+            Compartir
+          </BaseButton>
+
           <BaseButton
             v-if="isOwner"
             variant="secondary"
@@ -299,18 +304,35 @@
             {{ t('itemDetail.seller') }}
           </h3>
           <div class="flex items-center gap-3">
-            <div
-              class="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-              <Icon icon="mdi:account" class="text-2xl text-primary-600" />
-            </div>
+            <BaseAvatar
+              :src="currentItem.userProfile?.avatarUrl || ''"
+              :alt="currentItem.userProfile?.displayName || 'Usuario'"
+              size="large" />
             <div>
               <p class="font-medium text-gray-900 dark:text-white">
-                Usuario #{{ currentItem.userId.substring(0, 8) }}
+                {{
+                  currentItem.userProfile?.displayName ||
+                  t('profile.anonymousUser')
+                }}
               </p>
               <p class="text-sm text-gray-500 dark:text-gray-400">
                 Miembro desde {{ formatDate(currentItem.createdAt) }}
               </p>
             </div>
+          </div>
+        </div>
+
+        <!-- Relacionados -->
+        <div v-if="relatedItems.length" class="pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+            También te puede interesar
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ItemCard
+              v-for="item in relatedItems"
+              :key="item.id"
+              :item="item"
+              @click="router.push(`/items/${item.slug || item.id}`)" />
           </div>
         </div>
       </div>
@@ -347,6 +369,10 @@ import { useToast } from 'primevue/usetoast'
 import { useAuth } from '@/composables/useAuth'
 import { useItems } from '@/composables/useItems'
 import BaseButton from '@/components/base/BaseButton.vue'
+import BaseAvatar from '@/components/base/BaseAvatar.vue'
+import ItemCard from '@/components/marketplace/ItemCard.vue'
+import { ItemService } from '@/services/itemService'
+import type { Item } from '@/types/marketplace'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -367,13 +393,14 @@ const {
 const selectedImage = ref<string>('')
 const showLightbox = ref(false)
 const isFavorite = ref(false)
+const relatedItems = ref<Item[]>([])
 
 const isOwner = computed(() => {
   return user.value?.uid === currentItem.value?.userId
 })
 
 const loadItem = async () => {
-  const itemIdentifier = route.params.id as string
+  const itemIdentifier = (route.params.slug as string) || ''
 
   // Intentar cargar por slug primero, luego por ID
   let item = await getItemBySlug(itemIdentifier)
@@ -388,6 +415,11 @@ const loadItem = async () => {
   // Verificar si está en favoritos
   if (user.value?.uid && item) {
     isFavorite.value = await isItemFavorite(user.value.uid, item.id)
+  }
+
+  // Cargar relacionados
+  if (item?.categoryId) {
+    await loadRelatedItems(item.id, item.categoryId)
   }
 }
 
@@ -452,6 +484,25 @@ const handleEdit = () => {
   router.push(`/items/${currentItem.value?.id}/edit`)
 }
 
+const shareCurrentItem = async () => {
+  if (!currentItem.value) return
+  const url = `${window.location.origin}/items/${currentItem.value.slug || currentItem.value.id}`
+  const shareData = {
+    title: currentItem.value.title,
+    text: currentItem.value.description || '',
+    url,
+  }
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData)
+    } catch (e) {
+      // Silenciar cancelaciones
+    }
+  } else {
+    await navigator.clipboard.writeText(url)
+  }
+}
+
 const formatCurrency = (amount: number, currency: string): string => {
   return new Intl.NumberFormat(locale.value, {
     style: 'currency',
@@ -471,4 +522,14 @@ const formatDate = (dateString: string): string => {
 onMounted(() => {
   loadItem()
 })
+
+// Helpers
+const loadRelatedItems = async (excludeId: string, categoryId: string) => {
+  // Usamos ItemService vía useItems.loadItems, pero aquí llamamos directamente al servicio para obtener un lote pequeño
+  const result = await ItemService.getItems(
+    { categoryId, onlyPublished: true },
+    { page: 1, limit: 6 },
+  )
+  relatedItems.value = result.data.filter((i: Item) => i.id !== excludeId)
+}
 </script>

@@ -140,7 +140,7 @@
             :key="item.id"
             class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
             :style="{ animationDelay: `${index * 0.1}s` }"
-            @click="navigateToItem(item.id)">
+            @click="navigateToItem(item.slug || item.id)">
             <!-- Image -->
             <div
               class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
@@ -279,7 +279,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
@@ -398,8 +398,8 @@ const getCategoryIcon = (categoryKey: string) => {
   return category?.icon || 'mdi:tag'
 }
 
-const navigateToItem = (itemId: string) => {
-  router.push(`/items/${itemId}`)
+const navigateToItem = (itemIdOrSlug: string) => {
+  router.push(`/items/${itemIdOrSlug}`)
 }
 
 const toggleFavorite = async (itemId: string) => {
@@ -410,7 +410,7 @@ const toggleFavorite = async (itemId: string) => {
       detail: t('auth.loginRequired'),
       life: 3000,
     })
-    router.push('/login')
+    router.push('/auth/login')
     return
   }
 
@@ -446,7 +446,7 @@ const shareItem = async (itemId: string) => {
   const shareData = {
     title: item.title,
     text: item.description || '',
-    url: `${window.location.origin}/items/${itemId}`,
+    url: `${window.location.origin}/items/${item.slug || item.id}`,
   }
 
   if (navigator.share) {
@@ -505,6 +505,18 @@ onMounted(async () => {
     await loadUserFavorites()
   }
 })
+
+// Debounce de búsqueda
+let searchDebounce: number | undefined
+watch(
+  () => searchQuery.value,
+  () => {
+    if (searchDebounce) window.clearTimeout(searchDebounce)
+    searchDebounce = window.setTimeout(() => {
+      handleSearch()
+    }, 400)
+  },
+)
 </script>
 
 <style scoped>
