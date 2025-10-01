@@ -178,27 +178,6 @@
     "googleReauthDescription": "Por seguridad, es posible que necesites confirmar tu identidad con Google antes de establecer una contraseña. Se abrirá una ventana emergente para completar la verificación.",
     "notAuthenticated": "Debes iniciar sesión para acceder a esta función"
   },
-  "explore": {
-    "title": "Explorar",
-    "subtitle": "Descubre elementos y servicios disponibles en tu comunidad",
-    "searchPlaceholder": "Buscar elementos, servicios, categorías...",
-    "filters": {
-      "category": "Categoría",
-      "type": "Tipo",
-      "location": "Ubicación",
-      "all": "Todos",
-      "lend": "Prestar",
-      "sell": "Vender",
-      "exchange": "Intercambiar",
-      "donate": "Donar"
-    },
-    "noResults": "No se encontraron resultados",
-    "loadMore": "Cargar más",
-    "featured": "Destacados",
-    "recent": "Recientes",
-    "popular": "Populares",
-    "clearFilters": "Limpiar Filtros"
-  },
   "howItWorks": {
     "title": "Cómo Funciona LaCherada",
     "subtitle": "Descubre lo fácil que es compartir con tu comunidad",
@@ -606,5 +585,208 @@
     "maxItems": "{field} puede tener como máximo {max} elementos",
     "errors": "Errores de Validación",
     "checkFields": "Por favor revisa los campos marcados e intenta de nuevo"
+  },
+  "myItems": {
+    "title": "Mis Publicaciones",
+    "subtitle": "Gestiona todos tus items publicados",
+    "actions": {
+      "newItem": "Nueva Publicación",
+      "publishFirst": "Publicar mi Primer Item",
+      "published": "Publicado",
+      "paused": "Pausado",
+      "deleted": "Eliminado"
+    },
+    "filters": {
+      "all": "Todos",
+      "draft": "Borradores",
+      "published": "Publicados",
+      "paused": "Pausados",
+      "archived": "Archivados"
+    },
+    "search": {
+      "placeholder": "Buscar en mis publicaciones..."
+    },
+    "empty": {
+      "title": "No tienes publicaciones",
+      "description": "Comienza publicando tu primer item para compartir con la comunidad"
+    },
+    "messages": {
+      "publishSuccess": "Item publicado exitosamente",
+      "publishError": "Error al publicar el item",
+      "pauseSuccess": "Item pausado exitosamente",
+      "pauseError": "Error al pausar el item",
+      "deleteSuccess": "Item eliminado exitosamente",
+      "deleteError": "Error al eliminar el item"
+    },
+    "delete": {
+      "confirmTitle": "Confirmar Eliminación",
+      "confirmMessage": "¿Estás seguro de que deseas eliminar este item? Esta acción no se puede deshacer."
+    }
+  },
+  "favorites": {
+    "title": "Mis Favoritos",
+    "subtitle": "Items que has guardado para más tarde",
+    "actions": {
+      "explore": "Explorar Items",
+      "startExploring": "Comenzar a Explorar"
+    },
+    "empty": {
+      "title": "No tienes favoritos",
+      "description": "Guarda items que te interesen para encontrarlos fácilmente más tarde"
+    }
+  },
+  "itemDetail": {
+    "description": "Descripción",
+    "details": "Detalles",
+    "tags": "Etiquetas",
+    "seller": "Vendedor",
+    "actions": {
+      "contact": "Contactar Vendedor",
+      "favorite": "Guardar en Favoritos",
+      "unfavorite": "Quitar de Favoritos"
+    },
+    "messages": {
+      "favorited": "Agregado a favoritos",
+      "unfavorited": "Removido de favoritos"
+    }
+  },
+  "marketplace": {
+    "status": {
+      "draft": "Borrador",
+      "published": "Publicado",
+      "paused": "Pausado",
+      "completed": "Completado",
+      "archived": "Archivado"
+    },
+    "pricing": {
+      "free": "Gratis",
+      "fixed": "Precio Fijo",
+      "negotiable": "Negociable",
+      "donation": "Donación",
+      "request": "A Solicitud"
+    },
+    "listingType": {
+      "sell": "Venta",
+      "lend": "Préstamo",
+      "borrow": "Solicitud de Préstamo",
+      "donate": "Donación",
+      "exchange": "Intercambio",
+      "service": "Servicio"
+    },
+    "condition": {
+      "new": "Nuevo",
+      "like_new": "Como Nuevo",
+      "good": "Bueno",
+      "fair": "Regular",
+      "poor": "Malo"
+    },
+    "fulfillment": {
+      "in_person": "En Persona",
+      "pickup": "Recogida",
+      "delivery": "Entrega a Domicilio",
+      "shipping": "Envío",
+      "digital": "Digital"
+    },
+    "actions": {
+      "publish": "Publicar",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "messages": {
+    "title": "Mensajes",
+    "subtitle": "Comunícate con otros usuarios",
+    "comingSoon": {
+      "title": "Sistema de Mensajería en Desarrollo",
+      "description": "Estamos trabajando en un sistema de mensajería en tiempo real para que puedas comunicarte fácilmente con otros usuarios.",
+      "features": {
+        "realtime": {
+          "title": "Mensajería en Tiempo Real",
+          "description": "Chats instantáneos con notificaciones en vivo"
+        },
+        "readReceipts": {
+          "title": "Confirmaciones de Lectura",
+          "description": "Sabe cuándo tus mensajes han sido leídos"
+        },
+        "notifications": {
+          "title": "Notificaciones Push",
+          "description": "Recibe alertas de nuevos mensajes al instante"
+        },
+        "media": {
+          "title": "Compartir Multimedia",
+          "description": "Envía imágenes y archivos en tus conversaciones"
+        }
+      },
+      "progress": {
+        "title": "Progreso de Desarrollo",
+        "description": "Estamos al 65% de completar esta funcionalidad"
+      },
+      "actions": {
+        "explore": "Explorar Items",
+        "dashboard": "Ir al Dashboard"
+      }
+    }
+  },
+  "explore": {
+    "title": "Explorar",
+    "subtitle": "Descubre items y servicios en tu comunidad",
+    "search": {
+      "placeholder": "Buscar items, servicios...",
+      "button": "Buscar"
+    },
+    "filters": {
+      "title": "Filtros",
+      "category": "Categoría",
+      "allCategories": "Todas las Categorías",
+      "listingType": "Tipo de Publicación",
+      "allTypes": "Todos los Tipos",
+      "priceRange": "Rango de Precio",
+      "minPrice": "Precio Mínimo",
+      "maxPrice": "Precio Máximo",
+      "location": "Ubicación",
+      "city": "Ciudad",
+      "condition": "Condición",
+      "allConditions": "Todas las Condiciones",
+      "apply": "Aplicar Filtros",
+      "clear": "Limpiar Filtros"
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "newest": "Más Recientes",
+      "oldest": "Más Antiguos",
+      "priceLow": "Precio: Menor a Mayor",
+      "priceHigh": "Precio: Mayor a Menor",
+      "popular": "Más Populares"
+    },
+    "empty": {
+      "title": "No se encontraron resultados",
+      "description": "Intenta ajustar tus filtros o búsqueda"
+    },
+    "results": {
+      "showing": "Mostrando {count} de {total} items",
+      "found": "{count} items encontrados"
+    }
+  },
+  "itemEdit": {
+    "title": "Editar Publicación",
+    "subtitle": "Actualiza la información de tu item",
+    "status": {
+      "title": "Estado de la Publicación",
+      "label": "Estado"
+    },
+    "actions": {
+      "save": "Guardar Cambios"
+    },
+    "success": {
+      "title": "Cambios Guardados",
+      "message": "Tu publicación ha sido actualizada exitosamente"
+    },
+    "errors": {
+      "notOwner": "No tienes permiso para editar esta publicación",
+      "updateFailed": "Error al actualizar la publicación. Por favor intenta de nuevo."
+    },
+    "confirmCancel": "¿Estás seguro de que quieres cancelar? Los cambios no guardados se perderán."
   }
 }

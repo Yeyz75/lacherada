@@ -110,6 +110,17 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/items/:id',
+      name: 'itemDetail',
+      component: () => import('../views/marketplace/ItemDetailView.vue'),
+    },
+    {
+      path: '/items/:id/edit',
+      name: 'itemEdit',
+      component: () => import('../views/marketplace/ItemEditView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/design-system',
       name: 'designSystem',
       component: () => import('../views/DesignSystemView.vue'),
@@ -146,6 +157,7 @@ router.beforeEach(async (to, _from, next) => {
     'howItWorks',
     'contact',
     'designSystem',
+    'itemDetail',
   ]
   const authRoutes = ['login', 'register', 'forgotPassword', 'authCallback']
   const verifyRoute = 'verifyEmail'

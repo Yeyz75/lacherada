@@ -1,29 +1,37 @@
 <template>
-  <div class="explore-page">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">{{ t('explore.title') }}</h1>
-          <p class="hero-subtitle">{{ t('explore.subtitle') }}</p>
+    <section
+      class="bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600 text-white py-16 md:py-20">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">
+            {{ t('explore.title') }}
+          </h1>
+          <p class="text-lg md:text-xl mb-8 opacity-90">
+            {{ t('explore.subtitle') }}
+          </p>
 
           <!-- Search Bar -->
-          <div class="search-container">
-            <div class="search-input-wrapper">
-              <BaseInput
-                v-model="searchQuery"
-                :placeholder="t('explore.searchPlaceholder')"
-                @keyup.enter="handleSearch"
-                icon="mdi:magnify"
-                icon-position="left"
-                class="search-input" />
+          <div class="max-w-2xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-3">
+              <div class="relative flex-1">
+                <Icon
+                  icon="mdi:magnify"
+                  class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  :placeholder="t('explore.search.placeholder')"
+                  class="w-full pl-12 pr-4 py-3 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-0 focus:ring-2 focus:ring-white/50"
+                  @keyup.enter="handleSearch" />
+              </div>
               <BaseButton
-                @click="handleSearch"
-                variant="primary"
-                size="large"
-                icon="mdi:magnify"
-                class="search-btn">
-                Buscar
+                variant="secondary"
+                class="bg-white text-primary-600 hover:bg-gray-100"
+                @click="handleSearch">
+                <Icon icon="mdi:magnify" />
+                {{ t('explore.search.button') }}
               </BaseButton>
             </div>
           </div>
@@ -32,49 +40,47 @@
     </section>
 
     <!-- Filters Section -->
-    <section class="filters-section">
-      <div class="container">
-        <div class="filters-container">
-          <div class="filter-group">
-            <BaseSelect
-              v-model="selectedCategory"
-              :label="t('explore.filters.category')"
-              :placeholder="t('explore.filters.all')"
-              :options="categoryOptions"
-              clearable
-              filter
-              class="filter-select" />
+    <section
+      class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-6">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <BaseSelect
+            v-model="selectedCategory"
+            :label="t('explore.filters.category')"
+            :placeholder="t('explore.filters.allCategories')"
+            :options="categoryOptions"
+            clearable
+            filter />
+
+          <BaseSelect
+            v-model="selectedType"
+            :label="t('explore.filters.listingType')"
+            :placeholder="t('explore.filters.allTypes')"
+            :options="typeOptions"
+            clearable
+            filter />
+
+          <div class="relative">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {{ t('explore.filters.location') }}
+            </label>
+            <div class="relative">
+              <Icon
+                icon="mdi:map-marker"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                v-model="locationFilter"
+                type="text"
+                :placeholder="t('explore.filters.city')"
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent" />
+            </div>
           </div>
 
-          <div class="filter-group">
-            <BaseSelect
-              v-model="selectedType"
-              :label="t('explore.filters.type')"
-              :placeholder="t('explore.filters.all')"
-              :options="typeOptions"
-              clearable
-              filter
-              class="filter-select" />
-          </div>
-
-          <div class="filter-group">
-            <BaseInput
-              v-model="locationFilter"
-              :label="t('explore.filters.location')"
-              placeholder="Ciudad, barrio..."
-              icon="mdi:map-marker"
-              clearable
-              class="filter-input" />
-          </div>
-
-          <div class="filter-group filter-actions">
-            <BaseButton
-              @click="clearFilters"
-              variant="outlined"
-              size="md"
-              icon="mdi:filter-remove"
-              class="clear-button">
-              {{ t('explore.clearFilters') }}
+          <div class="flex items-end">
+            <BaseButton variant="outlined" class="w-full" @click="clearFilters">
+              <Icon icon="mdi:filter-remove" />
+              {{ t('explore.filters.clear') }}
             </BaseButton>
           </div>
         </div>

@@ -20,6 +20,7 @@ dist-ssr
 CLAUDE.md
 AGENTS.md
 MARKETPLACE_TASKS.md
+MARKETPLACE_IMPLEMENTATION_SUMMARY.md
 
 # Editor directories and files
 .vscode/*

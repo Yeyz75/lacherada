@@ -156,27 +156,6 @@
     "googleReauthDescription": "For security, you may need to confirm your identity with Google before setting a password. A popup window will open to complete the verification.",
     "notAuthenticated": "You must be logged in to access this feature"
   },
-  "explore": {
-    "title": "Explore",
-    "subtitle": "Discover items and services available in your community",
-    "searchPlaceholder": "Search items, services, categories...",
-    "filters": {
-      "category": "Category",
-      "type": "Type",
-      "location": "Location",
-      "all": "All",
-      "lend": "Lend",
-      "sell": "Sell",
-      "exchange": "Exchange",
-      "donate": "Donate"
-    },
-    "noResults": "No results found",
-    "loadMore": "Load More",
-    "featured": "Featured",
-    "recent": "Recent",
-    "popular": "Popular",
-    "clearFilters": "Clear Filters"
-  },
   "howItWorks": {
     "title": "How LaCherada Works",
     "subtitle": "Discover how easy it is to share with your community",
@@ -584,5 +563,208 @@
     "maxItems": "{field} can have at most {max} items",
     "errors": "Validation Errors",
     "checkFields": "Please check the highlighted fields and try again"
+  },
+  "myItems": {
+    "title": "My Listings",
+    "subtitle": "Manage all your published items",
+    "actions": {
+      "newItem": "New Listing",
+      "publishFirst": "Publish my First Item",
+      "published": "Published",
+      "paused": "Paused",
+      "deleted": "Deleted"
+    },
+    "filters": {
+      "all": "All",
+      "draft": "Drafts",
+      "published": "Published",
+      "paused": "Paused",
+      "archived": "Archived"
+    },
+    "search": {
+      "placeholder": "Search in my listings..."
+    },
+    "empty": {
+      "title": "You have no listings",
+      "description": "Start by publishing your first item to share with the community"
+    },
+    "messages": {
+      "publishSuccess": "Item published successfully",
+      "publishError": "Error publishing item",
+      "pauseSuccess": "Item paused successfully",
+      "pauseError": "Error pausing item",
+      "deleteSuccess": "Item deleted successfully",
+      "deleteError": "Error deleting item"
+    },
+    "delete": {
+      "confirmTitle": "Confirm Deletion",
+      "confirmMessage": "Are you sure you want to delete this item? This action cannot be undone."
+    }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "subtitle": "Items you've saved for later",
+    "actions": {
+      "explore": "Explore Items",
+      "startExploring": "Start Exploring"
+    },
+    "empty": {
+      "title": "You have no favorites",
+      "description": "Save items you're interested in to find them easily later"
+    }
+  },
+  "itemDetail": {
+    "description": "Description",
+    "details": "Details",
+    "tags": "Tags",
+    "seller": "Seller",
+    "actions": {
+      "contact": "Contact Seller",
+      "favorite": "Save to Favorites",
+      "unfavorite": "Remove from Favorites"
+    },
+    "messages": {
+      "favorited": "Added to favorites",
+      "unfavorited": "Removed from favorites"
+    }
+  },
+  "marketplace": {
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "paused": "Paused",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "pricing": {
+      "free": "Free",
+      "fixed": "Fixed Price",
+      "negotiable": "Negotiable",
+      "donation": "Donation",
+      "request": "On Request"
+    },
+    "listingType": {
+      "sell": "Sale",
+      "lend": "Lend",
+      "borrow": "Borrow Request",
+      "donate": "Donation",
+      "exchange": "Exchange",
+      "service": "Service"
+    },
+    "condition": {
+      "new": "New",
+      "like_new": "Like New",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "fulfillment": {
+      "in_person": "In Person",
+      "pickup": "Pickup",
+      "delivery": "Home Delivery",
+      "shipping": "Shipping",
+      "digital": "Digital"
+    },
+    "actions": {
+      "publish": "Publish",
+      "pause": "Pause",
+      "resume": "Resume",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "subtitle": "Communicate with other users",
+    "comingSoon": {
+      "title": "Messaging System in Development",
+      "description": "We're working on a real-time messaging system so you can easily communicate with other users.",
+      "features": {
+        "realtime": {
+          "title": "Real-Time Messaging",
+          "description": "Instant chats with live notifications"
+        },
+        "readReceipts": {
+          "title": "Read Receipts",
+          "description": "Know when your messages have been read"
+        },
+        "notifications": {
+          "title": "Push Notifications",
+          "description": "Receive instant alerts for new messages"
+        },
+        "media": {
+          "title": "Share Media",
+          "description": "Send images and files in your conversations"
+        }
+      },
+      "progress": {
+        "title": "Development Progress",
+        "description": "We're 65% done with this feature"
+      },
+      "actions": {
+        "explore": "Explore Items",
+        "dashboard": "Go to Dashboard"
+      }
+    }
+  },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover items and services in your community",
+    "search": {
+      "placeholder": "Search items, services...",
+      "button": "Search"
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "listingType": "Listing Type",
+      "allTypes": "All Types",
+      "priceRange": "Price Range",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
+      "location": "Location",
+      "city": "City",
+      "condition": "Condition",
+      "allConditions": "All Conditions",
+      "apply": "Apply Filters",
+      "clear": "Clear Filters"
+    },
+    "sort": {
+      "label": "Sort by",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "popular": "Most Popular"
+    },
+    "empty": {
+      "title": "No results found",
+      "description": "Try adjusting your filters or search"
+    },
+    "results": {
+      "showing": "Showing {count} of {total} items",
+      "found": "{count} items found"
+    }
+  },
+  "itemEdit": {
+    "title": "Edit Listing",
+    "subtitle": "Update your item information",
+    "status": {
+      "title": "Listing Status",
+      "label": "Status"
+    },
+    "actions": {
+      "save": "Save Changes"
+    },
+    "success": {
+      "title": "Changes Saved",
+      "message": "Your listing has been updated successfully"
+    },
+    "errors": {
+      "notOwner": "You don't have permission to edit this listing",
+      "updateFailed": "Error updating listing. Please try again."
+    },
+    "confirmCancel": "Are you sure you want to cancel? Unsaved changes will be lost."
   }
 }

@@ -1,41 +1,151 @@
 <template>
-  <div class="coming-soon-container">
-    <div class="coming-soon-content">
-      <div class="coming-soon-icon">
-        <Icon icon="mdi:message-text" />
+  <div class="max-w-7xl mx-auto p-4 md:p-8">
+    <!-- Header -->
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div class="flex-1">
+        <h1
+          class="flex items-center gap-2 text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <Icon icon="mdi:message-text" class="text-primary-600 text-4xl" />
+          {{ t('messages.title') }}
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          {{ t('messages.subtitle') }}
+        </p>
       </div>
-      <h1 class="coming-soon-title">{{ t('comingSoon.messages.title') }}</h1>
-      <p class="coming-soon-description">
-        {{ t('comingSoon.messages.description') }}
-      </p>
+    </div>
 
-      <div class="coming-soon-features">
-        <h3 class="features-title">{{ t('comingSoon.whatToExpect') }}</h3>
-        <ul class="features-list">
-          <li class="feature-item">
-            <Icon icon="mdi:chat" />
-            <span>{{ t('comingSoon.messages.features.realtime') }}</span>
-          </li>
-          <li class="feature-item">
-            <Icon icon="mdi:history" />
-            <span>{{ t('comingSoon.messages.features.history') }}</span>
-          </li>
-          <li class="feature-item">
-            <Icon icon="mdi:map-marker-outline" />
-            <span>{{ t('comingSoon.messages.features.location') }}</span>
-          </li>
-          <li class="feature-item">
-            <Icon icon="mdi:bell" />
-            <span>{{ t('comingSoon.messages.features.notifications') }}</span>
-          </li>
-        </ul>
+    <!-- Coming Soon State -->
+    <div
+      class="flex flex-col items-center justify-center py-20 gap-6 text-center">
+      <div class="relative">
+        <Icon
+          icon="mdi:chat-processing"
+          class="text-8xl text-primary-500 animate-pulse" />
+        <div
+          class="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+          <Icon icon="mdi:wrench" class="text-white text-sm" />
+        </div>
       </div>
 
-      <div class="coming-soon-actions">
-        <router-link to="/dashboard" class="btn btn-primary">
-          <Icon icon="mdi:arrow-left" />
-          {{ t('comingSoon.backToDashboard') }}
-        </router-link>
+      <div class="max-w-2xl space-y-4">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+          {{ t('messages.comingSoon.title') }}
+        </h2>
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          {{ t('messages.comingSoon.description') }}
+        </p>
+      </div>
+
+      <!-- Features Preview -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl w-full mt-8">
+        <div
+          class="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+              <Icon
+                icon="mdi:lightning-bolt"
+                class="text-2xl text-primary-600" />
+            </div>
+            <div class="text-left">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                {{ t('messages.comingSoon.features.realtime.title') }}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ t('messages.comingSoon.features.realtime.description') }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <Icon icon="mdi:check-all" class="text-2xl text-green-600" />
+            </div>
+            <div class="text-left">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                {{ t('messages.comingSoon.features.readReceipts.title') }}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ t('messages.comingSoon.features.readReceipts.description') }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Icon icon="mdi:bell-ring" class="text-2xl text-blue-600" />
+            </div>
+            <div class="text-left">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                {{ t('messages.comingSoon.features.notifications.title') }}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{
+                  t('messages.comingSoon.features.notifications.description')
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <Icon icon="mdi:file-image" class="text-2xl text-purple-600" />
+            </div>
+            <div class="text-left">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                {{ t('messages.comingSoon.features.media.title') }}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ t('messages.comingSoon.features.media.description') }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Indicator -->
+      <div
+        class="mt-8 p-6 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-lg max-w-2xl w-full">
+        <div class="flex items-center gap-4 mb-4">
+          <Icon icon="mdi:progress-clock" class="text-3xl text-primary-600" />
+          <div class="text-left flex-1">
+            <h3 class="font-semibold text-gray-900 dark:text-white">
+              {{ t('messages.comingSoon.progress.title') }}
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {{ t('messages.comingSoon.progress.description') }}
+            </p>
+          </div>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+          <div
+            class="bg-primary-600 h-2 rounded-full transition-all duration-500"
+            style="width: 65%"></div>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
+          65% completado
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-4 mt-8">
+        <BaseButton variant="primary" @click="router.push('/explore')">
+          <Icon icon="mdi:magnify" />
+          {{ t('messages.comingSoon.actions.explore') }}
+        </BaseButton>
+        <BaseButton variant="secondary" @click="router.push('/dashboard')">
+          <Icon icon="mdi:view-dashboard" />
+          {{ t('messages.comingSoon.actions.dashboard') }}
+        </BaseButton>
       </div>
     </div>
   </div>
@@ -43,136 +153,10 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const { t } = useI18n()
+const router = useRouter()
 </script>
-
-<style scoped>
-.coming-soon-container {
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xl);
-}
-
-.coming-soon-content {
-  max-width: 600px;
-  text-align: center;
-  padding: var(--space-xl);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-}
-
-.coming-soon-icon {
-  font-size: 4rem;
-  color: var(--color-primary);
-  margin-bottom: var(--space-lg);
-}
-
-.coming-soon-title {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-md);
-}
-
-.coming-soon-description {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-xl);
-  line-height: 1.6;
-}
-
-.coming-soon-features {
-  margin-bottom: var(--space-xl);
-  text-align: left;
-}
-
-.features-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-md);
-  text-align: center;
-}
-
-.features-list {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--color-background-secondary);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-}
-
-.feature-item svg {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.feature-item span {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.coming-soon-actions {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-md);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-weight: var(--font-weight-medium);
-  transition: all var(--transition-normal);
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: white;
-  border: 1px solid var(--color-primary);
-}
-
-.btn-primary:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-@media (max-width: 768px) {
-  .coming-soon-container {
-    padding: var(--space-md);
-  }
-
-  .coming-soon-content {
-    padding: var(--space-lg);
-  }
-
-  .coming-soon-title {
-    font-size: var(--font-size-2xl);
-  }
-
-  .coming-soon-description {
-    font-size: var(--font-size-base);
-  }
-}
-</style>
